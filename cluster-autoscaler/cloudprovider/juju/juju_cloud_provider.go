@@ -17,13 +17,16 @@ limitations under the License.
 package juju
 
 import (
+	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/autoscaler/cluster-autoscaler/cloudprovider"
 	"k8s.io/autoscaler/cluster-autoscaler/config"
+	"k8s.io/autoscaler/cluster-autoscaler/config/dynamic"
 	"k8s.io/autoscaler/cluster-autoscaler/utils/errors"
 	klog "k8s.io/klog/v2"
 )
@@ -32,19 +35,20 @@ var _ cloudprovider.CloudProvider = (*jujuCloudProvider)(nil)
 
 const (
 	// GPULabel is the label added to nodes with GPU resource.
-	GPULabel = "juju/gpu-node"
+	GPULabel             = "juju/gpu-node"
+	scaleToZeroSupported = true
 )
 
 // jujuCloudProvider implements CloudProvider interface.
 type jujuCloudProvider struct {
 	resourceLimiter *cloudprovider.ResourceLimiter
-	nodeGroup       *NodeGroup
+	nodeGroups      []cloudprovider.NodeGroup
 }
 
-func newJujuCloudProvider(rl *cloudprovider.ResourceLimiter, nodeGroup *NodeGroup) (*jujuCloudProvider, error) { //TODO
+func newJujuCloudProvider(rl *cloudprovider.ResourceLimiter, nodeGroups []cloudprovider.NodeGroup) (*jujuCloudProvider, error) { //TODO
 	return &jujuCloudProvider{
 		resourceLimiter: rl,
-		nodeGroup:       nodeGroup,
+		nodeGroups:      nodeGroups,
 	}, nil
 }
 
@@ -55,14 +59,25 @@ func (j *jujuCloudProvider) Name() string {
 
 // NodeGroups returns all node groups configured for this cloud provider.
 func (j *jujuCloudProvider) NodeGroups() []cloudprovider.NodeGroup {
-	return []cloudprovider.NodeGroup{j.nodeGroup}
+	return j.nodeGroups
 }
 
 // NodeGroupForNode returns the node group for the given node, nil if the node
 // should not be processed by cluster autoscaler, or non-nil error if such
 // occurred. Must be implemented.
 func (j *jujuCloudProvider) NodeGroupForNode(node *apiv1.Node) (cloudprovider.NodeGroup, error) {
-	return j.nodeGroup, nil
+	for _, nodeGroup := range j.nodeGroups {
+		nodeGroupNodes, err := nodeGroup.Nodes()
+		if err != nil {
+			return nil, err
+		}
+		for _, nodeGroupNode := range nodeGroupNodes {
+			if nodeGroupNode.Id == node.Name {
+				return nodeGroup, nil
+			}
+		}
+	}
+	return nil, nil
 }
 
 // Pricing returns pricing model for this cloud provider or error if not
@@ -138,22 +153,48 @@ func BuildJuju(
 		defer configFile.Close()
 	}
 
-	man := &Manager{
-		units: make(map[string]*Unit),
+	ngs := []cloudprovider.NodeGroup{}
+	for _, nodeGroupSpecString := range do.NodeGroupSpecs {
+		nodeGroupSpec, err := dynamic.SpecFromString(nodeGroupSpecString, scaleToZeroSupported)
+		if err != nil {
+			klog.Errorf("failed to parse node group spec: %v", err)
+			continue
+		}
+		model, application, err := parseNodeGroupName(nodeGroupSpec.Name)
+		if err != nil {
+			klog.Errorf("failed to parse node group name: %v", err)
+			continue
+		}
+		man := &Manager{
+			model:       model,
+			application: application,
+			units:       make(map[string]*Unit),
+		}
+		man.init()
+		ng := &NodeGroup{
+			id:      "juju",
+			minSize: nodeGroupSpec.MinSize,
+			maxSize: nodeGroupSpec.MaxSize,
+			target:  len(man.units),
+			manager: man,
+		}
+		ngs = append(ngs, ng)
 	}
-	man.init()
 
-	ng := &NodeGroup{
-		id:      "juju",
-		minSize: 3,
-		maxSize: 10,
-		target:  len(man.units),
-		manager: man,
-	}
-	provider, err := newJujuCloudProvider(rl, ng)
+	provider, err := newJujuCloudProvider(rl, ngs)
 	if err != nil {
 		klog.Fatalf("Failed to create Juju cloud provider: %v", err)
 	}
 
 	return provider
+}
+
+func parseNodeGroupName(name string) (string, string, error) {
+	s := strings.Split(name, ",")
+	if len(s) != 2 {
+		return "", "", fmt.Errorf("failed to parse node group name: %s, expected <model>,<application>", name)
+	}
+	model := s[0]
+	application := s[1]
+	return model, application, nil
 }
