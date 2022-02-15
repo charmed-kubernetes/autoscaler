@@ -19,19 +19,21 @@ type Unit struct {
 }
 
 type Manager struct {
-	units map[string]*Unit
+	model       string
+	application string
+	units       map[string]*Unit
 }
 
 func (m *Manager) init() error {
 	var status []byte
 	var hostname string
 
-	status, _ = exec.Command("juju", "status", "kubernetes-worker").Output()
+	status, _ = exec.Command("juju", "status", "-m", m.model, m.application).Output()
 	for _, line := range strings.Split(string(status), "\n") {
-		if strings.Contains(line, "kubernetes-worker/") {
+		if strings.Contains(line, m.application+"/") {
 			info := strings.Fields(line)
 			unitName := strings.Replace(info[0], "*", "", -1)
-			nodeExec, _ := exec.Command("juju", "exec", "-u", unitName, "hostname").Output()
+			nodeExec, _ := exec.Command("juju", "exec", "-m", m.model, "-u", unitName, "hostname").Output()
 			hostname = strings.Fields(string(nodeExec))[0]
 			exec.Command("kubectl", "patch", "node", hostname, "-p", `{"spec":{"providerID":"`+hostname+`"}}`).Output()
 			m.units[unitName] = &Unit{
@@ -53,7 +55,7 @@ func (m *Manager) addUnits(delta int) error {
 
 	cmd := exec.Cmd{
 		Path:   juju,
-		Args:   []string{juju, "add-unit", "-n", strconv.Itoa(delta), "kubernetes-worker"},
+		Args:   []string{juju, "add-unit", "-m", m.model, "-n", strconv.Itoa(delta), m.application},
 		Stderr: os.Stdout,
 	}
 	cmd.Run()
@@ -77,14 +79,14 @@ func (m *Manager) removeUnit(name string) error {
 
 	cmd := exec.Cmd{
 		Path:   juju,
-		Args:   []string{juju, "run-action", unit.jujuName, "pause", "--wait"},
+		Args:   []string{juju, "run-action", "-m", m.model, unit.jujuName, "pause", "--wait"},
 		Stderr: os.Stdout,
 	}
 	cmd.Run()
 
 	cmd = exec.Cmd{
 		Path:   juju,
-		Args:   []string{juju, "remove-unit", unit.jujuName},
+		Args:   []string{juju, "remove-unit", "-m", m.model, unit.jujuName},
 		Stderr: os.Stdout,
 	}
 	cmd.Run()
@@ -103,7 +105,7 @@ func (m *Manager) refresh() error {
 	for _, unit := range m.units {
 		if unit.state == cloudprovider.InstanceCreating {
 			if unit.kubeName == "" {
-				nodeExec, _ := exec.Command("juju", "exec", "-u", unit.jujuName, "hostname").Output()
+				nodeExec, _ := exec.Command("juju", "exec", "-m", m.model, "-u", unit.jujuName, "hostname").Output()
 				if len(strings.Fields(string(nodeExec))) > 0 {
 					unit.kubeName = strings.Fields(string(nodeExec))[0]
 				}
@@ -138,9 +140,9 @@ func (m *Manager) getStatus() map[string][]string {
 	var status []byte
 	units := make(map[string][]string)
 
-	status, _ = exec.Command("juju", "status", "kubernetes-worker").Output()
+	status, _ = exec.Command("juju", "status", "-m", m.model, m.application).Output()
 	for _, line := range strings.Split(string(status), "\n") {
-		if strings.Contains(line, "kubernetes-worker/") {
+		if strings.Contains(line, m.application+"/") {
 			info := strings.Fields(line)
 			unitName := strings.Replace(info[0], "*", "", -1)
 			if info[1] == "terminated" {
