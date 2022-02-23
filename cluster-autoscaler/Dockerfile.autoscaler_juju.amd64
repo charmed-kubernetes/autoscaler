@@ -1,0 +1,46 @@
+##
+## Build Autoscaler
+##
+FROM golang:1.17.5 AS autoscaler_builder
+ENV GOPATH /gopath/
+ENV PATH $GOPATH/bin:$PATH
+ENV GO111MODULE auto
+
+WORKDIR /app
+
+RUN apt-get update && apt-get --yes install libseccomp-dev
+RUN go version
+RUN go get github.com/tools/godep
+RUN godep version
+COPY . ./
+RUN make build
+
+##
+## Install Juju 
+##
+
+FROM ubuntu:20.04 AS juju_installer
+
+
+WORKDIR /
+
+
+RUN apt-get update && apt-get --yes install curl xz-utils ca-certificates &&\
+    curl -LO https://launchpad.net/juju/2.9/2.9.22/+download/juju-2.9.22-linux-amd64.tar.xz &&\
+    curl -L https://launchpad.net/juju/2.9/2.9.22/+download/juju-2.9.22-linux-amd64.tar.xz/+md5 -o juju.md5 &&\
+    cat juju.md5 | md5sum --check &&\
+    tar xf ./juju-2.9.22-linux-amd64.tar.xz 
+
+##
+## Deploy
+##
+FROM ubuntu:20.04 
+ENV PATH="/bin:${PATH}"
+
+WORKDIR /
+
+RUN apt-get update && apt-get --yes install ca-certificates
+COPY --from=autoscaler_builder /app/cluster-autoscaler-amd64 /bin/cluster-autoscaler
+COPY --from=juju_installer /juju /bin/juju
+RUN juju version
+ENTRYPOINT ["/bin/cluster-autoscaler"]
