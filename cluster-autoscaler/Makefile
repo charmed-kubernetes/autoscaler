@@ -117,8 +117,8 @@ juju-cli-image-arch-%:
 		--build-arg JUJU_MINOR=${JUJU_MINOR} \
 		--pull \
 		-t juju_cli:${JUJU_MAJOR}.${JUJU_MINOR}-$* \
-		-f Dockerfile.juju_cli \
+		-f ./cloudprovider/juju/Dockerfile.juju_cli \
 		--platform linux/$* \
-		--load .
+		--load ./cloudprovider/juju/
 
 .PHONY: all build test-unit clean format execute-release dev-release docker-builder build-in-docker release generate push-image push-manifest
