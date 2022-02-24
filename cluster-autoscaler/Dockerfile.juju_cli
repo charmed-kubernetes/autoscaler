@@ -1,0 +1,17 @@
+FROM --platform=$TARGETPLATFORM ubuntu:20.04 AS juju_installer
+ARG TARGETPLATFORM
+ARG TARGETARCH
+ARG TARGETOS
+ARG JUJU_MAJOR=2.9
+ARG JUJU_MINOR=22
+
+WORKDIR /
+
+RUN echo "Installing juju 2.9.22-${TARGETOS}-${TARGETARCH}"
+
+RUN apt-get update && apt-get --yes install curl xz-utils ca-certificates && \
+    curl -LO https://launchpad.net/juju/${JUJU_MAJOR}/${JUJU_MAJOR}.${JUJU_MINOR}/+download/juju-${JUJU_MAJOR}.${JUJU_MINOR}-${TARGETOS}-${TARGETARCH}.tar.xz && \
+    curl -L https://launchpad.net/juju/${JUJU_MAJOR}/${JUJU_MAJOR}.${JUJU_MINOR}/+download/juju-${JUJU_MAJOR}.${JUJU_MINOR}-${TARGETOS}-${TARGETARCH}.tar.xz/+md5 -o juju.md5 && \
+    cat juju.md5 | md5sum --check && \
+    tar xf ./juju-${JUJU_MAJOR}.${JUJU_MINOR}-${TARGETOS}-${TARGETARCH}.tar.xz
+CMD ["/juju", "version"]
