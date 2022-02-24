@@ -7,8 +7,10 @@ LDFLAGS?=-s
 ENVVAR=CGO_ENABLED=0
 GOOS?=linux
 GOARCH?=$(shell go env GOARCH)
-REGISTRY?=staging-k8s.gcr.io
+REGISTRY?=upload.rocks.canonical.com:5000
 DOCKER_NETWORK?=default
+JUJU_MAJOR?=2.9
+JUJU_MINOR?=22
 ifdef BUILD_TAGS
   TAGS_FLAG=--tags ${BUILD_TAGS}
   PROVIDER=-${BUILD_TAGS}
@@ -28,7 +30,7 @@ ifdef DOCKER_RM
 else
   RM_FLAG=
 endif
-IMAGE=$(REGISTRY)/cluster-autoscaler$(PROVIDER)
+IMAGE=$(REGISTRY)/cdk/cluster-autoscaler$(PROVIDER)
 
 export DOCKER_CLI_EXPERIMENTAL := enabled
 
@@ -49,7 +51,7 @@ make-image: make-image-arch-$(GOARCH)
 
 make-image-arch-%:
 ifdef BASEIMAGE
-	docker build --pull --build-arg BASEIMAGE=${BASEIMAGE} \
+	docker build --build-arg BASEIMAGE=${BASEIMAGE} \
 		-t ${IMAGE}-$*:${TAG} \
 		-f Dockerfile.$* .
 else
@@ -103,5 +105,20 @@ container-arch-%: build-in-docker-arch-% make-image-arch-%
 
 test-in-docker: clean docker-builder
 	docker run ${RM_FLAG} -v `pwd`:/cluster-autoscaler/:Z autoscaling-builder:latest bash -c 'cd /cluster-autoscaler && go test -race ./... ${TAGS_FLAG}'
+
+juju-cli-images: $(addprefix juju-cli-image-arch-,$(ALL_ARCH))
+	@echo "Juju CLI images built"
+
+# To use buildx to build multi-arch images, install qemu
+# sudo apt-get install -y qemu-user-static
+juju-cli-image-arch-%:
+	docker buildx build \
+		--build-arg JUJU_MAJOR=${JUJU_MAJOR} \
+		--build-arg JUJU_MINOR=${JUJU_MINOR} \
+		--pull \
+		-t juju_cli:${JUJU_MAJOR}.${JUJU_MINOR}-$* \
+		-f Dockerfile.juju_cli \
+		--platform linux/$* \
+		--load .
 
 .PHONY: all build test-unit clean format execute-release dev-release docker-builder build-in-docker release generate push-image push-manifest
