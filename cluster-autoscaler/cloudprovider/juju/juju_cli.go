@@ -1,12 +1,12 @@
 package juju
 
 import (
-	"os"
-	"os/exec"
-	"strings"
-	"strconv"
 	"k8s.io/autoscaler/cluster-autoscaler/cloudprovider"
 	klog "k8s.io/klog/v2"
+	"os"
+	"os/exec"
+	"strconv"
+	"strings"
 )
 
 type Unit struct {
@@ -19,7 +19,7 @@ type Unit struct {
 }
 
 type Manager struct {
-	units      map[string]*Unit
+	units map[string]*Unit
 }
 
 func (m *Manager) init() error {
@@ -30,10 +30,10 @@ func (m *Manager) init() error {
 	for _, line := range strings.Split(string(status), "\n") {
 		if strings.Contains(line, "kubernetes-worker/") {
 			info := strings.Fields(line)
-			unitName := strings.Replace(info[0],"*", "", -1)
+			unitName := strings.Replace(info[0], "*", "", -1)
 			nodeExec, _ := exec.Command("juju", "exec", "-u", unitName, "hostname").Output()
 			hostname = strings.Fields(string(nodeExec))[0]
-			exec.Command("kubectl", "patch", "node", hostname, "-p", `{"spec":{"providerID":"` + hostname + `"}}`).Output()
+			exec.Command("kubectl", "patch", "node", hostname, "-p", `{"spec":{"providerID":"`+hostname+`"}}`).Output()
 			m.units[unitName] = &Unit{
 				state:      cloudprovider.InstanceRunning,
 				jujuName:   unitName,
@@ -52,8 +52,8 @@ func (m *Manager) addUnits(delta int) error {
 	prevStatus := m.getStatus()
 
 	cmd := exec.Cmd{
-		Path: juju,
-		Args: []string {juju, "add-unit", "-n", strconv.Itoa(delta), "kubernetes-worker"},
+		Path:   juju,
+		Args:   []string{juju, "add-unit", "-n", strconv.Itoa(delta), "kubernetes-worker"},
 		Stderr: os.Stdout,
 	}
 	cmd.Run()
@@ -76,15 +76,15 @@ func (m *Manager) removeUnit(name string) error {
 	unit.state = cloudprovider.InstanceDeleting
 
 	cmd := exec.Cmd{
-		Path: juju,
-		Args: []string {juju, "run-action", unit.jujuName, "pause", "--wait"},
+		Path:   juju,
+		Args:   []string{juju, "run-action", unit.jujuName, "pause", "--wait"},
 		Stderr: os.Stdout,
 	}
 	cmd.Run()
 
 	cmd = exec.Cmd{
-		Path: juju,
-		Args: []string {juju, "remove-unit", unit.jujuName},
+		Path:   juju,
+		Args:   []string{juju, "remove-unit", unit.jujuName},
 		Stderr: os.Stdout,
 	}
 	cmd.Run()
@@ -110,8 +110,8 @@ func (m *Manager) refresh() error {
 			}
 
 			if unit.workload == "active" && !unit.registered {
-				output, _ := exec.Command("kubectl", "patch", "node", unit.kubeName, "-p", `{"spec":{"providerID":"` + unit.kubeName + `"}}`).Output()
-				if string(output) == "node/" + unit.kubeName +" patched" {
+				output, _ := exec.Command("kubectl", "patch", "node", unit.kubeName, "-p", `{"spec":{"providerID":"`+unit.kubeName+`"}}`).Output()
+				if string(output) == "node/"+unit.kubeName+" patched" {
 					unit.registered = true
 					unit.state = cloudprovider.InstanceRunning
 					klog.Warningf(unit.kubeName + " registered.")
@@ -142,8 +142,8 @@ func (m *Manager) getStatus() map[string][]string {
 	for _, line := range strings.Split(string(status), "\n") {
 		if strings.Contains(line, "kubernetes-worker/") {
 			info := strings.Fields(line)
-			unitName := strings.Replace(info[0],"*", "", -1)
-			if (info[1] == "terminated") {
+			unitName := strings.Replace(info[0], "*", "", -1)
+			if info[1] == "terminated" {
 				continue
 			} else {
 				units[unitName] = info[0:]

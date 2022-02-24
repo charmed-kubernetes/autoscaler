@@ -38,13 +38,13 @@ const (
 // jujuCloudProvider implements CloudProvider interface.
 type jujuCloudProvider struct {
 	resourceLimiter *cloudprovider.ResourceLimiter
-	nodeGroup *NodeGroup
+	nodeGroup       *NodeGroup
 }
 
 func newJujuCloudProvider(rl *cloudprovider.ResourceLimiter, nodeGroup *NodeGroup) (*jujuCloudProvider, error) { //TODO
 	return &jujuCloudProvider{
 		resourceLimiter: rl,
-		nodeGroup: nodeGroup,
+		nodeGroup:       nodeGroup,
 	}, nil
 }
 
@@ -139,16 +139,16 @@ func BuildJuju(
 	}
 
 	man := &Manager{
-		units:    make(map[string]*Unit),
+		units: make(map[string]*Unit),
 	}
 	man.init()
 
 	ng := &NodeGroup{
-		id:         "juju",
-		minSize:    3,
-		maxSize:    10,
-		target:     len(man.units),
-		manager:    man,
+		id:      "juju",
+		minSize: 3,
+		maxSize: 10,
+		target:  len(man.units),
+		manager: man,
 	}
 	provider, err := newJujuCloudProvider(rl, ng)
 	if err != nil {
