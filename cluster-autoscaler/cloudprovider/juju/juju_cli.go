@@ -1,12 +1,12 @@
 package juju
 
 import (
-	"os"
-	"os/exec"
-	"strings"
-	"strconv"
 	"k8s.io/autoscaler/cluster-autoscaler/cloudprovider"
 	klog "k8s.io/klog/v2"
+	"os"
+	"os/exec"
+	"strconv"
+	"strings"
 )
 
 type Unit struct {
@@ -19,21 +19,23 @@ type Unit struct {
 }
 
 type Manager struct {
-	units      map[string]*Unit
+	model       string
+	application string
+	units       map[string]*Unit
 }
 
 func (m *Manager) init() error {
 	var status []byte
 	var hostname string
 
-	status, _ = exec.Command("juju", "status", "kubernetes-worker").Output()
+	status, _ = exec.Command("juju", "status", "-m", m.model, m.application).Output()
 	for _, line := range strings.Split(string(status), "\n") {
-		if strings.Contains(line, "kubernetes-worker/") {
+		if strings.Contains(line, m.application+"/") {
 			info := strings.Fields(line)
-			unitName := strings.Replace(info[0],"*", "", -1)
-			nodeExec, _ := exec.Command("juju", "exec", "-u", unitName, "hostname").Output()
+			unitName := strings.Replace(info[0], "*", "", -1)
+			nodeExec, _ := exec.Command("juju", "exec", "-m", m.model, "-u", unitName, "hostname").Output()
 			hostname = strings.Fields(string(nodeExec))[0]
-			exec.Command("kubectl", "patch", "node", hostname, "-p", `{"spec":{"providerID":"` + hostname + `"}}`).Output()
+			exec.Command("kubectl", "patch", "node", hostname, "-p", `{"spec":{"providerID":"`+hostname+`"}}`).Output()
 			m.units[unitName] = &Unit{
 				state:      cloudprovider.InstanceRunning,
 				jujuName:   unitName,
@@ -52,8 +54,8 @@ func (m *Manager) addUnits(delta int) error {
 	prevStatus := m.getStatus()
 
 	cmd := exec.Cmd{
-		Path: juju,
-		Args: []string {juju, "add-unit", "-n", strconv.Itoa(delta), "kubernetes-worker"},
+		Path:   juju,
+		Args:   []string{juju, "add-unit", "-m", m.model, "-n", strconv.Itoa(delta), m.application},
 		Stderr: os.Stdout,
 	}
 	cmd.Run()
@@ -76,15 +78,15 @@ func (m *Manager) removeUnit(name string) error {
 	unit.state = cloudprovider.InstanceDeleting
 
 	cmd := exec.Cmd{
-		Path: juju,
-		Args: []string {juju, "run-action", unit.jujuName, "pause", "--wait"},
+		Path:   juju,
+		Args:   []string{juju, "run-action", "-m", m.model, unit.jujuName, "pause", "--wait"},
 		Stderr: os.Stdout,
 	}
 	cmd.Run()
 
 	cmd = exec.Cmd{
-		Path: juju,
-		Args: []string {juju, "remove-unit", unit.jujuName},
+		Path:   juju,
+		Args:   []string{juju, "remove-unit", "-m", m.model, unit.jujuName},
 		Stderr: os.Stdout,
 	}
 	cmd.Run()
@@ -103,15 +105,15 @@ func (m *Manager) refresh() error {
 	for _, unit := range m.units {
 		if unit.state == cloudprovider.InstanceCreating {
 			if unit.kubeName == "" {
-				nodeExec, _ := exec.Command("juju", "exec", "-u", unit.jujuName, "hostname").Output()
+				nodeExec, _ := exec.Command("juju", "exec", "-m", m.model, "-u", unit.jujuName, "hostname").Output()
 				if len(strings.Fields(string(nodeExec))) > 0 {
 					unit.kubeName = strings.Fields(string(nodeExec))[0]
 				}
 			}
 
 			if unit.workload == "active" && !unit.registered {
-				output, _ := exec.Command("kubectl", "patch", "node", unit.kubeName, "-p", `{"spec":{"providerID":"` + unit.kubeName + `"}}`).Output()
-				if string(output) == "node/" + unit.kubeName +" patched" {
+				output, _ := exec.Command("kubectl", "patch", "node", unit.kubeName, "-p", `{"spec":{"providerID":"`+unit.kubeName+`"}}`).Output()
+				if string(output) == "node/"+unit.kubeName+" patched" {
 					unit.registered = true
 					unit.state = cloudprovider.InstanceRunning
 					klog.Warningf(unit.kubeName + " registered.")
@@ -138,12 +140,12 @@ func (m *Manager) getStatus() map[string][]string {
 	var status []byte
 	units := make(map[string][]string)
 
-	status, _ = exec.Command("juju", "status", "kubernetes-worker").Output()
+	status, _ = exec.Command("juju", "status", "-m", m.model, m.application).Output()
 	for _, line := range strings.Split(string(status), "\n") {
-		if strings.Contains(line, "kubernetes-worker/") {
+		if strings.Contains(line, m.application+"/") {
 			info := strings.Fields(line)
-			unitName := strings.Replace(info[0],"*", "", -1)
-			if (info[1] == "terminated") {
+			unitName := strings.Replace(info[0], "*", "", -1)
+			if info[1] == "terminated" {
 				continue
 			} else {
 				units[unitName] = info[0:]

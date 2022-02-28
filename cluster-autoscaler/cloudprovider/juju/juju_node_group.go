@@ -31,12 +31,11 @@ import (
 // )
 
 type NodeGroup struct {
-	id         string
-	minSize    int
-	maxSize    int
-	target     int
-	manager    *Manager
-
+	id      string
+	minSize int
+	maxSize int
+	target  int
+	manager *Manager
 }
 
 // MaxSize returns maximum size of the node group.
