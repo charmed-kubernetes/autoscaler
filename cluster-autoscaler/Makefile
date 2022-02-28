@@ -51,7 +51,7 @@ make-image: make-image-arch-$(GOARCH)
 
 make-image-arch-%:
 ifdef BASEIMAGE
-	docker build --build-arg BASEIMAGE=${BASEIMAGE} \
+	docker build --build-arg BASEIMAGE=${BASEIMAGE}-$* \
 		-t ${IMAGE}-$*:${TAG} \
 		-f Dockerfile.$* .
 else
@@ -68,9 +68,12 @@ push-image-arch-%:
 
 push-manifest:
 	docker manifest create ${IMAGE}:${TAG} \
-	    $(addprefix $(REGISTRY)/cluster-autoscaler$(PROVIDER)-, $(addsuffix :$(TAG), $(ALL_ARCH)))
+	    $(addprefix $(IMAGE)-, $(addsuffix :$(TAG), $(ALL_ARCH)))
 	docker manifest push --purge ${IMAGE}:${TAG}
 
+# To release a juju-cli version of the autoscaler app to rocks:
+# make juju-cli-images
+# make TAG=dev-2.9.22-build1  BUILD_TAGS=juju BASEIMAGE=juju_cli:2.9.22 execute-release
 execute-release: $(addprefix make-image-arch-,$(ALL_ARCH)) $(addprefix push-image-arch-,$(ALL_ARCH)) push-manifest
 	@echo "Release ${TAG}${FOR_PROVIDER} completed"
 
