@@ -190,9 +190,9 @@ func BuildJuju(
 }
 
 func parseNodeGroupName(name string) (string, string, error) {
-	s := strings.Split(name, ",")
+	s := strings.Split(name, ":")
 	if len(s) != 2 {
-		return "", "", fmt.Errorf("failed to parse node group name: %s, expected <model>,<application>", name)
+		return "", "", fmt.Errorf("failed to parse node group name: %s, expected <model>:<application>", name)
 	}
 	model := s[0]
 	application := s[1]
