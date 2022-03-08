@@ -2,7 +2,6 @@ package juju
 
 import (
 	"k8s.io/autoscaler/cluster-autoscaler/cloudprovider"
-	klog "k8s.io/klog/v2"
 	"os"
 	"os/exec"
 	"strconv"
@@ -10,12 +9,11 @@ import (
 )
 
 type Unit struct {
-	state      cloudprovider.InstanceState
-	jujuName   string
-	kubeName   string
-	workload   string
-	agent      string
-	registered bool
+	state    cloudprovider.InstanceState
+	jujuName string
+	kubeName string
+	workload string
+	agent    string
 }
 
 type Manager struct {
@@ -35,12 +33,10 @@ func (m *Manager) init() error {
 			unitName := strings.Replace(info[0], "*", "", -1)
 			nodeExec, _ := exec.Command("juju", "exec", "-m", m.model, "-u", unitName, "hostname").Output()
 			hostname = strings.Fields(string(nodeExec))[0]
-			exec.Command("kubectl", "patch", "node", hostname, "-p", `{"spec":{"providerID":"`+hostname+`"}}`).Output()
 			m.units[unitName] = &Unit{
-				state:      cloudprovider.InstanceRunning,
-				jujuName:   unitName,
-				kubeName:   hostname,
-				registered: true,
+				state:    cloudprovider.InstanceRunning,
+				jujuName: unitName,
+				kubeName: hostname,
 			}
 		}
 	}
@@ -111,13 +107,8 @@ func (m *Manager) refresh() error {
 				}
 			}
 
-			if unit.workload == "active" && !unit.registered {
-				output, _ := exec.Command("kubectl", "patch", "node", unit.kubeName, "-p", `{"spec":{"providerID":"`+unit.kubeName+`"}}`).Output()
-				if string(output) == "node/"+unit.kubeName+" patched" {
-					unit.registered = true
-					unit.state = cloudprovider.InstanceRunning
-					klog.Warningf(unit.kubeName + " registered.")
-				}
+			if unit.workload == "active" {
+				unit.state = cloudprovider.InstanceRunning
 			}
 		} else if unit.state == cloudprovider.InstanceDeleting {
 			delete(m.units, unit.jujuName)
