@@ -160,12 +160,13 @@ func BuildJuju(
 			klog.Errorf("failed to parse node group spec: %v", err)
 			continue
 		}
-		model, application, err := parseNodeGroupName(nodeGroupSpec.Name)
+		controller, model, application, err := parseNodeGroupName(nodeGroupSpec.Name)
 		if err != nil {
 			klog.Errorf("failed to parse node group name: %v", err)
 			continue
 		}
 		man := &Manager{
+			controller:  controller,
 			model:       model,
 			application: application,
 			units:       make(map[string]*Unit),
@@ -189,12 +190,13 @@ func BuildJuju(
 	return provider
 }
 
-func parseNodeGroupName(name string) (string, string, error) {
+func parseNodeGroupName(name string) (string, string, string, error) {
 	s := strings.Split(name, ":")
-	if len(s) != 2 {
-		return "", "", fmt.Errorf("failed to parse node group name: %s, expected <model>:<application>", name)
+	if len(s) != 3 {
+		return "", "", "", fmt.Errorf("failed to parse node group name: %s, expected <controller>:<model>:<application>", name)
 	}
-	model := s[0]
-	application := s[1]
-	return model, application, nil
+	controller := s[0]
+	model := s[1]
+	application := s[2]
+	return controller, model, application, nil
 }
