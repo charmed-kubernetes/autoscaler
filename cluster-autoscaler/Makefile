@@ -71,9 +71,6 @@ push-manifest:
 	    $(addprefix $(IMAGE)-, $(addsuffix :$(TAG), $(ALL_ARCH)))
 	docker manifest push --purge ${IMAGE}:${TAG}
 
-# To release a juju-cli version of the autoscaler app to rocks:
-# make juju-cli-images
-# make TAG=dev-2.9.22-build1  BUILD_TAGS=juju BASEIMAGE=juju_cli:2.9.22 execute-release
 execute-release: $(addprefix make-image-arch-,$(ALL_ARCH)) $(addprefix push-image-arch-,$(ALL_ARCH)) push-manifest
 	@echo "Release ${TAG}${FOR_PROVIDER} completed"
 
@@ -98,6 +95,8 @@ build-in-docker-arch-%: clean-arch-% docker-builder
 	docker run ${RM_FLAG} -v `pwd`:/gopath/src/k8s.io/autoscaler/cluster-autoscaler/:Z autoscaling-builder:latest \
 		bash -c 'cd /gopath/src/k8s.io/autoscaler/cluster-autoscaler && BUILD_TAGS=${BUILD_TAGS} LDFLAGS="${LDFLAGS}" make build-arch-$*'
 
+# To release a juju version of the autoscaler app to rocks:
+# make TAG=<tag>  BUILD_TAGS=juju  release
 release: $(addprefix build-in-docker-arch-,$(ALL_ARCH)) execute-release
 	@echo "Full in-docker release ${TAG}${FOR_PROVIDER} completed"
 
@@ -108,20 +107,5 @@ container-arch-%: build-in-docker-arch-% make-image-arch-%
 
 test-in-docker: clean docker-builder
 	docker run ${RM_FLAG} -v `pwd`:/cluster-autoscaler/:Z autoscaling-builder:latest bash -c 'cd /cluster-autoscaler && go test -race ./... ${TAGS_FLAG}'
-
-juju-cli-images: $(addprefix juju-cli-image-arch-,$(ALL_ARCH))
-	@echo "Juju CLI images built"
-
-# To use buildx to build multi-arch images, install qemu
-# sudo apt-get install -y qemu-user-static
-juju-cli-image-arch-%:
-	docker buildx build \
-		--build-arg JUJU_MAJOR=${JUJU_MAJOR} \
-		--build-arg JUJU_MINOR=${JUJU_MINOR} \
-		--pull \
-		-t juju_cli:${JUJU_MAJOR}.${JUJU_MINOR}-$* \
-		-f ./cloudprovider/juju/Dockerfile.juju_cli \
-		--platform linux/$* \
-		--load ./cloudprovider/juju/
 
 .PHONY: all build test-unit clean format execute-release dev-release docker-builder build-in-docker release generate push-image push-manifest
