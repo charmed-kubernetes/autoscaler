@@ -4,9 +4,9 @@ go 1.16
 
 require (
 	cloud.google.com/go v0.81.0
-	github.com/Azure/azure-sdk-for-go v55.8.0+incompatible
-	github.com/Azure/go-autorest/autorest v0.11.22
-	github.com/Azure/go-autorest/autorest/adal v0.9.17
+	github.com/Azure/azure-sdk-for-go v62.2.0+incompatible
+	github.com/Azure/go-autorest/autorest v0.11.24
+	github.com/Azure/go-autorest/autorest/adal v0.9.18
 	github.com/Azure/go-autorest/autorest/azure/auth v0.5.8
 	github.com/Azure/go-autorest/autorest/date v0.3.0
 	github.com/Azure/go-autorest/autorest/to v0.4.0
@@ -15,9 +15,10 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/golang/mock v1.6.0
 	github.com/google/go-querystring v1.0.0
-	github.com/google/uuid v1.1.2
+	github.com/google/uuid v1.2.0
 	github.com/jmespath/go-jmespath v0.4.0
 	github.com/json-iterator/go v1.1.12
+	github.com/juju/juju v0.0.0-20220329105921-385df47be423
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.12.1
 	github.com/satori/go.uuid v1.2.0
