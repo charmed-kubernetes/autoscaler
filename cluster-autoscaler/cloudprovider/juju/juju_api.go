@@ -2,7 +2,6 @@ package juju
 
 import (
 	"fmt"
-	"sync"
 
 	"github.com/juju/juju/api/client/application"
 	"github.com/juju/juju/rpc/params"
@@ -23,7 +22,6 @@ type Manager struct {
 	model       string
 	application string
 	units       map[string]*Unit
-	mu          sync.Mutex
 }
 
 func (m *Manager) init() error {
@@ -33,7 +31,7 @@ func (m *Manager) init() error {
 		return err
 	}
 
-	fullStatus, err := m.clients.statusClient.Status(nil)
+	fullStatus, err := m.getStatus()
 	if err != nil {
 		return fmt.Errorf("error getting status: %v", err)
 	}
@@ -159,11 +157,10 @@ func (m *Manager) getHostnameForUnitNamed(unitName string) (string, error) {
 }
 
 func (m *Manager) getStatus() (*params.FullStatus, error) {
-	m.mu.Lock()
 	status, err := m.clients.statusClient.Status(nil)
 	if err != nil {
 		return nil, fmt.Errorf("error getting status: %v", err)
 	}
-	m.mu.Unlock()
+
 	return status, nil
 }
