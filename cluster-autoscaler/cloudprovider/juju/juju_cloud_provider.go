@@ -22,6 +22,7 @@ import (
 	"os"
 	"strings"
 
+	"gopkg.in/yaml.v2"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/autoscaler/cluster-autoscaler/cloudprovider"
@@ -143,14 +144,21 @@ func BuildJuju(
 	do cloudprovider.NodeGroupDiscoveryOptions,
 	rl *cloudprovider.ResourceLimiter,
 ) cloudprovider.CloudProvider {
-	var configFile io.ReadCloser
+	var configRC io.ReadCloser
 	if opts.CloudConfig != "" {
 		var err error
-		configFile, err = os.Open(opts.CloudConfig)
+		configRC, err = os.Open(opts.CloudConfig)
 		if err != nil {
 			klog.Fatalf("Couldn't open cloud provider configuration %s: %#v", opts.CloudConfig, err)
 		}
-		defer configFile.Close()
+		defer configRC.Close()
+	} else {
+		klog.Fatal("Please provide a juju cloud configuration file path using --cloud-config")
+	}
+
+	cloudConfig, err := readCloudConfigYaml(configRC)
+	if err != nil {
+		klog.Fatalf("Couldn't read cloud provider configuration yaml file %s", err)
 	}
 
 	ngs := []cloudprovider.NodeGroup{}
@@ -166,6 +174,7 @@ func BuildJuju(
 			continue
 		}
 		man := &Manager{
+			cloudConfig: cloudConfig,
 			controller:  controller,
 			model:       model,
 			application: application,
@@ -199,4 +208,19 @@ func parseNodeGroupName(name string) (string, string, string, error) {
 	model := s[1]
 	application := s[2]
 	return controller, model, application, nil
+}
+
+func readCloudConfigYaml(configRC io.ReadCloser) (jujuCloudConfig, error) {
+	t := jujuCloudConfig{}
+	b, err := io.ReadAll(configRC)
+	if err != nil {
+		return t, err
+	}
+
+	err = yaml.Unmarshal(b, &t)
+	if err != nil {
+		return t, err
+	}
+
+	return t, err
 }

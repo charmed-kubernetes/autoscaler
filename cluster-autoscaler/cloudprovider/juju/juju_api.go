@@ -3,6 +3,7 @@ package juju
 import (
 	"fmt"
 
+	"github.com/juju/juju/api"
 	"github.com/juju/juju/api/client/application"
 	"github.com/juju/juju/rpc/params"
 	"k8s.io/autoscaler/cluster-autoscaler/cloudprovider"
@@ -16,7 +17,18 @@ type Unit struct {
 	agent    string
 }
 
+// Note: struct fields must be public in order for unmarshal to
+// correctly populate the data.
+type jujuCloudConfig struct {
+	Username  string
+	Password  string
+	Endpoint  string
+	Cacert    string
+	Modeluuid string
+}
+
 type Manager struct {
+	cloudConfig jujuCloudConfig
 	clients     *Clients
 	controller  string
 	model       string
@@ -26,7 +38,14 @@ type Manager struct {
 
 func (m *Manager) init() error {
 	var err error
-	m.clients, err = NewClientsUsingClientStore(m.controller, m.model)
+	m.clients, err = NewClientsUsingConnectorConfig(api.SimpleConnectorConfig{
+		ControllerAddress: m.cloudConfig.Endpoint,
+		CACert:            m.cloudConfig.Cacert,
+		Username:          m.cloudConfig.Username,
+		Password:          m.cloudConfig.Password,
+		ModelUUID:         m.cloudConfig.Modeluuid,
+	})
+
 	if err != nil {
 		return err
 	}
@@ -71,7 +90,7 @@ func (m *Manager) addUnits(delta int) error {
 		return err
 	}
 
-	for unitName, _ := range jujuStatus.Applications[m.application].Units {
+	for unitName := range jujuStatus.Applications[m.application].Units {
 		if _, ok := prevStatus.Applications[m.application].Units[unitName]; !ok {
 			m.units[unitName] = &Unit{
 				state:    cloudprovider.InstanceCreating,
