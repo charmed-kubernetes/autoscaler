@@ -218,5 +218,5 @@ func readCloudConfigYaml(configRC io.ReadCloser) (jujuCloudConfig, error) {
 	}
 
 	err = yaml.Unmarshal(b, &t)
-return t, err
+	return t, err
 }
