@@ -20,11 +20,10 @@ type Unit struct {
 // Note: struct fields must be public in order for unmarshal to
 // correctly populate the data.
 type jujuCloudConfig struct {
-	Username  string
-	Password  string
-	Endpoint  string
-	Cacert    string
-	Modeluuid string
+	Username string
+	Password string
+	Endpoint string
+	Cacert   string
 }
 
 type Manager struct {
@@ -43,7 +42,7 @@ func (m *Manager) init() error {
 		CACert:            m.cloudConfig.Cacert,
 		Username:          m.cloudConfig.Username,
 		Password:          m.cloudConfig.Password,
-		ModelUUID:         m.cloudConfig.Modeluuid,
+		ModelUUID:         m.model,
 	})
 
 	if err != nil {
