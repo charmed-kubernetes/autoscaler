@@ -29,7 +29,6 @@ type jujuCloudConfig struct {
 type Manager struct {
 	cloudConfig jujuCloudConfig
 	clients     *Clients
-	controller  string
 	model       string
 	application string
 	units       map[string]*Unit

@@ -168,14 +168,13 @@ func BuildJuju(
 			klog.Errorf("failed to parse node group spec: %v", err)
 			continue
 		}
-		controller, model, application, err := parseNodeGroupName(nodeGroupSpec.Name)
+		model, application, err := parseNodeGroupName(nodeGroupSpec.Name)
 		if err != nil {
 			klog.Errorf("failed to parse node group name: %v", err)
 			continue
 		}
 		man := &Manager{
 			cloudConfig: cloudConfig,
-			controller:  controller,
 			model:       model,
 			application: application,
 			units:       make(map[string]*Unit),
@@ -199,15 +198,14 @@ func BuildJuju(
 	return provider
 }
 
-func parseNodeGroupName(name string) (string, string, string, error) {
+func parseNodeGroupName(name string) (string, string, error) {
 	s := strings.Split(name, ":")
-	if len(s) != 3 {
-		return "", "", "", fmt.Errorf("failed to parse node group name: %s, expected <controller>:<model>:<application>", name)
+	if len(s) != 2 {
+		return "", "", fmt.Errorf("failed to parse node group name: %s, expected <model>:<application>", name)
 	}
-	controller := s[0]
-	model := s[1]
-	application := s[2]
-	return controller, model, application, nil
+	model := s[0]
+	application := s[1]
+	return model, application, nil
 }
 
 func readCloudConfigYaml(configRC io.ReadCloser) (jujuCloudConfig, error) {
