@@ -72,6 +72,8 @@ const (
 	PacketProviderName = "packet"
 	// TencentcloudProviderName gets the provider name of tencentcloud
 	TencentcloudProviderName = "tencentcloud"
+	// JujuProviderName gets the provider name of juju
+	JujuProviderName = "juju"
 )
 
 // CloudProvider contains configuration info and functions for interacting with
