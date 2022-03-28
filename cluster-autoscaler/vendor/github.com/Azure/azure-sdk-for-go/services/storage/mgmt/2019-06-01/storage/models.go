@@ -157,8 +157,8 @@ func (a *Account) UnmarshalJSON(body []byte) error {
 	return nil
 }
 
-// AccountCheckNameAvailabilityParameters the parameters used to check the availability of the storage
-// account name.
+// AccountCheckNameAvailabilityParameters the parameters used to check the availability of the storage account
+// name.
 type AccountCheckNameAvailabilityParameters struct {
 	// Name - The storage account name.
 	Name *string `json:"name,omitempty"`
@@ -275,8 +275,8 @@ func (acp *AccountCreateParameters) UnmarshalJSON(body []byte) error {
 	return nil
 }
 
-// AccountInternetEndpoints the URIs that are used to perform a retrieval of a public blob, file, web or
-// dfs object via a internet routing endpoint.
+// AccountInternetEndpoints the URIs that are used to perform a retrieval of a public blob, file, web or dfs
+// object via a internet routing endpoint.
 type AccountInternetEndpoints struct {
 	// Blob - READ-ONLY; Gets the blob endpoint.
 	Blob *string `json:"blob,omitempty"`
@@ -488,8 +488,8 @@ func NewAccountListResultPage(cur AccountListResult, getNextPage func(context.Co
 	}
 }
 
-// AccountMicrosoftEndpoints the URIs that are used to perform a retrieval of a public blob, queue, table,
-// web or dfs object via a microsoft routing endpoint.
+// AccountMicrosoftEndpoints the URIs that are used to perform a retrieval of a public blob, queue, table, web
+// or dfs object via a microsoft routing endpoint.
 type AccountMicrosoftEndpoints struct {
 	// Blob - READ-ONLY; Gets the blob endpoint.
 	Blob *string `json:"blob,omitempty"`
@@ -666,8 +666,7 @@ type AccountSasParameters struct {
 	KeyToSign *string `json:"keyToSign,omitempty"`
 }
 
-// AccountsCreateFuture an abstraction for monitoring and retrieving the results of a long-running
-// operation.
+// AccountsCreateFuture an abstraction for monitoring and retrieving the results of a long-running operation.
 type AccountsCreateFuture struct {
 	azure.FutureAPI
 	// Result returns the result of the asynchronous operation.
@@ -709,8 +708,7 @@ func (future *AccountsCreateFuture) result(client AccountsClient) (a Account, er
 	return
 }
 
-// AccountsFailoverFuture an abstraction for monitoring and retrieving the results of a long-running
-// operation.
+// AccountsFailoverFuture an abstraction for monitoring and retrieving the results of a long-running operation.
 type AccountsFailoverFuture struct {
 	azure.FutureAPI
 	// Result returns the result of the asynchronous operation.
@@ -746,8 +744,8 @@ func (future *AccountsFailoverFuture) result(client AccountsClient) (ar autorest
 	return
 }
 
-// AccountsRestoreBlobRangesFuture an abstraction for monitoring and retrieving the results of a
-// long-running operation.
+// AccountsRestoreBlobRangesFuture an abstraction for monitoring and retrieving the results of a long-running
+// operation.
 type AccountsRestoreBlobRangesFuture struct {
 	azure.FutureAPI
 	// Result returns the result of the asynchronous operation.
@@ -789,8 +787,7 @@ func (future *AccountsRestoreBlobRangesFuture) result(client AccountsClient) (br
 	return
 }
 
-// AccountUpdateParameters the parameters that can be provided when updating the storage account
-// properties.
+// AccountUpdateParameters the parameters that can be provided when updating the storage account properties.
 type AccountUpdateParameters struct {
 	// Sku - Gets or sets the SKU name. Note that the SKU name cannot be updated to Standard_ZRS, Premium_LRS or Premium_ZRS, nor can accounts of those SKU names be updated to any other value.
 	Sku *Sku `json:"sku,omitempty"`
@@ -1413,8 +1410,8 @@ type EncryptionScopeKeyVaultProperties struct {
 	KeyURI *string `json:"keyUri,omitempty"`
 }
 
-// EncryptionScopeListResult list of encryption scopes requested, and if paging is required, a URL to the
-// next page of encryption scopes.
+// EncryptionScopeListResult list of encryption scopes requested, and if paging is required, a URL to the next
+// page of encryption scopes.
 type EncryptionScopeListResult struct {
 	autorest.Response `json:"-"`
 	// Value - READ-ONLY; List of encryption scopes requested.
@@ -1642,8 +1639,7 @@ type EncryptionServices struct {
 	Queue *EncryptionService `json:"queue,omitempty"`
 }
 
-// Endpoints the URIs that are used to perform a retrieval of a public blob, queue, table, web or dfs
-// object.
+// Endpoints the URIs that are used to perform a retrieval of a public blob, queue, table, web or dfs object.
 type Endpoints struct {
 	// Blob - READ-ONLY; Gets the blob endpoint.
 	Blob *string `json:"blob,omitempty"`
@@ -1955,8 +1951,8 @@ func (fsi *FileShareItem) UnmarshalJSON(body []byte) error {
 	return nil
 }
 
-// FileShareItems response schema. Contains list of shares returned, and if paging is requested or
-// required, a URL to next page of shares.
+// FileShareItems response schema. Contains list of shares returned, and if paging is requested or required, a
+// URL to next page of shares.
 type FileShareItems struct {
 	autorest.Response `json:"-"`
 	// Value - READ-ONLY; List of file shares returned.
@@ -2567,8 +2563,8 @@ func (lci *ListContainerItem) UnmarshalJSON(body []byte) error {
 	return nil
 }
 
-// ListContainerItems response schema. Contains list of blobs returned, and if paging is requested or
-// required, a URL to next page of containers.
+// ListContainerItems response schema. Contains list of blobs returned, and if paging is requested or required,
+// a URL to next page of containers.
 type ListContainerItems struct {
 	autorest.Response `json:"-"`
 	// Value - READ-ONLY; List of blobs containers returned.
@@ -3383,8 +3379,8 @@ type ObjectReplicationPolicies struct {
 	Value *[]ObjectReplicationPolicy `json:"value,omitempty"`
 }
 
-// ObjectReplicationPolicy the replication policy between two storage accounts. Multiple rules can be
-// defined in one policy.
+// ObjectReplicationPolicy the replication policy between two storage accounts. Multiple rules can be defined
+// in one policy.
 type ObjectReplicationPolicy struct {
 	autorest.Response `json:"-"`
 	// ObjectReplicationPolicyProperties - Returns the Storage Account Object Replication Policy.
@@ -3457,9 +3453,9 @@ func (orp *ObjectReplicationPolicy) UnmarshalJSON(body []byte) error {
 	return nil
 }
 
-// ObjectReplicationPolicyFilter filters limit replication to a subset of blobs within the storage account.
-// A logical OR is performed on values in the filter. If multiple filters are defined, a logical AND is
-// performed on all filters.
+// ObjectReplicationPolicyFilter filters limit replication to a subset of blobs within the storage account. A
+// logical OR is performed on values in the filter. If multiple filters are defined, a logical AND is performed
+// on all filters.
 type ObjectReplicationPolicyFilter struct {
 	// PrefixMatch - Optional. Filters the results to replicate only blobs whose names begin with the specified prefix.
 	PrefixMatch *[]string `json:"prefixMatch,omitempty"`
@@ -3601,8 +3597,8 @@ type OperationDisplay struct {
 	Description *string `json:"description,omitempty"`
 }
 
-// OperationListResult result of the request to list Storage operations. It contains a list of operations
-// and a URL link to get the next set of results.
+// OperationListResult result of the request to list Storage operations. It contains a list of operations and a
+// URL link to get the next set of results.
 type OperationListResult struct {
 	autorest.Response `json:"-"`
 	// Value - List of Storage operations supported by the Storage resource provider.
@@ -4072,8 +4068,13 @@ func (r Restriction) MarshalJSON() ([]byte, error) {
 	return json.Marshal(objectMap)
 }
 
+<<<<<<< HEAD
 // RoutingPreference routing preference defines the type of network, either microsoft or internet routing
 // to be used to deliver the user data, the default option is microsoft routing
+=======
+// RoutingPreference routing preference defines the type of network, either microsoft or internet routing to be
+// used to deliver the user data, the default option is microsoft routing
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 type RoutingPreference struct {
 	// RoutingChoice - Routing Choice defines the kind of network routing opted by the user. Possible values include: 'MicrosoftRouting', 'InternetRouting'
 	RoutingChoice RoutingChoice `json:"routingChoice,omitempty"`

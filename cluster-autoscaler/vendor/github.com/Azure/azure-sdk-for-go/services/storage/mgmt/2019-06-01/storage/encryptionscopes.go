@@ -183,6 +183,9 @@ func (client EncryptionScopesClient) List(ctx context.Context, resourceGroupName
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.eslr.hasNextLink() && result.eslr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

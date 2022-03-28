@@ -341,7 +341,11 @@ func WithErrorUnlessStatusCode(codes ...int) autorest.RespondDecorator {
 					// Check if error is unwrapped ServiceError
 					decoder := autorest.NewDecoder(encodedAs, bytes.NewReader(b.Bytes()))
 					if err := decoder.Decode(&e.ServiceError); err != nil {
+<<<<<<< HEAD
 						return fmt.Errorf("autorest/azure: error response cannot be parsed: %q error: %v", b, err)
+=======
+						return fmt.Errorf("autorest/azure: error response cannot be parsed: %q error: %v", b.String(), err)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 					}
 
 					// for example, should the API return the literal value `null` as the response
@@ -364,7 +368,11 @@ func WithErrorUnlessStatusCode(codes ...int) autorest.RespondDecorator {
 					rawBody := map[string]interface{}{}
 					decoder := autorest.NewDecoder(encodedAs, bytes.NewReader(b.Bytes()))
 					if err := decoder.Decode(&rawBody); err != nil {
+<<<<<<< HEAD
 						return fmt.Errorf("autorest/azure: error response cannot be parsed: %q error: %v", b, err)
+=======
+						return fmt.Errorf("autorest/azure: error response cannot be parsed: %q error: %v", b.String(), err)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 					}
 
 					e.ServiceError = &ServiceError{

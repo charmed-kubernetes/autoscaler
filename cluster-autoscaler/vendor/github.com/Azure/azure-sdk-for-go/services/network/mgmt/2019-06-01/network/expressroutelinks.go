@@ -147,6 +147,9 @@ func (client ExpressRouteLinksClient) List(ctx context.Context, resourceGroupNam
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.erllr.hasNextLink() && result.erllr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

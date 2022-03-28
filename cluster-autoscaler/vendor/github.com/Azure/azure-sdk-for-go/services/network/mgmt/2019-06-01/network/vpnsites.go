@@ -302,6 +302,9 @@ func (client VpnSitesClient) List(ctx context.Context) (result ListVpnSitesResul
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lvsr.hasNextLink() && result.lvsr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -416,6 +419,9 @@ func (client VpnSitesClient) ListByResourceGroup(ctx context.Context, resourceGr
 	if result.lvsr.hasNextLink() && result.lvsr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.lvsr.hasNextLink() && result.lvsr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

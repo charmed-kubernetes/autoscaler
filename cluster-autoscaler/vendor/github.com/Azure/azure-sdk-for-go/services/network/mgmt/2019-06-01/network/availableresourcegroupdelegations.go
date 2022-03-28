@@ -70,6 +70,9 @@ func (client AvailableResourceGroupDelegationsClient) List(ctx context.Context, 
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.adr.hasNextLink() && result.adr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

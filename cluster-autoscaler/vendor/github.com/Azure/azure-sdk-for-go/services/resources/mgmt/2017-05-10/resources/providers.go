@@ -149,6 +149,9 @@ func (client ProvidersClient) List(ctx context.Context, top *int32, expand strin
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.plr.hasNextLink() && result.plr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

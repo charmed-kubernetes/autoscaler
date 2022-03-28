@@ -22,7 +22,10 @@ import (
 	"os"
 	"strings"
 
+<<<<<<< HEAD
 	"gopkg.in/yaml.v2"
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/autoscaler/cluster-autoscaler/cloudprovider"
@@ -144,6 +147,7 @@ func BuildJuju(
 	do cloudprovider.NodeGroupDiscoveryOptions,
 	rl *cloudprovider.ResourceLimiter,
 ) cloudprovider.CloudProvider {
+<<<<<<< HEAD
 	var configRC io.ReadCloser
 	if opts.CloudConfig != "" {
 		var err error
@@ -157,6 +161,16 @@ func BuildJuju(
 	cloudConfig, err := readCloudConfigYaml(configRC)
 	if err != nil {
 		klog.Fatalf("Couldn't read cloud provider configuration yaml file %s", err)
+=======
+	var configFile io.ReadCloser
+	if opts.CloudConfig != "" {
+		var err error
+		configFile, err = os.Open(opts.CloudConfig)
+		if err != nil {
+			klog.Fatalf("Couldn't open cloud provider configuration %s: %#v", opts.CloudConfig, err)
+		}
+		defer configFile.Close()
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	}
 
 	ngs := []cloudprovider.NodeGroup{}
@@ -166,13 +180,21 @@ func BuildJuju(
 			klog.Errorf("failed to parse node group spec: %v", err)
 			continue
 		}
+<<<<<<< HEAD
 		model, application, err := parseNodeGroupName(nodeGroupSpec.Name)
+=======
+		controller, model, application, err := parseNodeGroupName(nodeGroupSpec.Name)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 		if err != nil {
 			klog.Errorf("failed to parse node group name: %v", err)
 			continue
 		}
 		man := &Manager{
+<<<<<<< HEAD
 			cloudConfig: cloudConfig,
+=======
+			controller:  controller,
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 			model:       model,
 			application: application,
 			units:       make(map[string]*Unit),
@@ -196,6 +218,7 @@ func BuildJuju(
 	return provider
 }
 
+<<<<<<< HEAD
 func parseNodeGroupName(name string) (string, string, error) {
 	s := strings.Split(name, ":")
 	if len(s) != 2 {
@@ -215,4 +238,15 @@ func readCloudConfigYaml(configRC io.ReadCloser) (jujuCloudConfig, error) {
 
 	err = yaml.Unmarshal(b, &t)
 	return t, err
+=======
+func parseNodeGroupName(name string) (string, string, string, error) {
+	s := strings.Split(name, ":")
+	if len(s) != 3 {
+		return "", "", "", fmt.Errorf("failed to parse node group name: %s, expected <controller>:<model>:<application>", name)
+	}
+	controller := s[0]
+	model := s[1]
+	application := s[2]
+	return controller, model, application, nil
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 }

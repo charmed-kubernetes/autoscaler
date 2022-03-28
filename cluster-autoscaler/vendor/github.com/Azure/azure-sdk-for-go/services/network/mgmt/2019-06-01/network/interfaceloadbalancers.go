@@ -69,6 +69,9 @@ func (client InterfaceLoadBalancersClient) List(ctx context.Context, resourceGro
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.ilblr.hasNextLink() && result.ilblr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

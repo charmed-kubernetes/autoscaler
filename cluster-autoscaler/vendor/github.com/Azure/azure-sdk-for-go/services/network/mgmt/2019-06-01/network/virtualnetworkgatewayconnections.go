@@ -396,6 +396,9 @@ func (client VirtualNetworkGatewayConnectionsClient) List(ctx context.Context, r
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.vngclr.hasNextLink() && result.vngclr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

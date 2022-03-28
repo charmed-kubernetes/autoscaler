@@ -12,8 +12,11 @@
 // 	        panic(err)
 // 	}
 // 	defer term.Restore(int(os.Stdin.Fd()), oldState)
+<<<<<<< HEAD
 //
 // Note that on non-Unix systems os.Stdin.Fd() may not be 0.
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 package term
 
 // State contains the state of a terminal.

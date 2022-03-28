@@ -302,6 +302,9 @@ func (client VirtualHubsClient) List(ctx context.Context) (result ListVirtualHub
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lvhr.hasNextLink() && result.lvhr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -416,6 +419,9 @@ func (client VirtualHubsClient) ListByResourceGroup(ctx context.Context, resourc
 	if result.lvhr.hasNextLink() && result.lvhr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.lvhr.hasNextLink() && result.lvhr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

@@ -410,6 +410,9 @@ func (client SnapshotsClient) List(ctx context.Context) (result SnapshotListPage
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.sl.hasNextLink() && result.sl.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -524,6 +527,9 @@ func (client SnapshotsClient) ListByResourceGroup(ctx context.Context, resourceG
 	if result.sl.hasNextLink() && result.sl.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.sl.hasNextLink() && result.sl.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

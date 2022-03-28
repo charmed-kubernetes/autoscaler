@@ -65,7 +65,10 @@ type (
 		TxQueue   uint64
 		RxQueue   uint64
 		UID       uint64
+<<<<<<< HEAD
 		Inode     uint64
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	}
 )
 
@@ -151,9 +154,15 @@ func parseIP(hexIP string) (net.IP, error) {
 // parseNetIPSocketLine parses a single line, represented by a list of fields.
 func parseNetIPSocketLine(fields []string) (*netIPSocketLine, error) {
 	line := &netIPSocketLine{}
+<<<<<<< HEAD
 	if len(fields) < 10 {
 		return nil, fmt.Errorf(
 			"cannot parse net socket line as it has less then 10 columns %q",
+=======
+	if len(fields) < 8 {
+		return nil, fmt.Errorf(
+			"cannot parse net socket line as it has less then 8 columns %q",
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 			strings.Join(fields, " "),
 		)
 	}
@@ -217,10 +226,13 @@ func parseNetIPSocketLine(fields []string) (*netIPSocketLine, error) {
 		return nil, fmt.Errorf("cannot parse uid value in socket line: %w", err)
 	}
 
+<<<<<<< HEAD
 	// inode
 	if line.Inode, err = strconv.ParseUint(fields[9], 0, 64); err != nil {
 		return nil, fmt.Errorf("cannot parse inode value in socket line: %w", err)
 	}
 
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	return line, nil
 }

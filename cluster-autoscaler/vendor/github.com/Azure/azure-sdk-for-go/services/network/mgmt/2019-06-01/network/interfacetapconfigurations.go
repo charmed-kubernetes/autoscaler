@@ -348,6 +348,9 @@ func (client InterfaceTapConfigurationsClient) List(ctx context.Context, resourc
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.itclr.hasNextLink() && result.itclr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

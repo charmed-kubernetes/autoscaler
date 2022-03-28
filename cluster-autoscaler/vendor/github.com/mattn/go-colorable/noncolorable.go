@@ -42,6 +42,10 @@ loop:
 			continue
 		}
 
+<<<<<<< HEAD
+=======
+		var buf bytes.Buffer
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 		for {
 			c, err := er.ReadByte()
 			if err != nil {
@@ -50,6 +54,10 @@ loop:
 			if ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || c == '@' {
 				break
 			}
+<<<<<<< HEAD
+=======
+			buf.Write([]byte(string(c)))
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 		}
 	}
 

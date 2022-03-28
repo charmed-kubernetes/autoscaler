@@ -363,6 +363,9 @@ func (client ReplicationsClient) List(ctx context.Context, resourceGroupName str
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.rlr.hasNextLink() && result.rlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

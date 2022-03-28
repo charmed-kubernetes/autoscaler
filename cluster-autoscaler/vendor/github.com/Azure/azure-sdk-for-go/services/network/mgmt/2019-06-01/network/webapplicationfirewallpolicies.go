@@ -320,6 +320,9 @@ func (client WebApplicationFirewallPoliciesClient) List(ctx context.Context, res
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.wafplr.hasNextLink() && result.wafplr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -433,6 +436,9 @@ func (client WebApplicationFirewallPoliciesClient) ListAll(ctx context.Context) 
 	if result.wafplr.hasNextLink() && result.wafplr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.wafplr.hasNextLink() && result.wafplr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

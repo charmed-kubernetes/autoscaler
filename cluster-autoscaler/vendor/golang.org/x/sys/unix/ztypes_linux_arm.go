@@ -634,6 +634,7 @@ const (
 const (
 	PIDFD_NONBLOCK = 0x800
 )
+<<<<<<< HEAD
 
 type SysvIpcPerm struct {
 	Key  int32
@@ -663,3 +664,5 @@ type SysvShmDesc struct {
 	_          uint32
 	_          uint32
 }
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16

@@ -304,6 +304,9 @@ func (client ProfilesClient) List(ctx context.Context, resourceGroupName string)
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.plr.hasNextLink() && result.plr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -417,6 +420,9 @@ func (client ProfilesClient) ListAll(ctx context.Context) (result ProfileListRes
 	if result.plr.hasNextLink() && result.plr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.plr.hasNextLink() && result.plr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

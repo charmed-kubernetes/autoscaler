@@ -146,6 +146,9 @@ func (client VpnSiteLinksClient) ListByVpnSite(ctx context.Context, resourceGrou
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lvslr.hasNextLink() && result.lvslr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

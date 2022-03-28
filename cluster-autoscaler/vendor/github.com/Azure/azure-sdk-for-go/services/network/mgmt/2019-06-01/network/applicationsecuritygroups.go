@@ -305,6 +305,9 @@ func (client ApplicationSecurityGroupsClient) List(ctx context.Context, resource
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.asglr.hasNextLink() && result.asglr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -418,6 +421,9 @@ func (client ApplicationSecurityGroupsClient) ListAll(ctx context.Context) (resu
 	if result.asglr.hasNextLink() && result.asglr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.asglr.hasNextLink() && result.asglr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

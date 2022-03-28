@@ -303,6 +303,9 @@ func (client ExpressRoutePortsClient) List(ctx context.Context) (result ExpressR
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.erplr.hasNextLink() && result.erplr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -417,6 +420,9 @@ func (client ExpressRoutePortsClient) ListByResourceGroup(ctx context.Context, r
 	if result.erplr.hasNextLink() && result.erplr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.erplr.hasNextLink() && result.erplr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

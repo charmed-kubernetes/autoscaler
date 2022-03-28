@@ -66,6 +66,9 @@ func (client AzureFirewallFqdnTagsClient) ListAll(ctx context.Context) (result A
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.afftlr.hasNextLink() && result.afftlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

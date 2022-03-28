@@ -157,6 +157,9 @@ func (client VirtualMachineRunCommandsClient) List(ctx context.Context, location
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.rclr.hasNextLink() && result.rclr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

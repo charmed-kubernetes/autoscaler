@@ -326,6 +326,9 @@ func (client ExpressRouteCrossConnectionPeeringsClient) List(ctx context.Context
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.erccpl.hasNextLink() && result.erccpl.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

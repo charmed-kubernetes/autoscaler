@@ -335,6 +335,9 @@ func (client InboundNatRulesClient) List(ctx context.Context, resourceGroupName 
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.inrlr.hasNextLink() && result.inrlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

@@ -94,8 +94,7 @@ func (future *CreateOrUpdateByIDFuture) result(client Client) (gr GenericResourc
 	return
 }
 
-// CreateOrUpdateFuture an abstraction for monitoring and retrieving the results of a long-running
-// operation.
+// CreateOrUpdateFuture an abstraction for monitoring and retrieving the results of a long-running operation.
 type CreateOrUpdateFuture struct {
 	azure.FutureAPI
 	// Result returns the result of the asynchronous operation.
@@ -501,8 +500,12 @@ func (dolr DeploymentOperationsListResult) MarshalJSON() ([]byte, error) {
 	return json.Marshal(objectMap)
 }
 
+<<<<<<< HEAD
 // DeploymentOperationsListResultIterator provides access to a complete listing of DeploymentOperation
 // values.
+=======
+// DeploymentOperationsListResultIterator provides access to a complete listing of DeploymentOperation values.
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 type DeploymentOperationsListResultIterator struct {
 	i    int
 	page DeploymentOperationsListResultPage
@@ -729,8 +732,13 @@ func (dpe DeploymentPropertiesExtended) MarshalJSON() ([]byte, error) {
 	return json.Marshal(objectMap)
 }
 
+<<<<<<< HEAD
 // DeploymentsCreateOrUpdateFuture an abstraction for monitoring and retrieving the results of a
 // long-running operation.
+=======
+// DeploymentsCreateOrUpdateFuture an abstraction for monitoring and retrieving the results of a long-running
+// operation.
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 type DeploymentsCreateOrUpdateFuture struct {
 	azure.FutureAPI
 	// Result returns the result of the asynchronous operation.
@@ -1508,8 +1516,7 @@ type MoveInfo struct {
 	TargetResourceGroup *string `json:"targetResourceGroup,omitempty"`
 }
 
-// MoveResourcesFuture an abstraction for monitoring and retrieving the results of a long-running
-// operation.
+// MoveResourcesFuture an abstraction for monitoring and retrieving the results of a long-running operation.
 type MoveResourcesFuture struct {
 	azure.FutureAPI
 	// Result returns the result of the asynchronous operation.

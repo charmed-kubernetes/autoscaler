@@ -1651,6 +1651,7 @@ var spewConfig = spew.ConfigState{
 	SortKeys:                true,
 	DisableMethods:          true,
 	MaxDepth:                10,
+<<<<<<< HEAD
 }
 
 var spewConfigStringerEnabled = spew.ConfigState{
@@ -1659,6 +1660,8 @@ var spewConfigStringerEnabled = spew.ConfigState{
 	DisableCapacities:       true,
 	SortKeys:                true,
 	MaxDepth:                10,
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 }
 
 type tHelper interface {

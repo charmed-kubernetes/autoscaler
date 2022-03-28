@@ -343,6 +343,9 @@ func (client GalleryApplicationVersionsClient) ListByGalleryApplication(ctx cont
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.gavl.hasNextLink() && result.gavl.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

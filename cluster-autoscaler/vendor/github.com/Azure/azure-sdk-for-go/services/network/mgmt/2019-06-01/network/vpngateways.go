@@ -302,6 +302,9 @@ func (client VpnGatewaysClient) List(ctx context.Context) (result ListVpnGateway
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lvgr.hasNextLink() && result.lvgr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -416,6 +419,9 @@ func (client VpnGatewaysClient) ListByResourceGroup(ctx context.Context, resourc
 	if result.lvgr.hasNextLink() && result.lvgr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.lvgr.hasNextLink() && result.lvgr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

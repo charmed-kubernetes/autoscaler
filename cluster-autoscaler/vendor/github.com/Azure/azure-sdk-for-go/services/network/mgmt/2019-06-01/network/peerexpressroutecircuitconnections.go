@@ -151,6 +151,9 @@ func (client PeerExpressRouteCircuitConnectionsClient) List(ctx context.Context,
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.percclr.hasNextLink() && result.percclr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

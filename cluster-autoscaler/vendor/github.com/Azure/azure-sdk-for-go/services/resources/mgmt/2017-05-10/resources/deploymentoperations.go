@@ -173,6 +173,9 @@ func (client DeploymentOperationsClient) List(ctx context.Context, resourceGroup
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.dolr.hasNextLink() && result.dolr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

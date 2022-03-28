@@ -317,6 +317,9 @@ func (client GalleryApplicationsClient) ListByGallery(ctx context.Context, resou
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.gal.hasNextLink() && result.gal.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

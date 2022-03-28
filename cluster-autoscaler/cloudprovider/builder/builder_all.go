@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 //go:build !gce && !aws && !azure && !kubemark && !alicloud && !magnum && !digitalocean && !clusterapi && !huaweicloud && !ionoscloud && !linode && !hetzner && !bizflycloud && !brightbox && !packet && !oci && !vultr && !tencentcloud && !juju
 // +build !gce,!aws,!azure,!kubemark,!alicloud,!magnum,!digitalocean,!clusterapi,!huaweicloud,!ionoscloud,!linode,!hetzner,!bizflycloud,!brightbox,!packet,!oci,!vultr,!tencentcloud,!juju
+=======
+// +build !gce,!aws,!azure,!kubemark,!alicloud,!magnum,!digitalocean,!clusterapi,!huaweicloud,!ionoscloud,!linode,!hetzner,!juju
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 
 /*
 Copyright 2018 The Kubernetes Authors.
@@ -64,11 +68,14 @@ var AvailableCloudProviders = []string{
 	cloudprovider.ClusterAPIProviderName,
 	cloudprovider.IonoscloudProviderName,
 	cloudprovider.LinodeProviderName,
+<<<<<<< HEAD
 	cloudprovider.BizflyCloudProviderName,
 	cloudprovider.BrightboxProviderName,
 	cloudprovider.PacketProviderName,
 	cloudprovider.VultrProviderName,
 	cloudprovider.TencentcloudProviderName,
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	cloudprovider.JujuProviderName,
 }
 
@@ -113,12 +120,15 @@ func buildCloudProvider(opts config.AutoscalingOptions, do cloudprovider.NodeGro
 		return ionoscloud.BuildIonosCloud(opts, do, rl)
 	case cloudprovider.LinodeProviderName:
 		return linode.BuildLinode(opts, do, rl)
+<<<<<<< HEAD
 	case cloudprovider.OracleCloudProviderName:
 		return oci.BuildOCI(opts, do, rl)
 	case cloudprovider.VultrProviderName:
 		return vultr.BuildVultr(opts, do, rl)
 	case cloudprovider.TencentcloudProviderName:
 		return tencentcloud.BuildTencentcloud(opts, do, rl)
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	case cloudprovider.JujuProviderName:
 		return juju.BuildJuju(opts, do, rl)
 	}

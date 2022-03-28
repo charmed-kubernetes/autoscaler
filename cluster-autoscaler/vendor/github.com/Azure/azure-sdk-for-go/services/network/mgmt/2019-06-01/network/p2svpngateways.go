@@ -464,6 +464,9 @@ func (client P2sVpnGatewaysClient) List(ctx context.Context) (result ListP2SVpnG
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lpvgr.hasNextLink() && result.lpvgr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -578,6 +581,9 @@ func (client P2sVpnGatewaysClient) ListByResourceGroup(ctx context.Context, reso
 	if result.lpvgr.hasNextLink() && result.lpvgr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.lpvgr.hasNextLink() && result.lpvgr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

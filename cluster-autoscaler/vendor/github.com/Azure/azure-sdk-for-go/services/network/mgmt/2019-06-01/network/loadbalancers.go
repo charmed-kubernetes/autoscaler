@@ -307,6 +307,9 @@ func (client LoadBalancersClient) List(ctx context.Context, resourceGroupName st
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lblr.hasNextLink() && result.lblr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -420,6 +423,9 @@ func (client LoadBalancersClient) ListAll(ctx context.Context) (result LoadBalan
 	if result.lblr.hasNextLink() && result.lblr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.lblr.hasNextLink() && result.lblr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

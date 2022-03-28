@@ -19,10 +19,13 @@
 // Package grpclog (internal) defines depth logging for grpc.
 package grpclog
 
+<<<<<<< HEAD
 import (
 	"os"
 )
 
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 // Logger is the logger used for the non-depth log functions.
 var Logger LoggerV2
 
@@ -34,7 +37,11 @@ func InfoDepth(depth int, args ...interface{}) {
 	if DepthLogger != nil {
 		DepthLogger.InfoDepth(depth, args...)
 	} else {
+<<<<<<< HEAD
 		Logger.Infoln(args...)
+=======
+		Logger.Info(args...)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	}
 }
 
@@ -43,7 +50,11 @@ func WarningDepth(depth int, args ...interface{}) {
 	if DepthLogger != nil {
 		DepthLogger.WarningDepth(depth, args...)
 	} else {
+<<<<<<< HEAD
 		Logger.Warningln(args...)
+=======
+		Logger.Warning(args...)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	}
 }
 
@@ -52,7 +63,11 @@ func ErrorDepth(depth int, args ...interface{}) {
 	if DepthLogger != nil {
 		DepthLogger.ErrorDepth(depth, args...)
 	} else {
+<<<<<<< HEAD
 		Logger.Errorln(args...)
+=======
+		Logger.Error(args...)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	}
 }
 
@@ -61,9 +76,14 @@ func FatalDepth(depth int, args ...interface{}) {
 	if DepthLogger != nil {
 		DepthLogger.FatalDepth(depth, args...)
 	} else {
+<<<<<<< HEAD
 		Logger.Fatalln(args...)
 	}
 	os.Exit(1)
+=======
+		Logger.Fatal(args...)
+	}
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 }
 
 // LoggerV2 does underlying logging work for grpclog.
@@ -110,10 +130,14 @@ type LoggerV2 interface {
 // This is a copy of the DepthLoggerV2 defined in the external grpclog package.
 // It is defined here to avoid a circular dependency.
 //
+<<<<<<< HEAD
 // Experimental
 //
 // Notice: This type is EXPERIMENTAL and may be changed or removed in a
 // later release.
+=======
+// This API is EXPERIMENTAL.
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 type DepthLoggerV2 interface {
 	// InfoDepth logs to INFO log at the specified depth. Arguments are handled in the manner of fmt.Print.
 	InfoDepth(depth int, args ...interface{})

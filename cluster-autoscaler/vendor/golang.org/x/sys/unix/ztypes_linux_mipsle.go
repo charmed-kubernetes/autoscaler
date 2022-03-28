@@ -640,6 +640,7 @@ const (
 const (
 	PIDFD_NONBLOCK = 0x80
 )
+<<<<<<< HEAD
 
 type SysvIpcPerm struct {
 	Key  int32
@@ -668,3 +669,5 @@ type SysvShmDesc struct {
 	Ctime_high uint16
 	_          uint16
 }
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16

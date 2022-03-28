@@ -93,8 +93,13 @@ func (b *baseBalancer) ResolverError(err error) {
 
 func (b *baseBalancer) UpdateClientConnState(s balancer.ClientConnState) error {
 	// TODO: handle s.ResolverState.ServiceConfig?
+<<<<<<< HEAD
 	if logger.V(2) {
 		logger.Info("base.baseBalancer: got new ClientConn state: ", s)
+=======
+	if grpclog.V(2) {
+		grpclog.Infoln("base.baseBalancer: got new ClientConn state: ", s)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	}
 	// Successful resolution; clear resolver error and ensure we return nil.
 	b.resolverErr = nil
@@ -193,6 +198,12 @@ func (b *baseBalancer) UpdateSubConnState(sc balancer.SubConn, state balancer.Su
 		if s == connectivity.Idle {
 			sc.Connect()
 		}
+		return
+	}
+	if oldS == connectivity.TransientFailure && s == connectivity.Connecting {
+		// Once a subconn enters TRANSIENT_FAILURE, ignore subsequent
+		// CONNECTING transitions to prevent the aggregated state from being
+		// always CONNECTING when many backends exist but are all down.
 		return
 	}
 	b.scStates[sc] = s

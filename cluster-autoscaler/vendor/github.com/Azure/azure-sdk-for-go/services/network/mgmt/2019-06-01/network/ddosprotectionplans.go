@@ -306,6 +306,9 @@ func (client DdosProtectionPlansClient) List(ctx context.Context) (result DdosPr
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.dpplr.hasNextLink() && result.dpplr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -420,6 +423,9 @@ func (client DdosProtectionPlansClient) ListByResourceGroup(ctx context.Context,
 	if result.dpplr.hasNextLink() && result.dpplr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.dpplr.hasNextLink() && result.dpplr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

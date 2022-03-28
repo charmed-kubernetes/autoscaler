@@ -25,7 +25,11 @@ import (
 )
 
 func getMSIEndpoint(ctx context.Context, sender Sender) (*http.Response, error) {
+<<<<<<< HEAD
 	tempCtx, cancel := context.WithTimeout(ctx, 2*time.Second)
+=======
+	tempCtx, cancel := context.WithTimeout(ctx, 500*time.Millisecond)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	defer cancel()
 	// http.NewRequestWithContext() was added in Go 1.13
 	req, _ := http.NewRequestWithContext(tempCtx, http.MethodGet, msiEndpoint, nil)

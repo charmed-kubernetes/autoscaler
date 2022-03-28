@@ -66,6 +66,9 @@ func (client ExpressRouteServiceProvidersClient) List(ctx context.Context) (resu
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.ersplr.hasNextLink() && result.ersplr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

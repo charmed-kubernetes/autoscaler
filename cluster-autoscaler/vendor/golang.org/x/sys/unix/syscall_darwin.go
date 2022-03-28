@@ -432,6 +432,7 @@ func GetsockoptXucred(fd, level, opt int) (*Xucred, error) {
 	return x, err
 }
 
+<<<<<<< HEAD
 func SysctlKinfoProc(name string, args ...int) (*KinfoProc, error) {
 	mib, err := sysctlmib(name, args...)
 	if err != nil {
@@ -451,6 +452,10 @@ func SysctlKinfoProc(name string, args ...int) (*KinfoProc, error) {
 
 func SysctlKinfoProcSlice(name string, args ...int) ([]KinfoProc, error) {
 	mib, err := sysctlmib(name, args...)
+=======
+func SysctlKinfoProcSlice(name string) ([]KinfoProc, error) {
+	mib, err := sysctlmib(name)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	if err != nil {
 		return nil, err
 	}

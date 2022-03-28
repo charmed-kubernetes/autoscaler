@@ -553,6 +553,9 @@ func (client ManagedClustersClient) List(ctx context.Context) (result ManagedClu
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.mclr.hasNextLink() && result.mclr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -674,6 +677,9 @@ func (client ManagedClustersClient) ListByResourceGroup(ctx context.Context, res
 	if result.mclr.hasNextLink() && result.mclr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.mclr.hasNextLink() && result.mclr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

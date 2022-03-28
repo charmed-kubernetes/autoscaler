@@ -312,6 +312,9 @@ func (client VpnConnectionsClient) ListByVpnGateway(ctx context.Context, resourc
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lvcr.hasNextLink() && result.lvcr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

@@ -396,6 +396,9 @@ func (client VirtualMachineScaleSetVMsClient) List(ctx context.Context, resource
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.vmssvlr.hasNextLink() && result.vmssvlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

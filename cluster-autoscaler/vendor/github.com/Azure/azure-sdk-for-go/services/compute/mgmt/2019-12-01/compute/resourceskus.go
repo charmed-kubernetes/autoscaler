@@ -67,6 +67,9 @@ func (client ResourceSkusClient) List(ctx context.Context, filter string) (resul
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.rsr.hasNextLink() && result.rsr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

@@ -28,7 +28,12 @@ import (
 	"github.com/NYTimes/gziphandler"
 	"github.com/emicklei/go-restful"
 	"github.com/golang/protobuf/proto"
+<<<<<<< HEAD
 	openapi_v2 "github.com/google/gnostic/openapiv2"
+=======
+	openapi_v2 "github.com/googleapis/gnostic/openapiv2"
+	jsoniter "github.com/json-iterator/go"
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	"github.com/munnerz/goautoneg"
 	"gopkg.in/yaml.v2"
 	klog "k8s.io/klog/v2"
@@ -90,10 +95,26 @@ func (o *OpenAPIService) getSwaggerPbBytes() ([]byte, string, time.Time, error) 
 	defer o.rwMutex.RUnlock()
 	specPb, etag, err := o.protoCache.Get()
 	if err != nil {
+<<<<<<< HEAD
 		return nil, "", time.Time{}, err
 	}
 	return specPb, etag, o.lastModified, nil
 }
+=======
+		return err
+	}
+	specPb, err := ToProtoBinary(specBytes)
+	if err != nil {
+		return err
+	}
+	specPbGz := toGzip(specPb)
+
+	specBytesETag := computeETag(specBytes)
+	specPbETag := computeETag(specPb)
+	specPbGzETag := computeETag(specPbGz)
+
+	lastModified := time.Now()
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 
 func (o *OpenAPIService) UpdateSpec(openapiSpec *spec.Swagger) (err error) {
 	o.rwMutex.Lock()

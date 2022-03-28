@@ -298,6 +298,9 @@ func (client AvailabilitySetsClient) List(ctx context.Context, resourceGroupName
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.aslr.hasNextLink() && result.aslr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -490,6 +493,9 @@ func (client AvailabilitySetsClient) ListBySubscription(ctx context.Context, exp
 	if result.aslr.hasNextLink() && result.aslr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.aslr.hasNextLink() && result.aslr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

@@ -963,6 +963,9 @@ func (client VirtualNetworkGatewaysClient) List(ctx context.Context, resourceGro
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.vnglr.hasNextLink() && result.vnglr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -1079,6 +1082,9 @@ func (client VirtualNetworkGatewaysClient) ListConnections(ctx context.Context, 
 	if result.vnglcr.hasNextLink() && result.vnglcr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.vnglcr.hasNextLink() && result.vnglcr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

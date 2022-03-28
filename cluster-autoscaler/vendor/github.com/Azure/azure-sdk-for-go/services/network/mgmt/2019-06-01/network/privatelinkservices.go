@@ -40,8 +40,13 @@ func (client PrivateLinkServicesClient) CheckPrivateLinkServiceVisibility(ctx co
 		ctx = tracing.StartSpan(ctx, fqdn+"/PrivateLinkServicesClient.CheckPrivateLinkServiceVisibility")
 		defer func() {
 			sc := -1
+<<<<<<< HEAD
 			if result.FutureAPI != nil && result.FutureAPI.Response() != nil {
 				sc = result.FutureAPI.Response().StatusCode
+=======
+			if result.Response() != nil {
+				sc = result.Response().StatusCode
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 			}
 			tracing.EndSpan(ctx, sc, err)
 		}()
@@ -87,15 +92,22 @@ func (client PrivateLinkServicesClient) CheckPrivateLinkServiceVisibilityPrepare
 // http.Response Body if it receives an error.
 func (client PrivateLinkServicesClient) CheckPrivateLinkServiceVisibilitySender(req *http.Request) (future PrivateLinkServicesCheckPrivateLinkServiceVisibilityFuture, err error) {
 	var resp *http.Response
+<<<<<<< HEAD
 	future.FutureAPI = &azure.Future{}
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	resp, err = client.Send(req, azure.DoRetryWithRegistration(client.Client))
 	if err != nil {
 		return
 	}
+<<<<<<< HEAD
 	var azf azure.Future
 	azf, err = azure.NewFutureFromResponse(resp)
 	future.FutureAPI = &azf
 	future.Result = future.result
+=======
+	future.Future, err = azure.NewFutureFromResponse(resp)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	return
 }
 
@@ -121,8 +133,13 @@ func (client PrivateLinkServicesClient) CheckPrivateLinkServiceVisibilityByResou
 		ctx = tracing.StartSpan(ctx, fqdn+"/PrivateLinkServicesClient.CheckPrivateLinkServiceVisibilityByResourceGroup")
 		defer func() {
 			sc := -1
+<<<<<<< HEAD
 			if result.FutureAPI != nil && result.FutureAPI.Response() != nil {
 				sc = result.FutureAPI.Response().StatusCode
+=======
+			if result.Response() != nil {
+				sc = result.Response().StatusCode
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 			}
 			tracing.EndSpan(ctx, sc, err)
 		}()
@@ -169,15 +186,22 @@ func (client PrivateLinkServicesClient) CheckPrivateLinkServiceVisibilityByResou
 // http.Response Body if it receives an error.
 func (client PrivateLinkServicesClient) CheckPrivateLinkServiceVisibilityByResourceGroupSender(req *http.Request) (future PrivateLinkServicesCheckPrivateLinkServiceVisibilityByResourceGroupFuture, err error) {
 	var resp *http.Response
+<<<<<<< HEAD
 	future.FutureAPI = &azure.Future{}
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	resp, err = client.Send(req, azure.DoRetryWithRegistration(client.Client))
 	if err != nil {
 		return
 	}
+<<<<<<< HEAD
 	var azf azure.Future
 	azf, err = azure.NewFutureFromResponse(resp)
 	future.FutureAPI = &azf
 	future.Result = future.result
+=======
+	future.Future, err = azure.NewFutureFromResponse(resp)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	return
 }
 
@@ -550,6 +574,9 @@ func (client PrivateLinkServicesClient) List(ctx context.Context, resourceGroupN
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.plslr.hasNextLink() && result.plslr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -666,6 +693,9 @@ func (client PrivateLinkServicesClient) ListAutoApprovedPrivateLinkServices(ctx 
 	if result.aaplsr.hasNextLink() && result.aaplsr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.aaplsr.hasNextLink() && result.aaplsr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return
@@ -785,6 +815,9 @@ func (client PrivateLinkServicesClient) ListAutoApprovedPrivateLinkServicesByRes
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.aaplsr.hasNextLink() && result.aaplsr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -899,6 +932,9 @@ func (client PrivateLinkServicesClient) ListBySubscription(ctx context.Context) 
 	if result.plslr.hasNextLink() && result.plslr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.plslr.hasNextLink() && result.plslr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

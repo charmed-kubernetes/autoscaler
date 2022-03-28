@@ -147,6 +147,9 @@ func (client InterfaceIPConfigurationsClient) List(ctx context.Context, resource
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.iiclr.hasNextLink() && result.iiclr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

@@ -304,6 +304,9 @@ func (client AzureFirewallsClient) List(ctx context.Context, resourceGroupName s
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.aflr.hasNextLink() && result.aflr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -417,6 +420,9 @@ func (client AzureFirewallsClient) ListAll(ctx context.Context) (result AzureFir
 	if result.aflr.hasNextLink() && result.aflr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.aflr.hasNextLink() && result.aflr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

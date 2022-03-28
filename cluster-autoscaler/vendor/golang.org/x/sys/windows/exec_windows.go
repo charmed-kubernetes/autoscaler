@@ -9,6 +9,11 @@ package windows
 import (
 	errorspkg "errors"
 	"unsafe"
+<<<<<<< HEAD
+=======
+
+	"golang.org/x/sys/internal/unsafeheader"
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 )
 
 // EscapeArg rewrites command line argument s as prescribed
@@ -145,12 +150,17 @@ func NewProcThreadAttributeList(maxAttrCount uint32) (*ProcThreadAttributeListCo
 		}
 		return nil, err
 	}
+<<<<<<< HEAD
 	alloc, err := LocalAlloc(LMEM_FIXED, uint32(size))
 	if err != nil {
 		return nil, err
 	}
 	// size is guaranteed to be ≥1 by InitializeProcThreadAttributeList.
 	al := &ProcThreadAttributeListContainer{data: (*ProcThreadAttributeList)(unsafe.Pointer(alloc))}
+=======
+	// size is guaranteed to be ≥1 by InitializeProcThreadAttributeList.
+	al := &ProcThreadAttributeListContainer{data: (*ProcThreadAttributeList)(unsafe.Pointer(&make([]byte, size)[0]))}
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	err = initializeProcThreadAttributeList(al.data, maxAttrCount, 0, &size)
 	if err != nil {
 		return nil, err
@@ -159,17 +169,48 @@ func NewProcThreadAttributeList(maxAttrCount uint32) (*ProcThreadAttributeListCo
 }
 
 // Update modifies the ProcThreadAttributeList using UpdateProcThreadAttribute.
+<<<<<<< HEAD
 func (al *ProcThreadAttributeListContainer) Update(attribute uintptr, value unsafe.Pointer, size uintptr) error {
 	al.pointers = append(al.pointers, value)
 	return updateProcThreadAttribute(al.data, 0, attribute, value, size, nil, nil)
+=======
+// Note that the value passed to this function will be copied into memory
+// allocated by LocalAlloc, the contents of which should not contain any
+// Go-managed pointers, even if the passed value itself is a Go-managed
+// pointer.
+func (al *ProcThreadAttributeListContainer) Update(attribute uintptr, value unsafe.Pointer, size uintptr) error {
+	alloc, err := LocalAlloc(LMEM_FIXED, uint32(size))
+	if err != nil {
+		return err
+	}
+	var src, dst []byte
+	hdr := (*unsafeheader.Slice)(unsafe.Pointer(&src))
+	hdr.Data = value
+	hdr.Cap = int(size)
+	hdr.Len = int(size)
+	hdr = (*unsafeheader.Slice)(unsafe.Pointer(&dst))
+	hdr.Data = unsafe.Pointer(alloc)
+	hdr.Cap = int(size)
+	hdr.Len = int(size)
+	copy(dst, src)
+	al.heapAllocations = append(al.heapAllocations, alloc)
+	return updateProcThreadAttribute(al.data, 0, attribute, unsafe.Pointer(alloc), size, nil, nil)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 }
 
 // Delete frees ProcThreadAttributeList's resources.
 func (al *ProcThreadAttributeListContainer) Delete() {
 	deleteProcThreadAttributeList(al.data)
+<<<<<<< HEAD
 	LocalFree(Handle(unsafe.Pointer(al.data)))
 	al.data = nil
 	al.pointers = nil
+=======
+	for i := range al.heapAllocations {
+		LocalFree(Handle(al.heapAllocations[i]))
+	}
+	al.heapAllocations = nil
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 }
 
 // List returns the actual ProcThreadAttributeList to be passed to StartupInfoEx.

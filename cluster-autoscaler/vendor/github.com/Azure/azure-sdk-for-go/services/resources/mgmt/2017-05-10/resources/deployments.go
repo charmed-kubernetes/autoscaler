@@ -703,6 +703,9 @@ func (client DeploymentsClient) ListByResourceGroup(ctx context.Context, resourc
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.dlr.hasNextLink() && result.dlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

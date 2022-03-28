@@ -303,6 +303,9 @@ func (client ProximityPlacementGroupsClient) ListByResourceGroup(ctx context.Con
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.ppglr.hasNextLink() && result.ppglr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -416,6 +419,9 @@ func (client ProximityPlacementGroupsClient) ListBySubscription(ctx context.Cont
 	if result.ppglr.hasNextLink() && result.ppglr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.ppglr.hasNextLink() && result.ppglr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

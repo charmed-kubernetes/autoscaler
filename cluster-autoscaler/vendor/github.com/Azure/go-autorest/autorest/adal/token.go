@@ -37,7 +37,11 @@ import (
 
 	"github.com/Azure/go-autorest/autorest/date"
 	"github.com/Azure/go-autorest/logger"
+<<<<<<< HEAD
 	"github.com/golang-jwt/jwt/v4"
+=======
+	"github.com/form3tech-oss/jwt-go"
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 )
 
 const (
@@ -676,6 +680,11 @@ const (
 
 func (m msiType) String() string {
 	switch m {
+<<<<<<< HEAD
+=======
+	case msiTypeUnavailable:
+		return "unavailable"
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	case msiTypeAppServiceV20170901:
 		return "AppServiceV20170901"
 	case msiTypeCloudShell:
@@ -697,9 +706,19 @@ func getMSIType() (msiType, string, error) {
 		}
 		// if ONLY the env var MSI_ENDPOINT is set the msiType is CloudShell
 		return msiTypeCloudShell, endpointEnvVar, nil
+<<<<<<< HEAD
 	}
 	// if MSI_ENDPOINT is NOT set assume the msiType is IMDS
 	return msiTypeIMDS, msiEndpoint, nil
+=======
+	} else if msiAvailableHook(context.Background(), sender()) {
+		// if MSI_ENDPOINT is NOT set AND the IMDS endpoint is available the msiType is IMDS. This will timeout after 500 milliseconds
+		return msiTypeIMDS, msiEndpoint, nil
+	} else {
+		// if MSI_ENDPOINT is NOT set and IMDS endpoint is not available Managed Identity is not available
+		return msiTypeUnavailable, "", errors.New("MSI not available")
+	}
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 }
 
 // GetMSIVMEndpoint gets the MSI endpoint on Virtual Machines.
@@ -794,6 +813,7 @@ func newServicePrincipalTokenFromMSI(msiEndpoint, resource, userAssignedID, iden
 	}
 	msiType, endpoint, err := getMSIType()
 	if err != nil {
+<<<<<<< HEAD
 		logger.Instance.Writef(logger.LogError, "Error determining managed identity environment: %v\n", err)
 		return nil, err
 	}
@@ -801,6 +821,15 @@ func newServicePrincipalTokenFromMSI(msiEndpoint, resource, userAssignedID, iden
 	if msiEndpoint != "" {
 		endpoint = msiEndpoint
 		logger.Instance.Writef(logger.LogInfo, "Managed identity custom endpoint is %s\n", endpoint)
+=======
+		logger.Instance.Writef(logger.LogError, "Error determining managed identity environment: %v", err)
+		return nil, err
+	}
+	logger.Instance.Writef(logger.LogInfo, "Managed identity environment is %s, endpoint is %s", msiType, endpoint)
+	if msiEndpoint != "" {
+		endpoint = msiEndpoint
+		logger.Instance.Writef(logger.LogInfo, "Managed identity custom endpoint is %s", endpoint)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	}
 	msiEndpointURL, err := url.Parse(endpoint)
 	if err != nil {
@@ -1325,4 +1354,9 @@ func MSIAvailable(ctx context.Context, s Sender) bool {
 		resp.Body.Close()
 	}
 	return err == nil
+}
+
+// used for testing purposes
+var msiAvailableHook = func(ctx context.Context, sender Sender) bool {
+	return MSIAvailable(ctx, sender)
 }

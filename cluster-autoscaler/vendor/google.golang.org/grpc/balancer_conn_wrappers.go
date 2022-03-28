@@ -266,7 +266,11 @@ func (acbw *acBalancerWrapper) UpdateAddresses(addrs []resolver.Address) {
 
 		newAC, err := cc.newAddrConn(addrs, opts)
 		if err != nil {
+<<<<<<< HEAD
 			channelz.Warningf(logger, acbw.ac.channelzID, "acBalancerWrapper: UpdateAddresses: failed to newAddrConn: %v", err)
+=======
+			channelz.Warningf(acbw.ac.channelzID, "acBalancerWrapper: UpdateAddresses: failed to newAddrConn: %v", err)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 			return
 		}
 		acbw.ac = newAC

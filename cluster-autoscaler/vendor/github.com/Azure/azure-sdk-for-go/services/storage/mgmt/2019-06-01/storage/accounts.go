@@ -559,6 +559,9 @@ func (client AccountsClient) List(ctx context.Context) (result AccountListResult
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.alr.hasNextLink() && result.alr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

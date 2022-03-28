@@ -641,13 +641,21 @@ type Eproc struct {
 	Tdev    int32
 	Tpgid   int32
 	Tsess   uintptr
+<<<<<<< HEAD
 	Wmesg   [8]byte
+=======
+	Wmesg   [8]int8
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	Xsize   int32
 	Xrssize int16
 	Xccount int16
 	Xswrss  int16
 	Flag    int32
+<<<<<<< HEAD
 	Login   [12]byte
+=======
+	Login   [12]int8
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	Spare   [4]int32
 	_       [4]byte
 }
@@ -688,7 +696,11 @@ type ExternProc struct {
 	P_priority  uint8
 	P_usrpri    uint8
 	P_nice      int8
+<<<<<<< HEAD
 	P_comm      [17]byte
+=======
+	P_comm      [17]int8
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	P_pgrp      uintptr
 	P_addr      uintptr
 	P_xstat     uint16
@@ -730,6 +742,7 @@ type Ucred struct {
 	Ngroups int16
 	Groups  [16]uint32
 }
+<<<<<<< HEAD
 
 type SysvIpcPerm struct {
 	Uid  uint32
@@ -766,3 +779,5 @@ const (
 	SHM_RDONLY = 0x1000
 	SHM_RND    = 0x2000
 )
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16

@@ -1984,6 +1984,7 @@ func PidfdOpen(pid int, flags int) (fd int, err error) {
 func PidfdGetfd(pidfd int, targetfd int, flags int) (fd int, err error) {
 	r0, _, e1 := Syscall(SYS_PIDFD_GETFD, uintptr(pidfd), uintptr(targetfd), uintptr(flags))
 	fd = int(r0)
+<<<<<<< HEAD
 	if e1 != 0 {
 		err = errnoErr(e1)
 	}
@@ -2047,6 +2048,8 @@ func getitimer(which int, currValue *Itimerval) (err error) {
 
 func setitimer(which int, newValue *Itimerval, oldValue *Itimerval) (err error) {
 	_, _, e1 := Syscall(SYS_SETITIMER, uintptr(which), uintptr(unsafe.Pointer(newValue)), uintptr(unsafe.Pointer(oldValue)))
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	if e1 != 0 {
 		err = errnoErr(e1)
 	}

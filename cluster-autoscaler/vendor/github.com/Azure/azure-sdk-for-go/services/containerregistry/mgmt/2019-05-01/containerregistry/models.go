@@ -20,8 +20,13 @@ import (
 // The package's fully qualified name.
 const fqdn = "github.com/Azure/azure-sdk-for-go/services/containerregistry/mgmt/2019-05-01/containerregistry"
 
+<<<<<<< HEAD
 // Actor the agent that initiated the event. For most situations, this could be from the authorization
 // context of the request.
+=======
+// Actor the agent that initiated the event. For most situations, this could be from the authorization context
+// of the request.
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 type Actor struct {
 	// Name - The subject or username associated with the request context that generated the event.
 	Name *string `json:"name,omitempty"`
@@ -148,8 +153,8 @@ func (c Credentials) MarshalJSON() ([]byte, error) {
 	return json.Marshal(objectMap)
 }
 
-// CustomRegistryCredentials describes the credentials that will be used to access a custom registry during
-// a run.
+// CustomRegistryCredentials describes the credentials that will be used to access a custom registry during a
+// run.
 type CustomRegistryCredentials struct {
 	// UserName - The username for logging into the custom registry.
 	UserName *SecretObject `json:"userName,omitempty"`
@@ -1598,8 +1603,7 @@ type RegenerateCredentialParameters struct {
 	Name PasswordName `json:"name,omitempty"`
 }
 
-// RegistriesCreateFuture an abstraction for monitoring and retrieving the results of a long-running
-// operation.
+// RegistriesCreateFuture an abstraction for monitoring and retrieving the results of a long-running operation.
 type RegistriesCreateFuture struct {
 	azure.FutureAPI
 	// Result returns the result of the asynchronous operation.
@@ -1641,8 +1645,7 @@ func (future *RegistriesCreateFuture) result(client RegistriesClient) (r Registr
 	return
 }
 
-// RegistriesDeleteFuture an abstraction for monitoring and retrieving the results of a long-running
-// operation.
+// RegistriesDeleteFuture an abstraction for monitoring and retrieving the results of a long-running operation.
 type RegistriesDeleteFuture struct {
 	azure.FutureAPI
 	// Result returns the result of the asynchronous operation.
@@ -1758,8 +1761,7 @@ func (future *RegistriesScheduleRunFuture) result(client RegistriesClient) (r Ru
 	return
 }
 
-// RegistriesUpdateFuture an abstraction for monitoring and retrieving the results of a long-running
-// operation.
+// RegistriesUpdateFuture an abstraction for monitoring and retrieving the results of a long-running operation.
 type RegistriesUpdateFuture struct {
 	azure.FutureAPI
 	// Result returns the result of the asynchronous operation.
@@ -3312,8 +3314,13 @@ func (s Sku) MarshalJSON() ([]byte, error) {
 	return json.Marshal(objectMap)
 }
 
+<<<<<<< HEAD
 // Source the registry node that generated the event. Put differently, while the actor initiates the event,
 // the source generates it.
+=======
+// Source the registry node that generated the event. Put differently, while the actor initiates the event, the
+// source generates it.
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 type Source struct {
 	// Addr - The IP or hostname and the port of the registry node that generated the event. Generally, this will be resolved by os.Hostname() along with the running port.
 	Addr *string `json:"addr,omitempty"`
@@ -3416,6 +3423,7 @@ type Status struct {
 	Timestamp *date.Time `json:"timestamp,omitempty"`
 }
 
+<<<<<<< HEAD
 // MarshalJSON is the custom marshaler for Status.
 func (s Status) MarshalJSON() ([]byte, error) {
 	objectMap := make(map[string]interface{})
@@ -3424,6 +3432,10 @@ func (s Status) MarshalJSON() ([]byte, error) {
 
 // StorageAccountProperties the properties of a storage account for a container registry. Only applicable
 // to Classic SKU.
+=======
+// StorageAccountProperties the properties of a storage account for a container registry. Only applicable to
+// Classic SKU.
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 type StorageAccountProperties struct {
 	// ID - The resource ID of the storage account.
 	ID *string `json:"id,omitempty"`
@@ -4917,8 +4929,7 @@ func (wpup WebhookPropertiesUpdateParameters) MarshalJSON() ([]byte, error) {
 	return json.Marshal(objectMap)
 }
 
-// WebhooksCreateFuture an abstraction for monitoring and retrieving the results of a long-running
-// operation.
+// WebhooksCreateFuture an abstraction for monitoring and retrieving the results of a long-running operation.
 type WebhooksCreateFuture struct {
 	azure.FutureAPI
 	// Result returns the result of the asynchronous operation.
@@ -4960,8 +4971,7 @@ func (future *WebhooksCreateFuture) result(client WebhooksClient) (w Webhook, er
 	return
 }
 
-// WebhooksDeleteFuture an abstraction for monitoring and retrieving the results of a long-running
-// operation.
+// WebhooksDeleteFuture an abstraction for monitoring and retrieving the results of a long-running operation.
 type WebhooksDeleteFuture struct {
 	azure.FutureAPI
 	// Result returns the result of the asynchronous operation.
@@ -4997,8 +5007,7 @@ func (future *WebhooksDeleteFuture) result(client WebhooksClient) (ar autorest.R
 	return
 }
 
-// WebhooksUpdateFuture an abstraction for monitoring and retrieving the results of a long-running
-// operation.
+// WebhooksUpdateFuture an abstraction for monitoring and retrieving the results of a long-running operation.
 type WebhooksUpdateFuture struct {
 	azure.FutureAPI
 	// Result returns the result of the asynchronous operation.

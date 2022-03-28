@@ -633,6 +633,7 @@ userAuthLoop:
 		}
 
 		authFailures++
+<<<<<<< HEAD
 		if config.MaxAuthTries > 0 && authFailures >= config.MaxAuthTries {
 			// If we have hit the max attemps, don't bother sending the
 			// final SSH_MSG_USERAUTH_FAILURE message, since there are
@@ -657,6 +658,8 @@ userAuthLoop:
 			// to match that behavior.
 			continue
 		}
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 
 		var failureMsg userAuthFailureMsg
 		if config.PasswordCallback != nil {

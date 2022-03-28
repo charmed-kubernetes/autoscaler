@@ -4,7 +4,10 @@ import (
 	"fmt"
 
 	"github.com/juju/juju/api/client/application"
+<<<<<<< HEAD
 	"github.com/juju/juju/api/connector"
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	"github.com/juju/juju/rpc/params"
 	"k8s.io/autoscaler/cluster-autoscaler/cloudprovider"
 )
@@ -17,6 +20,7 @@ type Unit struct {
 	agent    string
 }
 
+<<<<<<< HEAD
 // Note: struct fields must be public in order for unmarshal to
 // correctly populate the data.
 type jujuCloudConfig struct {
@@ -29,6 +33,11 @@ type jujuCloudConfig struct {
 type Manager struct {
 	cloudConfig jujuCloudConfig
 	clients     *Clients
+=======
+type Manager struct {
+	clients     *Clients
+	controller  string
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	model       string
 	application string
 	units       map[string]*Unit
@@ -36,6 +45,7 @@ type Manager struct {
 
 func (m *Manager) init() error {
 	var err error
+<<<<<<< HEAD
 	config := connector.SimpleConfig{
 		ControllerAddresses: m.cloudConfig.Endpoints,
 		CACert:              m.cloudConfig.CAcert,
@@ -44,6 +54,9 @@ func (m *Manager) init() error {
 		Password:            m.cloudConfig.Password,
 	}
 	m.clients, err = NewClients(config)
+=======
+	m.clients, err = NewClientsUsingClientStore(m.controller, m.model)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	if err != nil {
 		return err
 	}
@@ -88,7 +101,11 @@ func (m *Manager) addUnits(delta int) error {
 		return err
 	}
 
+<<<<<<< HEAD
 	for unitName := range jujuStatus.Applications[m.application].Units {
+=======
+	for unitName, _ := range jujuStatus.Applications[m.application].Units {
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 		if _, ok := prevStatus.Applications[m.application].Units[unitName]; !ok {
 			m.units[unitName] = &Unit{
 				state:    cloudprovider.InstanceCreating,

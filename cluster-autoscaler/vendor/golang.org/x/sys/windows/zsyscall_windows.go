@@ -226,7 +226,10 @@ var (
 	procFreeLibrary                                          = modkernel32.NewProc("FreeLibrary")
 	procGenerateConsoleCtrlEvent                             = modkernel32.NewProc("GenerateConsoleCtrlEvent")
 	procGetACP                                               = modkernel32.NewProc("GetACP")
+<<<<<<< HEAD
 	procGetActiveProcessorCount                              = modkernel32.NewProc("GetActiveProcessorCount")
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	procGetCommTimeouts                                      = modkernel32.NewProc("GetCommTimeouts")
 	procGetCommandLineW                                      = modkernel32.NewProc("GetCommandLineW")
 	procGetComputerNameExW                                   = modkernel32.NewProc("GetComputerNameExW")
@@ -379,6 +382,7 @@ var (
 	procNtCreateFile                                         = modntdll.NewProc("NtCreateFile")
 	procNtCreateNamedPipeFile                                = modntdll.NewProc("NtCreateNamedPipeFile")
 	procNtQueryInformationProcess                            = modntdll.NewProc("NtQueryInformationProcess")
+<<<<<<< HEAD
 	procNtQuerySystemInformation                             = modntdll.NewProc("NtQuerySystemInformation")
 	procNtSetInformationFile                                 = modntdll.NewProc("NtSetInformationFile")
 	procNtSetInformationProcess                              = modntdll.NewProc("NtSetInformationProcess")
@@ -386,6 +390,10 @@ var (
 	procRtlAddFunctionTable                                  = modntdll.NewProc("RtlAddFunctionTable")
 	procRtlDefaultNpAcl                                      = modntdll.NewProc("RtlDefaultNpAcl")
 	procRtlDeleteFunctionTable                               = modntdll.NewProc("RtlDeleteFunctionTable")
+=======
+	procNtSetInformationProcess                              = modntdll.NewProc("NtSetInformationProcess")
+	procRtlDefaultNpAcl                                      = modntdll.NewProc("RtlDefaultNpAcl")
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	procRtlDosPathNameToNtPathName_U_WithStatus              = modntdll.NewProc("RtlDosPathNameToNtPathName_U_WithStatus")
 	procRtlDosPathNameToRelativeNtPathName_U_WithStatus      = modntdll.NewProc("RtlDosPathNameToRelativeNtPathName_U_WithStatus")
 	procRtlGetCurrentPeb                                     = modntdll.NewProc("RtlGetCurrentPeb")
@@ -1969,12 +1977,15 @@ func GetACP() (acp uint32) {
 	return
 }
 
+<<<<<<< HEAD
 func GetActiveProcessorCount(groupNumber uint16) (ret uint32) {
 	r0, _, _ := syscall.Syscall(procGetActiveProcessorCount.Addr(), 1, uintptr(groupNumber), 0, 0)
 	ret = uint32(r0)
 	return
 }
 
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 func GetCommTimeouts(handle Handle, timeouts *CommTimeouts) (err error) {
 	r1, _, e1 := syscall.Syscall(procGetCommTimeouts.Addr(), 2, uintptr(handle), uintptr(unsafe.Pointer(timeouts)), 0)
 	if r1 == 0 {
@@ -3270,6 +3281,8 @@ func NetUserGetInfo(serverName *uint16, userName *uint16, level uint32, buf **by
 
 func NtCreateFile(handle *Handle, access uint32, oa *OBJECT_ATTRIBUTES, iosb *IO_STATUS_BLOCK, allocationSize *int64, attributes uint32, share uint32, disposition uint32, options uint32, eabuffer uintptr, ealength uint32) (ntstatus error) {
 	r0, _, _ := syscall.Syscall12(procNtCreateFile.Addr(), 11, uintptr(unsafe.Pointer(handle)), uintptr(access), uintptr(unsafe.Pointer(oa)), uintptr(unsafe.Pointer(iosb)), uintptr(unsafe.Pointer(allocationSize)), uintptr(attributes), uintptr(share), uintptr(disposition), uintptr(options), uintptr(eabuffer), uintptr(ealength), 0)
+<<<<<<< HEAD
+=======
 	if r0 != 0 {
 		ntstatus = NTStatus(r0)
 	}
@@ -3292,6 +3305,96 @@ func NtQueryInformationProcess(proc Handle, procInfoClass int32, procInfo unsafe
 	return
 }
 
+func NtSetInformationProcess(proc Handle, procInfoClass int32, procInfo unsafe.Pointer, procInfoLen uint32) (ntstatus error) {
+	r0, _, _ := syscall.Syscall6(procNtSetInformationProcess.Addr(), 4, uintptr(proc), uintptr(procInfoClass), uintptr(procInfo), uintptr(procInfoLen), 0, 0)
+	if r0 != 0 {
+		ntstatus = NTStatus(r0)
+	}
+	return
+}
+
+func RtlDefaultNpAcl(acl **ACL) (ntstatus error) {
+	r0, _, _ := syscall.Syscall(procRtlDefaultNpAcl.Addr(), 1, uintptr(unsafe.Pointer(acl)), 0, 0)
+	if r0 != 0 {
+		ntstatus = NTStatus(r0)
+	}
+	return
+}
+
+func RtlDosPathNameToNtPathName(dosName *uint16, ntName *NTUnicodeString, ntFileNamePart *uint16, relativeName *RTL_RELATIVE_NAME) (ntstatus error) {
+	r0, _, _ := syscall.Syscall6(procRtlDosPathNameToNtPathName_U_WithStatus.Addr(), 4, uintptr(unsafe.Pointer(dosName)), uintptr(unsafe.Pointer(ntName)), uintptr(unsafe.Pointer(ntFileNamePart)), uintptr(unsafe.Pointer(relativeName)), 0, 0)
+	if r0 != 0 {
+		ntstatus = NTStatus(r0)
+	}
+	return
+}
+
+func RtlDosPathNameToRelativeNtPathName(dosName *uint16, ntName *NTUnicodeString, ntFileNamePart *uint16, relativeName *RTL_RELATIVE_NAME) (ntstatus error) {
+	r0, _, _ := syscall.Syscall6(procRtlDosPathNameToRelativeNtPathName_U_WithStatus.Addr(), 4, uintptr(unsafe.Pointer(dosName)), uintptr(unsafe.Pointer(ntName)), uintptr(unsafe.Pointer(ntFileNamePart)), uintptr(unsafe.Pointer(relativeName)), 0, 0)
+	if r0 != 0 {
+		ntstatus = NTStatus(r0)
+	}
+	return
+}
+
+func RtlGetCurrentPeb() (peb *PEB) {
+	r0, _, _ := syscall.Syscall(procRtlGetCurrentPeb.Addr(), 0, 0, 0, 0)
+	peb = (*PEB)(unsafe.Pointer(r0))
+	return
+}
+
+func rtlGetNtVersionNumbers(majorVersion *uint32, minorVersion *uint32, buildNumber *uint32) {
+	syscall.Syscall(procRtlGetNtVersionNumbers.Addr(), 3, uintptr(unsafe.Pointer(majorVersion)), uintptr(unsafe.Pointer(minorVersion)), uintptr(unsafe.Pointer(buildNumber)))
+	return
+}
+
+func rtlGetVersion(info *OsVersionInfoEx) (ntstatus error) {
+	r0, _, _ := syscall.Syscall(procRtlGetVersion.Addr(), 1, uintptr(unsafe.Pointer(info)), 0, 0)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
+	if r0 != 0 {
+		ntstatus = NTStatus(r0)
+	}
+	return
+}
+
+<<<<<<< HEAD
+func NtCreateNamedPipeFile(pipe *Handle, access uint32, oa *OBJECT_ATTRIBUTES, iosb *IO_STATUS_BLOCK, share uint32, disposition uint32, options uint32, typ uint32, readMode uint32, completionMode uint32, maxInstances uint32, inboundQuota uint32, outputQuota uint32, timeout *int64) (ntstatus error) {
+	r0, _, _ := syscall.Syscall15(procNtCreateNamedPipeFile.Addr(), 14, uintptr(unsafe.Pointer(pipe)), uintptr(access), uintptr(unsafe.Pointer(oa)), uintptr(unsafe.Pointer(iosb)), uintptr(share), uintptr(disposition), uintptr(options), uintptr(typ), uintptr(readMode), uintptr(completionMode), uintptr(maxInstances), uintptr(inboundQuota), uintptr(outputQuota), uintptr(unsafe.Pointer(timeout)), 0)
+=======
+func RtlInitString(destinationString *NTString, sourceString *byte) {
+	syscall.Syscall(procRtlInitString.Addr(), 2, uintptr(unsafe.Pointer(destinationString)), uintptr(unsafe.Pointer(sourceString)), 0)
+	return
+}
+
+func RtlInitUnicodeString(destinationString *NTUnicodeString, sourceString *uint16) {
+	syscall.Syscall(procRtlInitUnicodeString.Addr(), 2, uintptr(unsafe.Pointer(destinationString)), uintptr(unsafe.Pointer(sourceString)), 0)
+	return
+}
+
+func rtlNtStatusToDosErrorNoTeb(ntstatus NTStatus) (ret syscall.Errno) {
+	r0, _, _ := syscall.Syscall(procRtlNtStatusToDosErrorNoTeb.Addr(), 1, uintptr(ntstatus), 0, 0)
+	ret = syscall.Errno(r0)
+	return
+}
+
+func clsidFromString(lpsz *uint16, pclsid *GUID) (ret error) {
+	r0, _, _ := syscall.Syscall(procCLSIDFromString.Addr(), 2, uintptr(unsafe.Pointer(lpsz)), uintptr(unsafe.Pointer(pclsid)), 0)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
+	if r0 != 0 {
+		ntstatus = NTStatus(r0)
+	}
+	return
+}
+
+func NtQueryInformationProcess(proc Handle, procInfoClass int32, procInfo unsafe.Pointer, procInfoLen uint32, retLen *uint32) (ntstatus error) {
+	r0, _, _ := syscall.Syscall6(procNtQueryInformationProcess.Addr(), 5, uintptr(proc), uintptr(procInfoClass), uintptr(procInfo), uintptr(procInfoLen), uintptr(unsafe.Pointer(retLen)), 0)
+	if r0 != 0 {
+		ntstatus = NTStatus(r0)
+	}
+	return
+}
+
+<<<<<<< HEAD
 func NtQuerySystemInformation(sysInfoClass int32, sysInfo unsafe.Pointer, sysInfoLen uint32, retLen *uint32) (ntstatus error) {
 	r0, _, _ := syscall.Syscall6(procNtQuerySystemInformation.Addr(), 4, uintptr(sysInfoClass), uintptr(sysInfo), uintptr(sysInfoLen), uintptr(unsafe.Pointer(retLen)), 0, 0)
 	if r0 != 0 {
@@ -3305,6 +3408,37 @@ func NtSetInformationFile(handle Handle, iosb *IO_STATUS_BLOCK, inBuffer *byte, 
 	if r0 != 0 {
 		ntstatus = NTStatus(r0)
 	}
+=======
+func CoGetObject(name *uint16, bindOpts *BIND_OPTS3, guid *GUID, functionTable **uintptr) (ret error) {
+	r0, _, _ := syscall.Syscall6(procCoGetObject.Addr(), 4, uintptr(unsafe.Pointer(name)), uintptr(unsafe.Pointer(bindOpts)), uintptr(unsafe.Pointer(guid)), uintptr(unsafe.Pointer(functionTable)), 0, 0)
+	if r0 != 0 {
+		ret = syscall.Errno(r0)
+	}
+	return
+}
+
+func CoInitializeEx(reserved uintptr, coInit uint32) (ret error) {
+	r0, _, _ := syscall.Syscall(procCoInitializeEx.Addr(), 2, uintptr(reserved), uintptr(coInit), 0)
+	if r0 != 0 {
+		ret = syscall.Errno(r0)
+	}
+	return
+}
+
+func CoTaskMemFree(address unsafe.Pointer) {
+	syscall.Syscall(procCoTaskMemFree.Addr(), 1, uintptr(address), 0, 0)
+	return
+}
+
+func CoUninitialize() {
+	syscall.Syscall(procCoUninitialize.Addr(), 0, 0, 0, 0)
+	return
+}
+
+func stringFromGUID2(rguid *GUID, lpsz *uint16, cchMax int32) (chars int32) {
+	r0, _, _ := syscall.Syscall(procStringFromGUID2.Addr(), 3, uintptr(unsafe.Pointer(rguid)), uintptr(unsafe.Pointer(lpsz)), uintptr(cchMax))
+	chars = int32(r0)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	return
 }
 

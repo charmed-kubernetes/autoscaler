@@ -735,6 +735,9 @@ func (client VirtualMachineScaleSetsClient) GetOSUpgradeHistory(ctx context.Cont
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.vmsslouh.hasNextLink() && result.vmsslouh.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -852,6 +855,9 @@ func (client VirtualMachineScaleSetsClient) List(ctx context.Context, resourceGr
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.vmsslr.hasNextLink() && result.vmsslr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -967,6 +973,9 @@ func (client VirtualMachineScaleSetsClient) ListAll(ctx context.Context) (result
 	if result.vmsslwlr.hasNextLink() && result.vmsslwlr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.vmsslwlr.hasNextLink() && result.vmsslwlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return
@@ -1084,6 +1093,9 @@ func (client VirtualMachineScaleSetsClient) ListSkus(ctx context.Context, resour
 	if result.vmsslsr.hasNextLink() && result.vmsslsr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.vmsslsr.hasNextLink() && result.vmsslsr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

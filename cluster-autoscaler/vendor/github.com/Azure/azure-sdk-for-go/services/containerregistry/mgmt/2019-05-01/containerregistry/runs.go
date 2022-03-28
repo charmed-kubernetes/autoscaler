@@ -348,6 +348,9 @@ func (client RunsClient) List(ctx context.Context, resourceGroupName string, reg
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.rlr.hasNextLink() && result.rlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

@@ -557,6 +557,9 @@ func (client InterfacesClient) List(ctx context.Context, resourceGroupName strin
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.ilr.hasNextLink() && result.ilr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -670,6 +673,9 @@ func (client InterfacesClient) ListAll(ctx context.Context) (result InterfaceLis
 	if result.ilr.hasNextLink() && result.ilr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.ilr.hasNextLink() && result.ilr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return
@@ -870,6 +876,9 @@ func (client InterfacesClient) ListVirtualMachineScaleSetIPConfigurations(ctx co
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.iiclr.hasNextLink() && result.iiclr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -993,6 +1002,9 @@ func (client InterfacesClient) ListVirtualMachineScaleSetNetworkInterfaces(ctx c
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.ilr.hasNextLink() && result.ilr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -1112,6 +1124,9 @@ func (client InterfacesClient) ListVirtualMachineScaleSetVMNetworkInterfaces(ctx
 	if result.ilr.hasNextLink() && result.ilr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.ilr.hasNextLink() && result.ilr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

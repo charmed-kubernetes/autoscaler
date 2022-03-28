@@ -147,6 +147,9 @@ func (client HubVirtualNetworkConnectionsClient) List(ctx context.Context, resou
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lhvncr.hasNextLink() && result.lhvncr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

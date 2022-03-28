@@ -4,7 +4,10 @@
 package errors
 
 import (
+<<<<<<< HEAD
 	stderrors "errors"
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	"fmt"
 	"strings"
 )
@@ -329,6 +332,7 @@ func errorStack(err error) []string {
 	}
 	return result
 }
+<<<<<<< HEAD
 
 // Unwrap is a proxy for the Unwrap function in Go's standard `errors` library
 // (pkg.go.dev/errors).
@@ -347,3 +351,5 @@ func Is(err, target error) bool {
 func As(err error, target interface{}) bool {
 	return stderrors.As(err, target)
 }
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16

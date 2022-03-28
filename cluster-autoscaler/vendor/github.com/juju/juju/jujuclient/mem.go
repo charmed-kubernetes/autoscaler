@@ -24,10 +24,15 @@ type MemStore struct {
 	Credentials           map[string]cloud.CloudCredential
 	BootstrapConfig       map[string]BootstrapConfig
 	CookieJars            map[string]*cookiejar.Jar
+<<<<<<< HEAD
 	ImmutableAccount      bool
 }
 
 //NewMemStore returns a new MemStore.
+=======
+}
+
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 func NewMemStore() *MemStore {
 	return &MemStore{
 		Controllers:     make(map[string]ControllerDetails),
@@ -39,6 +44,7 @@ func NewMemStore() *MemStore {
 	}
 }
 
+<<<<<<< HEAD
 //NewEmbeddedMemStore returns a new MemStore used with the embedded CLI.
 // The account details are immutable once set.
 func NewEmbeddedMemStore() *MemStore {
@@ -48,6 +54,9 @@ func NewEmbeddedMemStore() *MemStore {
 }
 
 // AllControllers implements ControllerGetter.AllController
+=======
+// AllController implements ControllerGetter.AllController
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 func (c *MemStore) AllControllers() (map[string]ControllerDetails, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -361,17 +370,24 @@ func (c *MemStore) UpdateAccount(controllerName string, details AccountDetails) 
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
+<<<<<<< HEAD
 	oldDetails, ok := c.Accounts[controllerName]
 	if ok && c.ImmutableAccount {
 		return nil
 	}
 
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	if err := ValidateControllerName(controllerName); err != nil {
 		return err
 	}
 	if err := ValidateAccountDetails(details); err != nil {
 		return err
 	}
+<<<<<<< HEAD
+=======
+	oldDetails := c.Accounts[controllerName]
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	// Only update last known access if it has a value.
 	if details.LastKnownAccess == "" {
 		details.LastKnownAccess = oldDetails.LastKnownAccess

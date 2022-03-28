@@ -608,7 +608,10 @@ ccflags="$@"
 		$2 ~ /^MTD/ ||
 		$2 ~ /^OTP/ ||
 		$2 ~ /^MEM/ ||
+<<<<<<< HEAD
 		$2 ~ /^WG/ ||
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 		$2 ~ /^BLK[A-Z]*(GET$|SET$|BUF$|PART$|SIZE)/ {printf("\t%s = C.%s\n", $2, $2)}
 		$2 ~ /^__WCOREFLAG$/ {next}
 		$2 ~ /^__W[A-Z0-9]+$/ {printf("\t%s = C.%s\n", substr($2,3), $2)}

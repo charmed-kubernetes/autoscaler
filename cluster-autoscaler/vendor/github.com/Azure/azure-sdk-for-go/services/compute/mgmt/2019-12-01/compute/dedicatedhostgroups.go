@@ -312,6 +312,9 @@ func (client DedicatedHostGroupsClient) ListByResourceGroup(ctx context.Context,
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.dhglr.hasNextLink() && result.dhglr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -426,6 +429,9 @@ func (client DedicatedHostGroupsClient) ListBySubscription(ctx context.Context) 
 	if result.dhglr.hasNextLink() && result.dhglr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.dhglr.hasNextLink() && result.dhglr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

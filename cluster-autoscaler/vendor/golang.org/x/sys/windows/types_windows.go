@@ -938,8 +938,13 @@ type StartupInfoEx struct {
 type ProcThreadAttributeList struct{}
 
 type ProcThreadAttributeListContainer struct {
+<<<<<<< HEAD
 	data     *ProcThreadAttributeList
 	pointers []unsafe.Pointer
+=======
+	data            *ProcThreadAttributeList
+	heapAllocations []uintptr
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 }
 
 type ProcessInformation struct {
@@ -2383,12 +2388,15 @@ type LIST_ENTRY struct {
 	Blink *LIST_ENTRY
 }
 
+<<<<<<< HEAD
 type RUNTIME_FUNCTION struct {
 	BeginAddress uint32
 	EndAddress   uint32
 	UnwindData   uint32
 }
 
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 type LDR_DATA_TABLE_ENTRY struct {
 	reserved1          [2]uintptr
 	InMemoryOrderLinks LIST_ENTRY
@@ -2579,6 +2587,7 @@ const (
 	FILE_PIPE_SERVER_END = 0x00000001
 )
 
+<<<<<<< HEAD
 const (
 	// FileInformationClass for NtSetInformationFile
 	FileBasicInformation                         = 4
@@ -2633,6 +2642,8 @@ const (
 	FILE_LINK_FORCE_RESIZE_SR                      = 0x00000180
 )
 
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 // ProcessInformationClasses for NtQueryInformationProcess and NtSetInformationProcess.
 const (
 	ProcessBasicInformation = iota
@@ -2749,6 +2760,7 @@ type PROCESS_BASIC_INFORMATION struct {
 	InheritedFromUniqueProcessId uintptr
 }
 
+<<<<<<< HEAD
 type SYSTEM_PROCESS_INFORMATION struct {
 	NextEntryOffset              uint32
 	NumberOfThreads              uint32
@@ -2983,6 +2995,8 @@ type RTL_PROCESS_MODULES struct {
 	Modules         [1]RTL_PROCESS_MODULE_INFORMATION
 }
 
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 // Constants for LocalAlloc flags.
 const (
 	LMEM_FIXED          = 0x0
@@ -3077,6 +3091,7 @@ var (
 	RT_MANIFEST     ResourceID = 24
 )
 
+<<<<<<< HEAD
 type VS_FIXEDFILEINFO struct {
 	Signature        uint32
 	StrucVersion     uint32
@@ -3093,6 +3108,8 @@ type VS_FIXEDFILEINFO struct {
 	FileDateLS       uint32
 }
 
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 type COAUTHIDENTITY struct {
 	User           *uint16
 	UserLength     uint32
@@ -3166,6 +3183,7 @@ const (
 
 // Flag for QueryFullProcessImageName.
 const PROCESS_NAME_NATIVE = 1
+<<<<<<< HEAD
 
 type ModuleInfo struct {
 	BaseOfDll   uintptr
@@ -3174,3 +3192,5 @@ type ModuleInfo struct {
 }
 
 const ALL_PROCESSOR_GROUPS = 0xFFFF
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16

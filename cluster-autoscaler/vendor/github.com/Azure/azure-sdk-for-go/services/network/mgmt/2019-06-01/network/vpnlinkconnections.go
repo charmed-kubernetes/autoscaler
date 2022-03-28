@@ -70,6 +70,9 @@ func (client VpnLinkConnectionsClient) ListByVpnConnection(ctx context.Context, 
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lvslcr.hasNextLink() && result.lvslcr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

@@ -461,6 +461,9 @@ func (client WebhooksClient) List(ctx context.Context, resourceGroupName string,
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.wlr.hasNextLink() && result.wlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -593,6 +596,9 @@ func (client WebhooksClient) ListEvents(ctx context.Context, resourceGroupName s
 	if result.elr.hasNextLink() && result.elr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.elr.hasNextLink() && result.elr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

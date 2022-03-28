@@ -123,7 +123,11 @@ type Controller struct {
 // Controller.
 //
 // New in go1.14+, if you are passing a *testing.T into this function you no
+<<<<<<< HEAD
 // longer need to call ctrl.Finish() in your test methods.
+=======
+// longer need to call ctrl.Finish() in your test methods
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 func NewController(t TestReporter) *Controller {
 	h, ok := t.(TestHelper)
 	if !ok {

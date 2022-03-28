@@ -306,6 +306,9 @@ func (client RouteFiltersClient) List(ctx context.Context) (result RouteFilterLi
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.rflr.hasNextLink() && result.rflr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -420,6 +423,9 @@ func (client RouteFiltersClient) ListByResourceGroup(ctx context.Context, resour
 	if result.rflr.hasNextLink() && result.rflr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.rflr.hasNextLink() && result.rflr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

@@ -1,30 +1,11 @@
-## Purpose
+# WARNING ! Please read before using mount functionality
+# THIS REPOSITORY is moved : Please use https://github.com/kubernetes/mount-utils for all your work
 
-This repository defines an interface to mounting filesystems to be consumed by 
-various Kubernetes and out-of-tree CSI components. 
+This package has been moved to new location. Please use the new repo for bug fixes and enhancements.
+All existing dependencies on this repo are being removed. Eventually this repo will be deprecated. 
+If you are using this repo or planning to use, you must use the new repo mentioned here for this functionality.
 
-Consumers of this repository can make use of functions like 'Mount' to mount 
-source to target as fstype with given options, 'Unmount' to unmount a target.
-Other useful functions include 'List' all mounted file systems and find all
-mount references to a path using 'GetMountRefs'
+New repo : https://github.com/kubernetes/mount-utils 
+New go module: k8s.io/mount-utils
+For Kubernetes/Kubernetes project the code is available under staging directory. 
 
-## Community, discussion, contribution, and support
-
-Learn how to engage with the Kubernetes community on the [community
-page](http://kubernetes.io/community/).
-
-You can reach the maintainers of this repository at:
-
-- Slack: #sig-storage (on https://kubernetes.slack.com -- get an
-  invite at slack.kubernetes.io)
-- Mailing List:
-  https://groups.google.com/forum/#!forum/kubernetes-sig-storage
-
-### Code of Conduct
-
-Participation in the Kubernetes community is governed by the [Kubernetes
-Code of Conduct](code-of-conduct.md).
-
-### Contibution Guidelines
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for more information.

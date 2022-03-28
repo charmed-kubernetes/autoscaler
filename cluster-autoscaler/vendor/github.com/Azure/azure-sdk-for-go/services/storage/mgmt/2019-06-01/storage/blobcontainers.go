@@ -1037,6 +1037,9 @@ func (client BlobContainersClient) List(ctx context.Context, resourceGroupName s
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lci.hasNextLink() && result.lci.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

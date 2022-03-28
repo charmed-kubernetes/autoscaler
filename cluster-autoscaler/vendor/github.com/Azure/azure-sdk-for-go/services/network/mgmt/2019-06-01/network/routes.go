@@ -310,6 +310,9 @@ func (client RoutesClient) List(ctx context.Context, resourceGroupName string, r
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.rlr.hasNextLink() && result.rlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

@@ -415,6 +415,9 @@ func (client DisksClient) List(ctx context.Context) (result DiskListPage, err er
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.dl.hasNextLink() && result.dl.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -529,6 +532,9 @@ func (client DisksClient) ListByResourceGroup(ctx context.Context, resourceGroup
 	if result.dl.hasNextLink() && result.dl.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.dl.hasNextLink() && result.dl.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

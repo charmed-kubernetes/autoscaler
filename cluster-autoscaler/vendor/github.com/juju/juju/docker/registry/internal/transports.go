@@ -269,6 +269,7 @@ func handleErrorResponse(resp *http.Response) (*http.Response, error) {
 		errNew = errors.Forbiddenf
 	case http.StatusUnauthorized:
 		errNew = errors.Unauthorizedf
+<<<<<<< HEAD
 	case http.StatusNotFound:
 		errNew = errors.NotFoundf
 	}
@@ -284,3 +285,8 @@ func unwrapNetError(err error) error {
 	}
 	return err
 }
+=======
+	}
+	return nil, errNew(errMsg)
+}
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16

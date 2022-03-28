@@ -740,6 +740,9 @@ func (client VirtualMachinesClient) List(ctx context.Context, resourceGroupName 
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.vmlr.hasNextLink() && result.vmlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -856,6 +859,9 @@ func (client VirtualMachinesClient) ListAll(ctx context.Context, statusOnly stri
 	if result.vmlr.hasNextLink() && result.vmlr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.vmlr.hasNextLink() && result.vmlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return
@@ -1056,6 +1062,9 @@ func (client VirtualMachinesClient) ListByLocation(ctx context.Context, location
 	if result.vmlr.hasNextLink() && result.vmlr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.vmlr.hasNextLink() && result.vmlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

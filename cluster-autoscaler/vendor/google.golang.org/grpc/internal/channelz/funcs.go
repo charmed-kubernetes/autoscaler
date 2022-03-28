@@ -30,7 +30,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"google.golang.org/grpc/grpclog"
+	"google.golang.org/grpc/internal/grpclog"
 )
 
 const (
@@ -216,7 +216,11 @@ func RegisterChannel(c Channel, pid int64, ref string) int64 {
 // by pid). It returns the unique channelz tracking id assigned to this subchannel.
 func RegisterSubChannel(c Channel, pid int64, ref string) int64 {
 	if pid == 0 {
+<<<<<<< HEAD
 		logger.Error("a SubChannel's parent id cannot be 0")
+=======
+		grpclog.ErrorDepth(0, "a SubChannel's parent id cannot be 0")
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 		return 0
 	}
 	id := idGen.genID()
@@ -253,7 +257,11 @@ func RegisterServer(s Server, ref string) int64 {
 // this listen socket.
 func RegisterListenSocket(s Socket, pid int64, ref string) int64 {
 	if pid == 0 {
+<<<<<<< HEAD
 		logger.Error("a ListenSocket's parent id cannot be 0")
+=======
+		grpclog.ErrorDepth(0, "a ListenSocket's parent id cannot be 0")
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 		return 0
 	}
 	id := idGen.genID()
@@ -268,7 +276,11 @@ func RegisterListenSocket(s Socket, pid int64, ref string) int64 {
 // this normal socket.
 func RegisterNormalSocket(s Socket, pid int64, ref string) int64 {
 	if pid == 0 {
+<<<<<<< HEAD
 		logger.Error("a NormalSocket's parent id cannot be 0")
+=======
+		grpclog.ErrorDepth(0, "a NormalSocket's parent id cannot be 0")
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 		return 0
 	}
 	id := idGen.genID()
@@ -294,6 +306,7 @@ type TraceEventDesc struct {
 }
 
 // AddTraceEvent adds trace related to the entity with specified id, using the provided TraceEventDesc.
+<<<<<<< HEAD
 func AddTraceEvent(l grpclog.DepthLoggerV2, id int64, depth int, desc *TraceEventDesc) {
 	for d := desc; d != nil; d = d.Parent {
 		switch d.Severity {
@@ -303,6 +316,19 @@ func AddTraceEvent(l grpclog.DepthLoggerV2, id int64, depth int, desc *TraceEven
 			l.WarningDepth(depth+1, d.Desc)
 		case CtError:
 			l.ErrorDepth(depth+1, d.Desc)
+=======
+func AddTraceEvent(id int64, depth int, desc *TraceEventDesc) {
+	for d := desc; d != nil; d = d.Parent {
+		switch d.Severity {
+		case CtUNKNOWN:
+			grpclog.InfoDepth(depth+1, d.Desc)
+		case CtINFO:
+			grpclog.InfoDepth(depth+1, d.Desc)
+		case CtWarning:
+			grpclog.WarningDepth(depth+1, d.Desc)
+		case CtError:
+			grpclog.ErrorDepth(depth+1, d.Desc)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 		}
 	}
 	if getMaxTraceEntry() == 0 {

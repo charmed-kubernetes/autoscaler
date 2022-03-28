@@ -311,6 +311,9 @@ const (
 	SYS_LANDLOCK_ADD_RULE       = 445
 	SYS_LANDLOCK_RESTRICT_SELF  = 446
 	SYS_MEMFD_SECRET            = 447
+<<<<<<< HEAD
 	SYS_PROCESS_MRELEASE        = 448
 	SYS_FUTEX_WAITV             = 449
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 )

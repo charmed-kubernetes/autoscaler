@@ -148,6 +148,9 @@ func (client LoadBalancerFrontendIPConfigurationsClient) List(ctx context.Contex
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lbficlr.hasNextLink() && result.lbficlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

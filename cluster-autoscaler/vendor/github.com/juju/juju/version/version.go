@@ -21,7 +21,11 @@ import (
 // The presence and format of this constant is very important.
 // The debian/rules build recipe uses this value for the version
 // number of the release package.
+<<<<<<< HEAD
 const version = "2.9.28"
+=======
+const version = "2.9.27"
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 
 // UserAgentVersion defines a user agent version used for communication for
 // outside resources.
@@ -63,6 +67,7 @@ var GitCommit string
 var GitTreeState string = TreeStateDirty
 
 func init() {
+<<<<<<< HEAD
 	defer func() {
 		if Current.Build == 0 {
 			// We set the Build to OfficialBuild if no build number provided in the FORCE-VERSION file.
@@ -70,6 +75,8 @@ func init() {
 		}
 	}()
 
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	toolsDir := filepath.Dir(os.Args[0])
 	v, err := ioutil.ReadFile(filepath.Join(toolsDir, "FORCE-VERSION"))
 	if err != nil {

@@ -147,6 +147,9 @@ func (client LoadBalancerLoadBalancingRulesClient) List(ctx context.Context, res
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lblbrlr.hasNextLink() && result.lblbrlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

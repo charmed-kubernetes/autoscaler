@@ -312,6 +312,9 @@ func (client VirtualNetworkPeeringsClient) List(ctx context.Context, resourceGro
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.vnplr.hasNextLink() && result.vnplr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

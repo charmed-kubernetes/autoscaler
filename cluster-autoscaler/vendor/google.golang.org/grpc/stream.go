@@ -582,13 +582,21 @@ func (cs *clientStream) shouldRetry(err error) (bool, error) {
 		if len(sps) == 1 {
 			var e error
 			if pushback, e = strconv.Atoi(sps[0]); e != nil || pushback < 0 {
+<<<<<<< HEAD
 				channelz.Infof(logger, cs.cc.channelzID, "Server retry pushback specified to abort (%q).", sps[0])
+=======
+				channelz.Infof(cs.cc.channelzID, "Server retry pushback specified to abort (%q).", sps[0])
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 				cs.retryThrottler.throttle() // This counts as a failure for throttling.
 				return false, err
 			}
 			hasPushback = true
 		} else if len(sps) > 1 {
+<<<<<<< HEAD
 			channelz.Warningf(logger, cs.cc.channelzID, "Server retry pushback specified multiple values (%q); not retrying.", sps)
+=======
+			channelz.Warningf(cs.cc.channelzID, "Server retry pushback specified multiple values (%q); not retrying.", sps)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 			cs.retryThrottler.throttle() // This counts as a failure for throttling.
 			return false, err
 		}

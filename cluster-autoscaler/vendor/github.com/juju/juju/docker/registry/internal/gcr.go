@@ -99,5 +99,9 @@ func (c googleContainerRegistry) Ping() error {
 	if resp != nil {
 		defer resp.Body.Close()
 	}
+<<<<<<< HEAD
 	return errors.Trace(unwrapNetError(err))
+=======
+	return errors.Trace(err)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 }

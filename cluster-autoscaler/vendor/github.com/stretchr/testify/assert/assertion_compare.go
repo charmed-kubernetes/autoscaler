@@ -31,8 +31,11 @@ var (
 	float64Type = reflect.TypeOf(float64(1))
 
 	stringType = reflect.TypeOf("")
+<<<<<<< HEAD
 
 	timeType = reflect.TypeOf(time.Time{})
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 )
 
 func compare(obj1, obj2 interface{}, kind reflect.Kind) (CompareType, bool) {
@@ -400,6 +403,24 @@ func Negative(t TestingT, e interface{}, msgAndArgs ...interface{}) bool {
 	}
 	zero := reflect.Zero(reflect.TypeOf(e))
 	return compareTwoValues(t, e, zero.Interface(), []CompareType{compareLess}, "\"%v\" is not negative", msgAndArgs...)
+}
+
+// Positive asserts that the specified element is positive
+//
+//    assert.Positive(t, 1)
+//    assert.Positive(t, 1.23)
+func Positive(t TestingT, e interface{}, msgAndArgs ...interface{}) bool {
+	zero := reflect.Zero(reflect.TypeOf(e))
+	return compareTwoValues(t, e, zero.Interface(), []CompareType{compareGreater}, "\"%v\" is not positive", msgAndArgs)
+}
+
+// Negative asserts that the specified element is negative
+//
+//    assert.Negative(t, -1)
+//    assert.Negative(t, -1.23)
+func Negative(t TestingT, e interface{}, msgAndArgs ...interface{}) bool {
+	zero := reflect.Zero(reflect.TypeOf(e))
+	return compareTwoValues(t, e, zero.Interface(), []CompareType{compareLess}, "\"%v\" is not negative", msgAndArgs)
 }
 
 func compareTwoValues(t TestingT, e1 interface{}, e2 interface{}, allowedComparesResults []CompareType, failMessage string, msgAndArgs ...interface{}) bool {

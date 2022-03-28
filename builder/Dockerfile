@@ -12,7 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+<<<<<<< HEAD
 FROM golang:1.17.5
+=======
+FROM golang:1.16
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 LABEL maintainer="Marcin Wielgus <mwielgus@google.com>"
 
 ENV GOPATH /gopath/

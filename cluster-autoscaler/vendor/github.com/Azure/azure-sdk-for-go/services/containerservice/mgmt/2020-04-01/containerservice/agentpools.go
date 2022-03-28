@@ -527,6 +527,9 @@ func (client AgentPoolsClient) List(ctx context.Context, resourceGroupName strin
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.aplr.hasNextLink() && result.aplr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

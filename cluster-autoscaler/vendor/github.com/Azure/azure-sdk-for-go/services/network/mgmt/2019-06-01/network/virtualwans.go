@@ -302,6 +302,9 @@ func (client VirtualWansClient) List(ctx context.Context) (result ListVirtualWAN
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lvwnr.hasNextLink() && result.lvwnr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -416,6 +419,9 @@ func (client VirtualWansClient) ListByResourceGroup(ctx context.Context, resourc
 	if result.lvwnr.hasNextLink() && result.lvwnr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.lvwnr.hasNextLink() && result.lvwnr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

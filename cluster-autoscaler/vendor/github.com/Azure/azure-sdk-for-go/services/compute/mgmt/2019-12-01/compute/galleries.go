@@ -302,6 +302,9 @@ func (client GalleriesClient) List(ctx context.Context) (result GalleryListPage,
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.gl.hasNextLink() && result.gl.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -416,6 +419,9 @@ func (client GalleriesClient) ListByResourceGroup(ctx context.Context, resourceG
 	if result.gl.hasNextLink() && result.gl.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.gl.hasNextLink() && result.gl.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

@@ -313,6 +313,9 @@ func (client P2sVpnServerConfigurationsClient) ListByVirtualWan(ctx context.Cont
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lpvscr.hasNextLink() && result.lpvscr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

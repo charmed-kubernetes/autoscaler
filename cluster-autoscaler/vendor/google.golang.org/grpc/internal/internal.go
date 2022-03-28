@@ -38,6 +38,12 @@ var (
 	// KeepaliveMinPingTime is the minimum ping interval.  This must be 10s by
 	// default, but tests may wish to set it lower for convenience.
 	KeepaliveMinPingTime = 10 * time.Second
+<<<<<<< HEAD
+=======
+	// NewRequestInfoContext creates a new context based on the argument context attaching
+	// the passed in RequestInfo to the new context.
+	NewRequestInfoContext interface{} // func(context.Context, credentials.RequestInfo) context.Context
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	// ParseServiceConfigForTesting is for creating a fake
 	// ClientConn for resolver testing only
 	ParseServiceConfigForTesting interface{} // func(string) *serviceconfig.ParseResult

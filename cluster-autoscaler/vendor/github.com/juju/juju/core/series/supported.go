@@ -356,7 +356,10 @@ var ubuntuSeries = map[SeriesName]seriesVersion{
 const (
 	Centos7      SeriesName = "centos7"
 	Centos8      SeriesName = "centos8"
+<<<<<<< HEAD
 	Centos9      SeriesName = "centos9"
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	OpenSUSELeap SeriesName = "opensuseleap"
 	Kubernetes   SeriesName = "kubernetes"
 )
@@ -463,11 +466,14 @@ var centosSeries = map[SeriesName]seriesVersion{
 		Version:      "centos8",
 		Supported:    true,
 	},
+<<<<<<< HEAD
 	Centos9: {
 		WorkloadType: OtherWorkloadType,
 		Version:      "centos9",
 		Supported:    true,
 	},
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 }
 
 var opensuseSeries = map[SeriesName]seriesVersion{

@@ -26,7 +26,10 @@ import (
 	"log"
 	"os"
 	"strconv"
+<<<<<<< HEAD
 	"strings"
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 
 	"google.golang.org/grpc/internal/grpclog"
 )
@@ -70,9 +73,12 @@ type LoggerV2 interface {
 // SetLoggerV2 sets logger that is used in grpc to a V2 logger.
 // Not mutex-protected, should be called before any gRPC functions.
 func SetLoggerV2(l LoggerV2) {
+<<<<<<< HEAD
 	if _, ok := l.(*componentData); ok {
 		panic("cannot use component logger as grpclog logger")
 	}
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	grpclog.Logger = l
 	grpclog.DepthLogger, _ = l.(grpclog.DepthLoggerV2)
 }
@@ -242,12 +248,17 @@ func (g *loggerT) V(l int) bool {
 // DepthLoggerV2, the below functions will be called with the appropriate stack
 // depth set for trivial functions the logger may ignore.
 //
+<<<<<<< HEAD
 // Experimental
 //
 // Notice: This type is EXPERIMENTAL and may be changed or removed in a
 // later release.
 type DepthLoggerV2 interface {
 	LoggerV2
+=======
+// This API is EXPERIMENTAL.
+type DepthLoggerV2 interface {
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	// InfoDepth logs to INFO log at the specified depth. Arguments are handled in the manner of fmt.Print.
 	InfoDepth(depth int, args ...interface{})
 	// WarningDepth logs to WARNING log at the specified depth. Arguments are handled in the manner of fmt.Print.

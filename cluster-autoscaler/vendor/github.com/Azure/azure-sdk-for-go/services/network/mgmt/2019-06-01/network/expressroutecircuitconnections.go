@@ -321,6 +321,9 @@ func (client ExpressRouteCircuitConnectionsClient) List(ctx context.Context, res
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.ercclr.hasNextLink() && result.ercclr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

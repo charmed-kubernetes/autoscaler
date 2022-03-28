@@ -1297,6 +1297,7 @@ func (t *http2Client) operateHeaders(frame *http2.MetaHeadersFrame) {
 		return
 	}
 
+<<<<<<< HEAD
 	var (
 		// If a gRPC Response-Headers has already been received, then it means
 		// that the peer is speaking gRPC and we are in gRPC mode.
@@ -1335,6 +1336,26 @@ func (t *http2Client) operateHeaders(frame *http2.MetaHeadersFrame) {
 				se := status.New(codes.Internal, fmt.Sprintf("transport: malformed grpc-status: %v", err))
 				t.closeStream(s, se.Err(), true, http2.ErrCodeProtocol, se, nil, endStream)
 				return
+=======
+	isHeader := false
+	defer func() {
+		if t.statsHandler != nil {
+			if isHeader {
+				inHeader := &stats.InHeader{
+					Client:      true,
+					WireLength:  int(frame.Header().Length),
+					Header:      s.header.Copy(),
+					Compression: s.recvCompress,
+				}
+				t.statsHandler.HandleRPC(s.ctx, inHeader)
+			} else {
+				inTrailer := &stats.InTrailer{
+					Client:     true,
+					WireLength: int(frame.Header().Length),
+					Trailer:    s.trailer.Copy(),
+				}
+				t.statsHandler.HandleRPC(s.ctx, inTrailer)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 			}
 			rawStatusCode = codes.Code(uint32(code))
 		case "grpc-message":

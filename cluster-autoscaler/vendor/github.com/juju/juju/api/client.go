@@ -46,6 +46,7 @@ const websocketTimeout = 30 * time.Second
 type Client struct {
 	base.ClientFacade
 	facade base.FacadeCaller
+<<<<<<< HEAD
 	conn   Connection
 }
 
@@ -54,6 +55,9 @@ type Client struct {
 func NewClient(c Connection) *Client {
 	frontend, backend := base.NewClientFacade(c, "Client")
 	return &Client{ClientFacade: frontend, facade: backend, conn: c}
+=======
+	st     *state
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 }
 
 // Status returns the status of the juju model.
@@ -243,7 +247,11 @@ func (c *Client) SetModelConstraints(constraints constraints.Value) error {
 // ModelUUID returns the model UUID from the client connection
 // and reports whether it is valued.
 func (c *Client) ModelUUID() (string, bool) {
+<<<<<<< HEAD
 	tag, ok := c.conn.ModelTag()
+=======
+	tag, ok := c.st.ModelTag()
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	if !ok {
 		return "", false
 	}
@@ -275,7 +283,11 @@ func (c *Client) WatchAll() (*AllWatcher, error) {
 	if err := c.facade.FacadeCall("WatchAll", nil, &info); err != nil {
 		return nil, err
 	}
+<<<<<<< HEAD
 	return NewAllWatcher(c.conn, &info.AllWatcherId), nil
+=======
+	return NewAllWatcher(c.st, &info.AllWatcherId), nil
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 }
 
 // Close closes the Client's underlying State connection
@@ -283,7 +295,11 @@ func (c *Client) WatchAll() (*AllWatcher, error) {
 // connection, but it is conventional to use a Client object without any access
 // to its underlying state connection.
 func (c *Client) Close() error {
+<<<<<<< HEAD
 	return c.conn.Close()
+=======
+	return c.st.Close()
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 }
 
 // SetModelAgentVersion sets the model agent-version setting
@@ -548,7 +564,11 @@ func openCharmArgs(curl *charm.URL) (string, url.Values) {
 
 // OpenURI performs a GET on a Juju HTTP endpoint returning the
 func (c *Client) OpenURI(uri string, query url.Values) (io.ReadCloser, error) {
+<<<<<<< HEAD
 	return openURI(c.conn, uri, query)
+=======
+	return openURI(c.st, uri, query)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 }
 
 func openURI(apiCaller base.APICaller, uri string, query url.Values) (io.ReadCloser, error) {
@@ -602,7 +622,11 @@ func (c *Client) httpPost(content io.ReadSeeker, endpoint, contentType string, r
 	req.Header.Set("Content-Type", contentType)
 
 	// The returned httpClient sets the base url to /model/<uuid> if it can.
+<<<<<<< HEAD
 	httpClient, err := c.conn.HTTPClient()
+=======
+	httpClient, err := c.st.HTTPClient()
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	if err != nil {
 		return errors.Trace(err)
 	}
@@ -705,7 +729,11 @@ func (s *DeadlineStream) WriteJSON(v interface{}) error {
 // WatchDebugLog returns a channel of structured Log Messages. Only log entries
 // that match the filtering specified in the DebugLogParams are returned.
 func (c *Client) WatchDebugLog(args common.DebugLogParams) (<-chan common.LogMessage, error) {
+<<<<<<< HEAD
 	return common.StreamDebugLog(context.TODO(), c.conn, args)
+=======
+	return common.StreamDebugLog(context.TODO(), c.st, args)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 }
 
 // lxdCharmProfiler massages a charm.Charm into a LXDProfiler inside of the

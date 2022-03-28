@@ -333,6 +333,9 @@ func (client GalleryImageVersionsClient) ListByGalleryImage(ctx context.Context,
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.givl.hasNextLink() && result.givl.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

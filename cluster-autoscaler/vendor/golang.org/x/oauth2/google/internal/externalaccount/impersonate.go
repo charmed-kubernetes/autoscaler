@@ -29,6 +29,7 @@ type impersonateTokenResponse struct {
 	ExpireTime  string `json:"expireTime"`
 }
 
+<<<<<<< HEAD
 // ImpersonateTokenSource uses a source credential, stored in Ts, to request an access token to the provided URL.
 // Scopes can be defined when the access token is requested.
 type ImpersonateTokenSource struct {
@@ -56,17 +57,41 @@ func (its ImpersonateTokenSource) Token() (*oauth2.Token, error) {
 		Lifetime:  "3600s",
 		Scope:     its.Scopes,
 		Delegates: its.Delegates,
+=======
+type impersonateTokenSource struct {
+	ctx context.Context
+	ts  oauth2.TokenSource
+
+	url    string
+	scopes []string
+}
+
+// Token performs the exchange to get a temporary service account token to allow access to GCP.
+func (its impersonateTokenSource) Token() (*oauth2.Token, error) {
+	reqBody := generateAccessTokenReq{
+		Lifetime: "3600s",
+		Scope:    its.scopes,
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	}
 	b, err := json.Marshal(reqBody)
 	if err != nil {
 		return nil, fmt.Errorf("oauth2/google: unable to marshal request: %v", err)
 	}
+<<<<<<< HEAD
 	client := oauth2.NewClient(its.Ctx, its.Ts)
 	req, err := http.NewRequest("POST", its.URL, bytes.NewReader(b))
 	if err != nil {
 		return nil, fmt.Errorf("oauth2/google: unable to create impersonation request: %v", err)
 	}
 	req = req.WithContext(its.Ctx)
+=======
+	client := oauth2.NewClient(its.ctx, its.ts)
+	req, err := http.NewRequest("POST", its.url, bytes.NewReader(b))
+	if err != nil {
+		return nil, fmt.Errorf("oauth2/google: unable to create impersonation request: %v", err)
+	}
+	req = req.WithContext(its.ctx)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := client.Do(req)

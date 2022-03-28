@@ -132,10 +132,15 @@ func Pipe2(p []int, flags int) error {
 	}
 	var pp [2]_C_int
 	err := pipe2(&pp, flags)
+<<<<<<< HEAD
 	if err == nil {
 		p[0] = int(pp[0])
 		p[1] = int(pp[1])
 	}
+=======
+	p[0] = int(pp[0])
+	p[1] = int(pp[1])
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	return err
 }
 
@@ -2310,6 +2315,7 @@ type RemoteIovec struct {
 //sys	PidfdOpen(pid int, flags int) (fd int, err error) = SYS_PIDFD_OPEN
 //sys	PidfdGetfd(pidfd int, targetfd int, flags int) (fd int, err error) = SYS_PIDFD_GETFD
 
+<<<<<<< HEAD
 //sys	shmat(id int, addr uintptr, flag int) (ret uintptr, err error)
 //sys	shmctl(id int, cmd int, buf *SysvShmDesc) (result int, err error)
 //sys	shmdt(addr uintptr) (err error)
@@ -2361,6 +2367,8 @@ func Setitimer(which ItimerWhich, it Itimerval) (Itimerval, error) {
 	return prev, nil
 }
 
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 /*
  * Unimplemented
  */

@@ -376,6 +376,9 @@ func (client SSHPublicKeysClient) ListByResourceGroup(ctx context.Context, resou
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.spkglr.hasNextLink() && result.spkglr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -490,6 +493,9 @@ func (client SSHPublicKeysClient) ListBySubscription(ctx context.Context) (resul
 	if result.spkglr.hasNextLink() && result.spkglr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.spkglr.hasNextLink() && result.spkglr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

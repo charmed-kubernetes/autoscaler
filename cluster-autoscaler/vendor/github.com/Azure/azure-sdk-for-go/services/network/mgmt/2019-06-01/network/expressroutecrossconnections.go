@@ -225,6 +225,9 @@ func (client ExpressRouteCrossConnectionsClient) List(ctx context.Context) (resu
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.ercclr.hasNextLink() && result.ercclr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -423,6 +426,9 @@ func (client ExpressRouteCrossConnectionsClient) ListByResourceGroup(ctx context
 	if result.ercclr.hasNextLink() && result.ercclr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.ercclr.hasNextLink() && result.ercclr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

@@ -325,6 +325,9 @@ func (client LocalNetworkGatewaysClient) List(ctx context.Context, resourceGroup
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lnglr.hasNextLink() && result.lnglr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

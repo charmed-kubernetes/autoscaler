@@ -341,6 +341,9 @@ func (client ContainerServicesClient) List(ctx context.Context) (result Containe
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.cslr.hasNextLink() && result.cslr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -457,6 +460,9 @@ func (client ContainerServicesClient) ListByResourceGroup(ctx context.Context, r
 	if result.cslr.hasNextLink() && result.cslr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.cslr.hasNextLink() && result.cslr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

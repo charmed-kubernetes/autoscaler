@@ -383,6 +383,9 @@ func (client QueueClient) List(ctx context.Context, resourceGroupName string, ac
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lqr.hasNextLink() && result.lqr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

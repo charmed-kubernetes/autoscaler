@@ -377,6 +377,9 @@ func (client TableClient) List(ctx context.Context, resourceGroupName string, ac
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.ltr.hasNextLink() && result.ltr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

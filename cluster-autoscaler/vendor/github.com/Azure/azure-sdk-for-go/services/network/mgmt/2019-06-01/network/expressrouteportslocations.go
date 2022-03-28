@@ -142,6 +142,9 @@ func (client ExpressRoutePortsLocationsClient) List(ctx context.Context) (result
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.erpllr.hasNextLink() && result.erpllr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

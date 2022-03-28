@@ -490,6 +490,9 @@ func (client GroupsClient) List(ctx context.Context, filter string, top *int32) 
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.glr.hasNextLink() && result.glr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

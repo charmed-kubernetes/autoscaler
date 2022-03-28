@@ -316,6 +316,9 @@ func (client VirtualMachineScaleSetExtensionsClient) List(ctx context.Context, r
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.vmsselr.hasNextLink() && result.vmsselr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

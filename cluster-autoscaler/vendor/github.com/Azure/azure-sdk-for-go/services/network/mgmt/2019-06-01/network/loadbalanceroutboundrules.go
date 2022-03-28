@@ -147,6 +147,9 @@ func (client LoadBalancerOutboundRulesClient) List(ctx context.Context, resource
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lborlr.hasNextLink() && result.lborlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

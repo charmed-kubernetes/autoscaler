@@ -659,7 +659,11 @@
       }
     }
   },
+<<<<<<< HEAD
   "revision": "20210824",
+=======
+  "revision": "20201014",
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
   "rootUrl": "https://tpu.googleapis.com/",
   "schemas": {
     "AcceleratorType": {
@@ -850,6 +854,7 @@
       "properties": {
         "acceleratorType": {
           "description": "Required. The type of hardware accelerators associated with this node.",
+<<<<<<< HEAD
           "type": "string"
         },
         "apiVersion": {
@@ -867,6 +872,8 @@
             "TPU API V2Alpha1 version."
           ],
           "readOnly": true,
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
           "type": "string"
         },
         "cidrBlock": {
@@ -1052,8 +1059,12 @@
           "type": "string"
         },
         "cancelRequested": {
+<<<<<<< HEAD
           "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have been cancelled successfully have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
           "readOnly": true,
+=======
+          "description": "[Output only] Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
           "type": "boolean"
         },
         "createTime": {
@@ -1172,8 +1183,12 @@
             "OUT_OF_MEMORY",
             "EXECUTE_TIMED_OUT",
             "MESH_BUILD_FAIL",
+<<<<<<< HEAD
             "HBM_OUT_OF_MEMORY",
             "PROJECT_ABUSE"
+=======
+            "HBM_OUT_OF_MEMORY"
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
           ],
           "enumDescriptions": [
             "Unspecified symptom.",
@@ -1181,8 +1196,12 @@
             "TPU runtime is out of memory.",
             "TPU runtime execution has timed out.",
             "TPU runtime fails to construct a mesh that recognizes each TPU device's neighbors.",
+<<<<<<< HEAD
             "TPU HBM is out of memory.",
             "Abusive behaviors have been identified on the current project."
+=======
+            "TPU HBM is out of memory."
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
           ],
           "type": "string"
         },

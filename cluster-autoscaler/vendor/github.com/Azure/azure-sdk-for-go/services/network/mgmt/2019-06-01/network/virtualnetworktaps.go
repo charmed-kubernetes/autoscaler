@@ -334,6 +334,9 @@ func (client VirtualNetworkTapsClient) ListAll(ctx context.Context) (result Virt
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.vntlr.hasNextLink() && result.vntlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -448,6 +451,9 @@ func (client VirtualNetworkTapsClient) ListByResourceGroup(ctx context.Context, 
 	if result.vntlr.hasNextLink() && result.vntlr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.vntlr.hasNextLink() && result.vntlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

@@ -309,6 +309,9 @@ func (client FirewallPoliciesClient) List(ctx context.Context, resourceGroupName
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.fplr.hasNextLink() && result.fplr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -422,6 +425,9 @@ func (client FirewallPoliciesClient) ListAll(ctx context.Context) (result Firewa
 	if result.fplr.hasNextLink() && result.fplr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.fplr.hasNextLink() && result.fplr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

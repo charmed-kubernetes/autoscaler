@@ -459,6 +459,9 @@ func (client ExpressRouteCircuitsClient) List(ctx context.Context, resourceGroup
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.erclr.hasNextLink() && result.erclr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -572,6 +575,9 @@ func (client ExpressRouteCircuitsClient) ListAll(ctx context.Context) (result Ex
 	if result.erclr.hasNextLink() && result.erclr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.erclr.hasNextLink() && result.erclr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

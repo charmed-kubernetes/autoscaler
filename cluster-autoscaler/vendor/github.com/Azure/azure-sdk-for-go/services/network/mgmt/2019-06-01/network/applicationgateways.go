@@ -577,6 +577,9 @@ func (client ApplicationGatewaysClient) List(ctx context.Context, resourceGroupN
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.aglr.hasNextLink() && result.aglr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -690,6 +693,9 @@ func (client ApplicationGatewaysClient) ListAll(ctx context.Context) (result App
 	if result.aglr.hasNextLink() && result.aglr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.aglr.hasNextLink() && result.aglr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return
@@ -1087,6 +1093,9 @@ func (client ApplicationGatewaysClient) ListAvailableSslPredefinedPolicies(ctx c
 	if result.agaspp.hasNextLink() && result.agaspp.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.agaspp.hasNextLink() && result.agaspp.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

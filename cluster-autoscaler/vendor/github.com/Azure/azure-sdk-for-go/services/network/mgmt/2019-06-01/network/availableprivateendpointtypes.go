@@ -68,6 +68,9 @@ func (client AvailablePrivateEndpointTypesClient) List(ctx context.Context, loca
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.apetr.hasNextLink() && result.apetr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -185,6 +188,9 @@ func (client AvailablePrivateEndpointTypesClient) ListByResourceGroup(ctx contex
 	if result.apetr.hasNextLink() && result.apetr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.apetr.hasNextLink() && result.apetr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

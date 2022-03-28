@@ -314,6 +314,9 @@ func (client SubnetsClient) List(ctx context.Context, resourceGroupName string, 
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.slr.hasNextLink() && result.slr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

@@ -364,6 +364,9 @@ func (client TagsClient) List(ctx context.Context) (result TagsListResultPage, e
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.tlr.hasNextLink() && result.tlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

@@ -68,6 +68,9 @@ func (client AvailableEndpointServicesClient) List(ctx context.Context, location
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.eslr.hasNextLink() && result.eslr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

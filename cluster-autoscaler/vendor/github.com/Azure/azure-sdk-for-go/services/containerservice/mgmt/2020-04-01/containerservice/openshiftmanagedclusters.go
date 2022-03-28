@@ -329,6 +329,9 @@ func (client OpenShiftManagedClustersClient) List(ctx context.Context) (result O
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.osmclr.hasNextLink() && result.osmclr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -450,6 +453,9 @@ func (client OpenShiftManagedClustersClient) ListByResourceGroup(ctx context.Con
 	if result.osmclr.hasNextLink() && result.osmclr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.osmclr.hasNextLink() && result.osmclr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

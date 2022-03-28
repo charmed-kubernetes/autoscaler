@@ -1834,8 +1834,11 @@ const (
 	PERF_MEM_BLK_DATA                           = 0x2
 	PERF_MEM_BLK_NA                             = 0x1
 	PERF_MEM_BLK_SHIFT                          = 0x28
+<<<<<<< HEAD
 	PERF_MEM_HOPS_0                             = 0x1
 	PERF_MEM_HOPS_SHIFT                         = 0x2b
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	PERF_MEM_LOCK_LOCKED                        = 0x2
 	PERF_MEM_LOCK_NA                            = 0x1
 	PERF_MEM_LOCK_SHIFT                         = 0x18
@@ -1995,9 +1998,12 @@ const (
 	PR_SCHED_CORE_CREATE                        = 0x1
 	PR_SCHED_CORE_GET                           = 0x0
 	PR_SCHED_CORE_MAX                           = 0x4
+<<<<<<< HEAD
 	PR_SCHED_CORE_SCOPE_PROCESS_GROUP           = 0x2
 	PR_SCHED_CORE_SCOPE_THREAD                  = 0x0
 	PR_SCHED_CORE_SCOPE_THREAD_GROUP            = 0x1
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	PR_SCHED_CORE_SHARE_FROM                    = 0x3
 	PR_SCHED_CORE_SHARE_TO                      = 0x2
 	PR_SET_CHILD_SUBREAPER                      = 0x24
@@ -2179,6 +2185,7 @@ const (
 	RTCF_NAT                                    = 0x800000
 	RTCF_VALVE                                  = 0x200000
 	RTC_AF                                      = 0x20
+<<<<<<< HEAD
 	RTC_BSM_DIRECT                              = 0x1
 	RTC_BSM_DISABLED                            = 0x0
 	RTC_BSM_LEVEL                               = 0x2
@@ -2191,6 +2198,12 @@ const (
 	RTC_FEATURE_CORRECTION                      = 0x5
 	RTC_FEATURE_NEED_WEEK_DAY                   = 0x2
 	RTC_FEATURE_UPDATE_INTERRUPT                = 0x4
+=======
+	RTC_FEATURE_ALARM                           = 0x0
+	RTC_FEATURE_ALARM_RES_MINUTE                = 0x1
+	RTC_FEATURE_CNT                             = 0x3
+	RTC_FEATURE_NEED_WEEK_DAY                   = 0x2
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	RTC_IRQF                                    = 0x80
 	RTC_MAX_FREQ                                = 0x2000
 	RTC_PARAM_BACKUP_SWITCH_MODE                = 0x2

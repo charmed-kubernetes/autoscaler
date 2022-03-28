@@ -147,6 +147,9 @@ func (client LoadBalancerBackendAddressPoolsClient) List(ctx context.Context, re
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lbbaplr.hasNextLink() && result.lbbaplr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

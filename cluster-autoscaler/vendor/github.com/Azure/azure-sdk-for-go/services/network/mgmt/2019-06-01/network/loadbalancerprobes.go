@@ -147,6 +147,9 @@ func (client LoadBalancerProbesClient) List(ctx context.Context, resourceGroupNa
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lbplr.hasNextLink() && result.lbplr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

@@ -307,6 +307,9 @@ func (client RouteTablesClient) List(ctx context.Context, resourceGroupName stri
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.rtlr.hasNextLink() && result.rtlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -420,6 +423,9 @@ func (client RouteTablesClient) ListAll(ctx context.Context) (result RouteTableL
 	if result.rtlr.hasNextLink() && result.rtlr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.rtlr.hasNextLink() && result.rtlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

@@ -328,6 +328,9 @@ func (client DedicatedHostsClient) ListByHostGroup(ctx context.Context, resource
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.dhlr.hasNextLink() && result.dhlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

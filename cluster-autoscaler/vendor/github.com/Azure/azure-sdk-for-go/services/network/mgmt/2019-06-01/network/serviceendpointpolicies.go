@@ -306,6 +306,9 @@ func (client ServiceEndpointPoliciesClient) List(ctx context.Context) (result Se
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.seplr.hasNextLink() && result.seplr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -420,6 +423,9 @@ func (client ServiceEndpointPoliciesClient) ListByResourceGroup(ctx context.Cont
 	if result.seplr.hasNextLink() && result.seplr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.seplr.hasNextLink() && result.seplr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

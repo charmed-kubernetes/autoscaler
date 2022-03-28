@@ -3,6 +3,7 @@ module k8s.io/autoscaler/cluster-autoscaler
 go 1.16
 
 require (
+<<<<<<< HEAD
 	cloud.google.com/go v0.99.0
 	github.com/Azure/azure-sdk-for-go v62.2.0+incompatible
 	github.com/Azure/go-autorest/autorest v0.11.24
@@ -19,10 +20,26 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0
 	github.com/json-iterator/go v1.1.12
 	github.com/juju/juju v0.0.0-20220328152337-eac99339faf2
+=======
+	cloud.google.com/go v0.81.0
+	github.com/Azure/azure-sdk-for-go v46.4.0+incompatible
+	github.com/Azure/go-autorest/autorest v0.11.18
+	github.com/Azure/go-autorest/autorest/adal v0.9.13
+	github.com/Azure/go-autorest/autorest/date v0.3.0
+	github.com/Azure/go-autorest/autorest/to v0.3.0
+	github.com/aws/aws-sdk-go v1.35.24
+	github.com/digitalocean/godo v1.27.0
+	github.com/ghodss/yaml v1.0.0
+	github.com/golang/mock v1.5.0
+	github.com/jmespath/go-jmespath v0.4.0
+	github.com/json-iterator/go v1.1.12
+	github.com/juju/juju v0.0.0-20220310063357-5c2de081e2d2
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.12.1
 	github.com/satori/go.uuid v1.2.0
 	github.com/spf13/pflag v1.0.5
+<<<<<<< HEAD
 	github.com/stretchr/testify v1.7.1
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
@@ -47,6 +64,29 @@ require (
 )
 
 replace github.com/aws/aws-sdk-go/service/eks => github.com/aws/aws-sdk-go/service/eks v1.38.49
+=======
+	github.com/stretchr/testify v1.7.0
+	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
+	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f
+	google.golang.org/api v0.43.0
+	gopkg.in/gcfg.v1 v1.2.0
+	gopkg.in/yaml.v2 v2.4.0
+	k8s.io/api v0.23.4
+	k8s.io/apimachinery v0.23.4
+	k8s.io/apiserver v0.21.0-beta.1
+	k8s.io/client-go v0.23.4
+	k8s.io/cloud-provider v0.21.0-beta.1
+	k8s.io/component-base v0.21.0-beta.1
+	k8s.io/component-helpers v0.21.0-beta.1
+	k8s.io/klog/v2 v2.40.1
+	k8s.io/kubelet v0.0.0
+	k8s.io/kubernetes v1.21.0-beta.1
+	k8s.io/legacy-cloud-providers v0.0.0
+	k8s.io/utils v0.0.0-20220210201930-3a6ce19ff2f9
+)
+
+replace k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20210323165736-1a6458611d18
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 
 replace github.com/digitalocean/godo => github.com/digitalocean/godo v1.27.0
 
@@ -104,4 +144,10 @@ replace k8s.io/sample-cli-plugin => k8s.io/sample-cli-plugin v0.24.0-alpha.4
 
 replace k8s.io/sample-controller => k8s.io/sample-controller v0.24.0-alpha.4
 
+<<<<<<< HEAD
 replace k8s.io/pod-security-admission => k8s.io/pod-security-admission v0.24.0-alpha.4
+=======
+replace k8s.io/sample-controller => k8s.io/sample-controller v0.21.0-beta.1
+
+replace google.golang.org/grpc => google.golang.org/grpc v1.29.0
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16

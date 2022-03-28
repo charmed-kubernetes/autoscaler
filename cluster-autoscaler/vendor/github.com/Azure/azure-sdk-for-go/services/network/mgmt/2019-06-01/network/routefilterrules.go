@@ -322,6 +322,9 @@ func (client RouteFilterRulesClient) ListByRouteFilter(ctx context.Context, reso
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.rfrlr.hasNextLink() && result.rfrlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

@@ -307,6 +307,9 @@ func (client NatGatewaysClient) List(ctx context.Context, resourceGroupName stri
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.nglr.hasNextLink() && result.nglr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -420,6 +423,9 @@ func (client NatGatewaysClient) ListAll(ctx context.Context) (result NatGatewayL
 	if result.nglr.hasNextLink() && result.nglr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.nglr.hasNextLink() && result.nglr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

@@ -66,6 +66,9 @@ func (client BgpServiceCommunitiesClient) List(ctx context.Context) (result BgpS
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.bsclr.hasNextLink() && result.bsclr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

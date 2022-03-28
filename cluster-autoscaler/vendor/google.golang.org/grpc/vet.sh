@@ -49,6 +49,7 @@ if [[ "$1" = "-install" ]]; then
       unzip ${PROTOC_FILENAME}
       bin/protoc --version
       popd
+<<<<<<< HEAD
     elif [[ "${GITHUB_ACTIONS}" = "true" ]]; then
       PROTOBUF_VERSION=3.14.0
       PROTOC_FILENAME=protoc-${PROTOBUF_VERSION}-linux-x86_64.zip
@@ -57,6 +58,8 @@ if [[ "$1" = "-install" ]]; then
       unzip ${PROTOC_FILENAME}
       bin/protoc --version
       popd
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
     elif not which protoc > /dev/null; then
       die "Please install protoc into your path"
     fi
@@ -80,14 +83,27 @@ not git grep -l 'x/net/context' -- "*.go"
 #   thread safety.
 git grep -l '"math/rand"' -- "*.go" 2>&1 | not grep -v '^examples\|^stress\|grpcrand\|^benchmark\|wrr_test'
 
+<<<<<<< HEAD
 # - Do not call grpclog directly. Use grpclog.Component instead.
 git grep -l 'grpclog.I\|grpclog.W\|grpclog.E\|grpclog.F\|grpclog.V' -- "*.go" | not grep -v '^grpclog/component.go\|^internal/grpctest/tlogger_test.go'
+=======
+# - Ensure all ptypes proto packages are renamed when importing.
+not git grep "\(import \|^\s*\)\"github.com/golang/protobuf/ptypes/" -- "*.go"
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 
 # - Ensure all ptypes proto packages are renamed when importing.
 not git grep "\(import \|^\s*\)\"github.com/golang/protobuf/ptypes/" -- "*.go"
 
+<<<<<<< HEAD
 # - Ensure all xds proto imports are renamed to *pb or *grpc.
 git grep '"github.com/envoyproxy/go-control-plane/envoy' -- '*.go' ':(exclude)*.pb.go' | not grep -v 'pb "\|grpc "'
+=======
+# - gofmt, goimports, golint (with exceptions for generated code), go vet.
+gofmt -s -d -l . 2>&1 | fail_on_output
+goimports -l . 2>&1 | not grep -vE "(_mock|\.pb)\.go"
+golint ./... 2>&1 | not grep -vE "(_mock|\.pb)\.go:"
+go vet -all ./...
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 
 misspell -error .
 
@@ -124,7 +140,12 @@ staticcheck -go 1.9 -checks 'inherit,-ST1015' ./... > "${SC_OUT}" || true
 # Error if anything other than deprecation warnings are printed.
 not grep -v "is deprecated:.*SA1019" "${SC_OUT}"
 # Only ignore the following deprecated types/fields/functions.
+<<<<<<< HEAD
 not grep -Fv '.CredsBundle
+=======
+not grep -Fv '.HandleResolvedAddrs
+.HandleSubConnStateChange
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 .HeaderMap
 .Metadata is deprecated: use Attributes
 .NewAddress
@@ -156,6 +177,7 @@ grpc.WithServiceConfig
 grpc.WithTimeout
 http.CloseNotifier
 info.SecurityVersion
+<<<<<<< HEAD
 proto is deprecated
 proto.InternalMessageInfo is deprecated
 proto.EnumName is deprecated
@@ -207,5 +229,12 @@ lint_package_comment() {
   return $count
 }
 lint_package_comment
+=======
+naming.Resolver
+naming.Update
+naming.Watcher
+resolver.Backend
+resolver.GRPCLB' "${SC_OUT}"
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 
 echo SUCCESS

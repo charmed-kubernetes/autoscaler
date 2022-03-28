@@ -304,11 +304,15 @@ func MaxCallRecvMsgSize(bytes int) CallOption {
 
 // MaxRecvMsgSizeCallOption is a CallOption that indicates the maximum message
 // size in bytes the client can receive.
+<<<<<<< HEAD
 //
 // Experimental
 //
 // Notice: This type is EXPERIMENTAL and may be changed or removed in a
 // later release.
+=======
+// This is an EXPERIMENTAL API.
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 type MaxRecvMsgSizeCallOption struct {
 	MaxRecvMsgSize int
 }
@@ -327,11 +331,15 @@ func MaxCallSendMsgSize(bytes int) CallOption {
 
 // MaxSendMsgSizeCallOption is a CallOption that indicates the maximum message
 // size in bytes the client can send.
+<<<<<<< HEAD
 //
 // Experimental
 //
 // Notice: This type is EXPERIMENTAL and may be changed or removed in a
 // later release.
+=======
+// This is an EXPERIMENTAL API.
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 type MaxSendMsgSizeCallOption struct {
 	MaxSendMsgSize int
 }

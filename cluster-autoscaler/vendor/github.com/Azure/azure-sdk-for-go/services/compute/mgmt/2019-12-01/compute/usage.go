@@ -75,6 +75,9 @@ func (client UsageClient) List(ctx context.Context, location string) (result Lis
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lur.hasNextLink() && result.lur.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

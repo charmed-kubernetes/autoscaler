@@ -467,6 +467,9 @@ func (client TasksClient) List(ctx context.Context, resourceGroupName string, re
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.tlr.hasNextLink() && result.tlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

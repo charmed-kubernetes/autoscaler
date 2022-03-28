@@ -308,6 +308,9 @@ func (client PrivateEndpointsClient) List(ctx context.Context, resourceGroupName
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.pelr.hasNextLink() && result.pelr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -421,6 +424,9 @@ func (client PrivateEndpointsClient) ListBySubscription(ctx context.Context) (re
 	if result.pelr.hasNextLink() && result.pelr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.pelr.hasNextLink() && result.pelr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

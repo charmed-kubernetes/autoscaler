@@ -385,6 +385,9 @@ func (client VirtualNetworksClient) List(ctx context.Context, resourceGroupName 
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.vnlr.hasNextLink() && result.vnlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -498,6 +501,9 @@ func (client VirtualNetworksClient) ListAll(ctx context.Context) (result Virtual
 	if result.vnlr.hasNextLink() && result.vnlr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.vnlr.hasNextLink() && result.vnlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return
@@ -614,6 +620,9 @@ func (client VirtualNetworksClient) ListUsage(ctx context.Context, resourceGroup
 	if result.vnlur.hasNextLink() && result.vnlur.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.vnlur.hasNextLink() && result.vnlur.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

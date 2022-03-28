@@ -758,6 +758,9 @@ func (client Client) List(ctx context.Context, filter string, expand string, top
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.lr.hasNextLink() && result.lr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -893,6 +896,9 @@ func (client Client) ListByResourceGroup(ctx context.Context, resourceGroupName 
 	if result.lr.hasNextLink() && result.lr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.lr.hasNextLink() && result.lr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

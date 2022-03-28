@@ -280,6 +280,7 @@ func ErrorAsf(t TestingT, err error, target interface{}, msg string, args ...int
 	t.FailNow()
 }
 
+<<<<<<< HEAD
 // ErrorContains asserts that a function returned an error (i.e. not `nil`)
 // and that the error contains the specified substring.
 //
@@ -310,6 +311,8 @@ func ErrorContainsf(t TestingT, theError error, contains string, msg string, arg
 	t.FailNow()
 }
 
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 // ErrorIs asserts that at least one of the errors in err's chain matches target.
 // This is a wrapper for errors.Is.
 func ErrorIs(t TestingT, err error, target error, msgAndArgs ...interface{}) {

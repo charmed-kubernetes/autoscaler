@@ -284,7 +284,11 @@ type AccountRemover interface {
 
 // AccountGetter gets accounts.
 type AccountGetter interface {
+<<<<<<< HEAD
 	// AccountDetails returns the account associated with the given
+=======
+	// AccountByName returns the account associated with the given
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	// controller name. If no associated account exists, an error
 	// satisfying errors.IsNotFound will be returned.
 	AccountDetails(controllerName string) (*AccountDetails, error)

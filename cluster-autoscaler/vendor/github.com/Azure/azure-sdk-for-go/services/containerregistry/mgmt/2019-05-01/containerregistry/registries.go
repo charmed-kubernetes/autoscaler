@@ -608,6 +608,9 @@ func (client RegistriesClient) List(ctx context.Context) (result RegistryListRes
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.rlr.hasNextLink() && result.rlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -728,6 +731,9 @@ func (client RegistriesClient) ListByResourceGroup(ctx context.Context, resource
 	if result.rlr.hasNextLink() && result.rlr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.rlr.hasNextLink() && result.rlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

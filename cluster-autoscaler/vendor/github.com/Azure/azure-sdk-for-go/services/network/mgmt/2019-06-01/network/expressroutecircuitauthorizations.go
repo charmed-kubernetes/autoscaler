@@ -315,6 +315,9 @@ func (client ExpressRouteCircuitAuthorizationsClient) List(ctx context.Context, 
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.alr.hasNextLink() && result.alr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

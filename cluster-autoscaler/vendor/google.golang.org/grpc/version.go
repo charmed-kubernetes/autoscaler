@@ -19,4 +19,8 @@
 package grpc
 
 // Version is the current grpc version.
+<<<<<<< HEAD
 const Version = "1.42.0"
+=======
+const Version = "1.29.0"
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16

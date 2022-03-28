@@ -68,6 +68,9 @@ func (client AvailableDelegationsClient) List(ctx context.Context, location stri
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.adr.hasNextLink() && result.adr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

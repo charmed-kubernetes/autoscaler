@@ -310,6 +310,9 @@ func (client SecurityRulesClient) List(ctx context.Context, resourceGroupName st
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.srlr.hasNextLink() && result.srlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

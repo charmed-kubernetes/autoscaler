@@ -68,6 +68,11 @@ func GetClientCertificateSourceAndEndpoint(settings *internal.DialSettings) (cer
 func getClientCertificateSource(settings *internal.DialSettings) (cert.Source, error) {
 	if !isClientCertificateEnabled() {
 		return nil, nil
+<<<<<<< HEAD
+=======
+	} else if settings.HTTPClient != nil {
+		return nil, nil // HTTPClient is incompatible with ClientCertificateSource
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	} else if settings.ClientCertSource != nil {
 		return settings.ClientCertSource, nil
 	} else {

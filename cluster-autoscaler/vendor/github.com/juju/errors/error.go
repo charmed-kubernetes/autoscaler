@@ -174,9 +174,12 @@ func (e *Err) StackTrace() []string {
 func sameError(e1, e2 error) bool {
 	return reflect.DeepEqual(e1, e2)
 }
+<<<<<<< HEAD
 
 // Unwrap is a synonym for Underlying, which allows Err to be used with the
 // Unwrap, Is and As functions in Go's standard `errors` library.
 func (e *Err) Unwrap() error {
 	return e.previous
 }
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16

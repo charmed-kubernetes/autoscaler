@@ -92,10 +92,16 @@ func JWTConfigFromJSON(jsonKey []byte, scope ...string) (*jwt.Config, error) {
 
 // JSON key file types.
 const (
+<<<<<<< HEAD
 	serviceAccountKey          = "service_account"
 	userCredentialsKey         = "authorized_user"
 	externalAccountKey         = "external_account"
 	impersonatedServiceAccount = "impersonated_service_account"
+=======
+	serviceAccountKey  = "service_account"
+	userCredentialsKey = "authorized_user"
+	externalAccountKey = "external_account"
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 )
 
 // credentialsFile is the unmarshalled representation of a credentials file.
@@ -122,6 +128,7 @@ type credentialsFile struct {
 	TokenURLExternal               string                           `json:"token_url"`
 	TokenInfoURL                   string                           `json:"token_info_url"`
 	ServiceAccountImpersonationURL string                           `json:"service_account_impersonation_url"`
+<<<<<<< HEAD
 	Delegates                      []string                         `json:"delegates"`
 	CredentialSource               externalaccount.CredentialSource `json:"credential_source"`
 	QuotaProjectID                 string                           `json:"quota_project_id"`
@@ -129,6 +136,10 @@ type credentialsFile struct {
 
 	// Service account impersonation
 	SourceCredentials *credentialsFile `json:"source_credentials"`
+=======
+	CredentialSource               externalaccount.CredentialSource `json:"credential_source"`
+	QuotaProjectID                 string                           `json:"quota_project_id"`
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 }
 
 func (f *credentialsFile) jwtConfig(scopes []string, subject string) *jwt.Config {
@@ -182,6 +193,7 @@ func (f *credentialsFile) tokenSource(ctx context.Context, params CredentialsPar
 			CredentialSource:               f.CredentialSource,
 			QuotaProjectID:                 f.QuotaProjectID,
 			Scopes:                         params.Scopes,
+<<<<<<< HEAD
 			WorkforcePoolUserProject:       f.WorkforcePoolUserProject,
 		}
 		return cfg.TokenSource(ctx)
@@ -202,6 +214,10 @@ func (f *credentialsFile) tokenSource(ctx context.Context, params CredentialsPar
 			Delegates: f.Delegates,
 		}
 		return oauth2.ReuseTokenSource(nil, imp), nil
+=======
+		}
+		return cfg.TokenSource(ctx)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	case "":
 		return nil, errors.New("missing 'type' field in credentials")
 	default:

@@ -147,6 +147,9 @@ func (client DefaultSecurityRulesClient) List(ctx context.Context, resourceGroup
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.srlr.hasNextLink() && result.srlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

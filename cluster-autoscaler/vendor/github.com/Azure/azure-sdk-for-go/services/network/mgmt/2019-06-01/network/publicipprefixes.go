@@ -308,6 +308,9 @@ func (client PublicIPPrefixesClient) List(ctx context.Context, resourceGroupName
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.piplr.hasNextLink() && result.piplr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -421,6 +424,9 @@ func (client PublicIPPrefixesClient) ListAll(ctx context.Context) (result Public
 	if result.piplr.hasNextLink() && result.piplr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.piplr.hasNextLink() && result.piplr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

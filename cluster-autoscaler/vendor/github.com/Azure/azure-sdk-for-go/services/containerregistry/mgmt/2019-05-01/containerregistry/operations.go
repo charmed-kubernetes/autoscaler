@@ -65,6 +65,9 @@ func (client OperationsClient) List(ctx context.Context) (result OperationListRe
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.olr.hasNextLink() && result.olr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

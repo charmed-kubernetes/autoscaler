@@ -302,6 +302,9 @@ func (client BastionHostsClient) List(ctx context.Context) (result BastionHostLi
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.bhlr.hasNextLink() && result.bhlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -416,6 +419,9 @@ func (client BastionHostsClient) ListByResourceGroup(ctx context.Context, resour
 	if result.bhlr.hasNextLink() && result.bhlr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.bhlr.hasNextLink() && result.bhlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

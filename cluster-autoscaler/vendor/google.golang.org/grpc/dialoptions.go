@@ -66,7 +66,16 @@ type dialOptions struct {
 	minConnectTimeout           func() time.Duration
 	defaultServiceConfig        *ServiceConfig // defaultServiceConfig is parsed from defaultServiceConfigRawJSON.
 	defaultServiceConfigRawJSON *string
+<<<<<<< HEAD
 	resolvers                   []resolver.Builder
+=======
+	// This is used by ccResolverWrapper to backoff between successive calls to
+	// resolver.ResolveNow(). The user will have no need to configure this, but
+	// we need to be able to configure this in tests.
+	resolveNowBackoff func(int) time.Duration
+	resolvers         []resolver.Builder
+	withProxy         bool
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 }
 
 // DialOption configures how we set up the connection.
@@ -314,6 +323,7 @@ func WithInsecure() DialOption {
 // WithNoProxy returns a DialOption which disables the use of proxies for this
 // ClientConn. This is ignored if WithDialer or WithContextDialer are used.
 //
+<<<<<<< HEAD
 // Experimental
 //
 // Notice: This API is EXPERIMENTAL and may be changed or removed in a
@@ -321,6 +331,12 @@ func WithInsecure() DialOption {
 func WithNoProxy() DialOption {
 	return newFuncDialOption(func(o *dialOptions) {
 		o.copts.UseProxy = false
+=======
+// This API is EXPERIMENTAL.
+func WithNoProxy() DialOption {
+	return newFuncDialOption(func(o *dialOptions) {
+		o.withProxy = false
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	})
 }
 
@@ -587,6 +603,11 @@ func defaultDialOptions() dialOptions {
 			ReadBufferSize:  defaultReadBufSize,
 			UseProxy:        true,
 		},
+<<<<<<< HEAD
+=======
+		resolveNowBackoff: internalbackoff.DefaultExponential.Backoff,
+		withProxy:         true,
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	}
 }
 

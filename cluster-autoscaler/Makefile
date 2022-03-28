@@ -7,8 +7,10 @@ LDFLAGS?=-s
 ENVVAR=CGO_ENABLED=0
 GOOS?=linux
 GOARCH?=$(shell go env GOARCH)
-REGISTRY?=staging-k8s.gcr.io
+REGISTRY?=upload.rocks.canonical.com:5000
 DOCKER_NETWORK?=default
+JUJU_MAJOR?=2.9
+JUJU_MINOR?=22
 ifdef BUILD_TAGS
   TAGS_FLAG=--tags ${BUILD_TAGS}
   PROVIDER=-${BUILD_TAGS}
@@ -28,7 +30,7 @@ ifdef DOCKER_RM
 else
   RM_FLAG=
 endif
-IMAGE=$(REGISTRY)/cluster-autoscaler$(PROVIDER)
+IMAGE=$(REGISTRY)/cdk/cluster-autoscaler$(PROVIDER)
 
 export DOCKER_CLI_EXPERIMENTAL := enabled
 
@@ -49,7 +51,7 @@ make-image: make-image-arch-$(GOARCH)
 
 make-image-arch-%:
 ifdef BASEIMAGE
-	docker build --pull --build-arg BASEIMAGE=${BASEIMAGE} \
+	docker build --build-arg BASEIMAGE=${BASEIMAGE}-$* \
 		-t ${IMAGE}-$*:${TAG} \
 		-f Dockerfile.$* .
 else
@@ -66,7 +68,7 @@ push-image-arch-%:
 
 push-manifest:
 	docker manifest create ${IMAGE}:${TAG} \
-	    $(addprefix $(REGISTRY)/cluster-autoscaler$(PROVIDER)-, $(addsuffix :$(TAG), $(ALL_ARCH)))
+	    $(addprefix $(IMAGE)-, $(addsuffix :$(TAG), $(ALL_ARCH)))
 	docker manifest push --purge ${IMAGE}:${TAG}
 
 execute-release: $(addprefix make-image-arch-,$(ALL_ARCH)) $(addprefix push-image-arch-,$(ALL_ARCH)) push-manifest
@@ -93,6 +95,8 @@ build-in-docker-arch-%: clean-arch-% docker-builder
 	docker run ${RM_FLAG} -v `pwd`:/gopath/src/k8s.io/autoscaler/cluster-autoscaler/:Z autoscaling-builder:latest \
 		bash -c 'cd /gopath/src/k8s.io/autoscaler/cluster-autoscaler && BUILD_TAGS=${BUILD_TAGS} LDFLAGS="${LDFLAGS}" make build-arch-$*'
 
+# To release a juju version of the autoscaler app to rocks:
+# make TAG=<tag>  BUILD_TAGS=juju  release
 release: $(addprefix build-in-docker-arch-,$(ALL_ARCH)) execute-release
 	@echo "Full in-docker release ${TAG}${FOR_PROVIDER} completed"
 

@@ -395,6 +395,9 @@ func (client FileSharesClient) List(ctx context.Context, resourceGroupName strin
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.fsi.hasNextLink() && result.fsi.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

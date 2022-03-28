@@ -407,7 +407,11 @@ func StreamInterceptor(i StreamServerInterceptor) ServerOption {
 }
 
 // ChainStreamInterceptor returns a ServerOption that specifies the chained interceptor
+<<<<<<< HEAD
 // for streaming RPCs. The first interceptor will be the outer most,
+=======
+// for stream RPCs. The first interceptor will be the outer most,
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 // while the last interceptor will be the inner most wrapper around the real call.
 // All stream interceptors added by this method will be chained.
 func ChainStreamInterceptor(interceptors ...StreamServerInterceptor) ServerOption {
@@ -564,6 +568,7 @@ func NewServer(opt ...ServerOption) *Server {
 		o.apply(&opts)
 	}
 	s := &Server{
+<<<<<<< HEAD
 		lis:      make(map[net.Listener]bool),
 		opts:     opts,
 		conns:    make(map[string]map[transport.ServerTransport]bool),
@@ -571,6 +576,15 @@ func NewServer(opt ...ServerOption) *Server {
 		quit:     grpcsync.NewEvent(),
 		done:     grpcsync.NewEvent(),
 		czData:   new(channelzData),
+=======
+		lis:    make(map[net.Listener]bool),
+		opts:   opts,
+		conns:  make(map[transport.ServerTransport]bool),
+		m:      make(map[string]*service),
+		quit:   grpcsync.NewEvent(),
+		done:   grpcsync.NewEvent(),
+		czData: new(channelzData),
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	}
 	chainUnaryServerInterceptors(s)
 	chainStreamServerInterceptors(s)
@@ -832,6 +846,23 @@ func (s *Server) handleRawConn(lisAddr string, rawConn net.Conn) {
 		return
 	}
 	rawConn.SetDeadline(time.Now().Add(s.opts.connectionTimeout))
+<<<<<<< HEAD
+=======
+	conn, authInfo, err := s.useTransportAuthenticator(rawConn)
+	if err != nil {
+		// ErrConnDispatched means that the connection was dispatched away from
+		// gRPC; those connections should be left open.
+		if err != credentials.ErrConnDispatched {
+			s.mu.Lock()
+			s.errorf("ServerHandshake(%q) failed: %v", rawConn.RemoteAddr(), err)
+			s.mu.Unlock()
+			channelz.Warningf(s.channelzID, "grpc: Server.Serve failed to complete security handshake from %q: %v", rawConn.RemoteAddr(), err)
+			rawConn.Close()
+		}
+		rawConn.SetDeadline(time.Time{})
+		return
+	}
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 
 	// Finish handshaking (HTTP2)
 	st := s.newHTTP2Transport(rawConn)
@@ -882,6 +913,7 @@ func (s *Server) newHTTP2Transport(c net.Conn) transport.ServerTransport {
 		s.mu.Lock()
 		s.errorf("NewServerTransport(%q) failed: %v", c.RemoteAddr(), err)
 		s.mu.Unlock()
+<<<<<<< HEAD
 		// ErrConnDispatched means that the connection was dispatched away from
 		// gRPC; those connections should be left open.
 		if err != credentials.ErrConnDispatched {
@@ -891,6 +923,10 @@ func (s *Server) newHTTP2Transport(c net.Conn) transport.ServerTransport {
 			}
 			c.Close()
 		}
+=======
+		c.Close()
+		channelz.Warning(s.channelzID, "grpc: Server.Serve failed to create ServerTransport: ", err)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 		return nil
 	}
 
@@ -1061,12 +1097,20 @@ func (s *Server) incrCallsFailed() {
 func (s *Server) sendResponse(t transport.ServerTransport, stream *transport.Stream, msg interface{}, cp Compressor, opts *transport.Options, comp encoding.Compressor) error {
 	data, err := encode(s.getCodec(stream.ContentSubtype()), msg)
 	if err != nil {
+<<<<<<< HEAD
 		channelz.Error(logger, s.channelzID, "grpc: server failed to encode response: ", err)
+=======
+		channelz.Error(s.channelzID, "grpc: server failed to encode response: ", err)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 		return err
 	}
 	compData, err := compress(data, cp, comp)
 	if err != nil {
+<<<<<<< HEAD
 		channelz.Error(logger, s.channelzID, "grpc: server failed to compress response: ", err)
+=======
+		channelz.Error(s.channelzID, "grpc: server failed to compress response: ", err)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 		return err
 	}
 	hdr, payload := msgHeader(data, compData)
@@ -1096,12 +1140,19 @@ func chainUnaryServerInterceptors(s *Server) {
 	} else if len(interceptors) == 1 {
 		chainedInt = interceptors[0]
 	} else {
+<<<<<<< HEAD
 		chainedInt = chainUnaryInterceptors(interceptors)
+=======
+		chainedInt = func(ctx context.Context, req interface{}, info *UnaryServerInfo, handler UnaryHandler) (interface{}, error) {
+			return interceptors[0](ctx, req, info, getChainUnaryHandler(interceptors, 0, info, handler))
+		}
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	}
 
 	s.opts.unaryInt = chainedInt
 }
 
+<<<<<<< HEAD
 func chainUnaryInterceptors(interceptors []UnaryServerInterceptor) UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *UnaryServerInfo, handler UnaryHandler) (interface{}, error) {
 		// the struct ensures the variables are allocated together, rather than separately, since we
@@ -1123,6 +1174,20 @@ func chainUnaryInterceptors(interceptors []UnaryServerInterceptor) UnaryServerIn
 }
 
 func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.Stream, info *serviceInfo, md *MethodDesc, trInfo *traceInfo) (err error) {
+=======
+// getChainUnaryHandler recursively generate the chained UnaryHandler
+func getChainUnaryHandler(interceptors []UnaryServerInterceptor, curr int, info *UnaryServerInfo, finalHandler UnaryHandler) UnaryHandler {
+	if curr == len(interceptors)-1 {
+		return finalHandler
+	}
+
+	return func(ctx context.Context, req interface{}) (interface{}, error) {
+		return interceptors[curr+1](ctx, req, info, getChainUnaryHandler(interceptors, curr+1, info, finalHandler))
+	}
+}
+
+func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.Stream, srv *service, md *MethodDesc, trInfo *traceInfo) (err error) {
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	sh := s.opts.statsHandler
 	if sh != nil || trInfo != nil || channelz.IsOn() {
 		if channelz.IsOn() {
@@ -1247,8 +1312,15 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 	}
 	d, err := recvAndDecompress(&parser{r: stream}, stream, dc, s.opts.maxReceiveMessageSize, payInfo, decomp)
 	if err != nil {
+<<<<<<< HEAD
 		if e := t.WriteStatus(stream, status.Convert(err)); e != nil {
 			channelz.Warningf(logger, s.channelzID, "grpc: Server.processUnaryRPC failed to write status %v", e)
+=======
+		if st, ok := status.FromError(err); ok {
+			if e := t.WriteStatus(stream, st); e != nil {
+				channelz.Warningf(s.channelzID, "grpc: Server.processUnaryRPC failed to write status %v", e)
+			}
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 		}
 		return err
 	}
@@ -1292,7 +1364,11 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 			trInfo.tr.SetError()
 		}
 		if e := t.WriteStatus(stream, appStatus); e != nil {
+<<<<<<< HEAD
 			channelz.Warningf(logger, s.channelzID, "grpc: Server.processUnaryRPC failed to write status: %v", e)
+=======
+			channelz.Warningf(s.channelzID, "grpc: Server.processUnaryRPC failed to write status: %v", e)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 		}
 		if binlog != nil {
 			if h, _ := stream.Header(); h.Len() > 0 {
@@ -1321,7 +1397,11 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 		}
 		if sts, ok := status.FromError(err); ok {
 			if e := t.WriteStatus(stream, sts); e != nil {
+<<<<<<< HEAD
 				channelz.Warningf(logger, s.channelzID, "grpc: Server.processUnaryRPC failed to write status: %v", e)
+=======
+				channelz.Warningf(s.channelzID, "grpc: Server.processUnaryRPC failed to write status: %v", e)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 			}
 		} else {
 			switch st := err.(type) {
@@ -1386,12 +1466,19 @@ func chainStreamServerInterceptors(s *Server) {
 	} else if len(interceptors) == 1 {
 		chainedInt = interceptors[0]
 	} else {
+<<<<<<< HEAD
 		chainedInt = chainStreamInterceptors(interceptors)
+=======
+		chainedInt = func(srv interface{}, ss ServerStream, info *StreamServerInfo, handler StreamHandler) error {
+			return interceptors[0](srv, ss, info, getChainStreamHandler(interceptors, 0, info, handler))
+		}
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	}
 
 	s.opts.streamInt = chainedInt
 }
 
+<<<<<<< HEAD
 func chainStreamInterceptors(interceptors []StreamServerInterceptor) StreamServerInterceptor {
 	return func(srv interface{}, ss ServerStream, info *StreamServerInfo, handler StreamHandler) error {
 		// the struct ensures the variables are allocated together, rather than separately, since we
@@ -1413,6 +1500,20 @@ func chainStreamInterceptors(interceptors []StreamServerInterceptor) StreamServe
 }
 
 func (s *Server) processStreamingRPC(t transport.ServerTransport, stream *transport.Stream, info *serviceInfo, sd *StreamDesc, trInfo *traceInfo) (err error) {
+=======
+// getChainStreamHandler recursively generate the chained StreamHandler
+func getChainStreamHandler(interceptors []StreamServerInterceptor, curr int, info *StreamServerInfo, finalHandler StreamHandler) StreamHandler {
+	if curr == len(interceptors)-1 {
+		return finalHandler
+	}
+
+	return func(srv interface{}, ss ServerStream) error {
+		return interceptors[curr+1](srv, ss, info, getChainStreamHandler(interceptors, curr+1, info, finalHandler))
+	}
+}
+
+func (s *Server) processStreamingRPC(t transport.ServerTransport, stream *transport.Stream, srv *service, sd *StreamDesc, trInfo *traceInfo) (err error) {
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	if channelz.IsOn() {
 		s.incrCallsStarted()
 	}
@@ -1600,7 +1701,11 @@ func (s *Server) handleStream(t transport.ServerTransport, stream *transport.Str
 				trInfo.tr.LazyLog(&fmtStringer{"%v", []interface{}{err}}, true)
 				trInfo.tr.SetError()
 			}
+<<<<<<< HEAD
 			channelz.Warningf(logger, s.channelzID, "grpc: Server.handleStream failed to write status: %v", err)
+=======
+			channelz.Warningf(s.channelzID, "grpc: Server.handleStream failed to write status: %v", err)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 		}
 		if trInfo != nil {
 			trInfo.tr.Finish()
@@ -1641,7 +1746,11 @@ func (s *Server) handleStream(t transport.ServerTransport, stream *transport.Str
 			trInfo.tr.LazyLog(&fmtStringer{"%v", []interface{}{err}}, true)
 			trInfo.tr.SetError()
 		}
+<<<<<<< HEAD
 		channelz.Warningf(logger, s.channelzID, "grpc: Server.handleStream failed to write status: %v", err)
+=======
+		channelz.Warningf(s.channelzID, "grpc: Server.handleStream failed to write status: %v", err)
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	}
 	if trInfo != nil {
 		trInfo.tr.Finish()

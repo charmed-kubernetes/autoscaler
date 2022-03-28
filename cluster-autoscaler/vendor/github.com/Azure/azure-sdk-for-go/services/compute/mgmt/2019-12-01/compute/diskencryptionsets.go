@@ -321,6 +321,9 @@ func (client DiskEncryptionSetsClient) List(ctx context.Context) (result DiskEnc
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.desl.hasNextLink() && result.desl.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -435,6 +438,9 @@ func (client DiskEncryptionSetsClient) ListByResourceGroup(ctx context.Context, 
 	if result.desl.hasNextLink() && result.desl.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.desl.hasNextLink() && result.desl.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

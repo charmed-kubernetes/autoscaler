@@ -325,6 +325,9 @@ func (client FirewallPolicyRuleGroupsClient) List(ctx context.Context, resourceG
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.fprglr.hasNextLink() && result.fprglr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

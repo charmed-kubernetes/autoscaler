@@ -305,10 +305,13 @@ func (w withClientCertSource) Apply(o *internal.DialSettings) {
 // roles/serviceusage.serviceUsageConsumer.
 //
 // This is an EXPERIMENTAL API and may be changed or removed in the future.
+<<<<<<< HEAD
 //
 // This option has been replaced by `impersonate` package:
 // `google.golang.org/api/impersonate`. Please use the `impersonate` package
 // instead.
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 func ImpersonateCredentials(target string, delegates ...string) ClientOption {
 	return impersonateServiceAccount{
 		target:    target,

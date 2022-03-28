@@ -8,6 +8,10 @@
 package svc
 
 import (
+<<<<<<< HEAD
+=======
+	"path/filepath"
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 	"strings"
 	"unsafe"
 
@@ -73,6 +77,7 @@ func IsWindowsService() (bool, error) {
 	// Specifically, it looks up whether the parent process has session ID zero
 	// and is called "services".
 
+<<<<<<< HEAD
 	var currentProcess windows.PROCESS_BASIC_INFORMATION
 	infoSize := uint32(unsafe.Sizeof(currentProcess))
 	err := windows.NtQueryInformationProcess(windows.CurrentProcess(), windows.ProcessBasicInformation, unsafe.Pointer(&currentProcess), infoSize, &infoSize)
@@ -98,4 +103,38 @@ func IsWindowsService() (bool, error) {
 		}
 	}
 	return false, nil
+=======
+	var pbi windows.PROCESS_BASIC_INFORMATION
+	pbiLen := uint32(unsafe.Sizeof(pbi))
+	err := windows.NtQueryInformationProcess(windows.CurrentProcess(), windows.ProcessBasicInformation, unsafe.Pointer(&pbi), pbiLen, &pbiLen)
+	if err != nil {
+		return false, err
+	}
+	var psid uint32
+	err = windows.ProcessIdToSessionId(uint32(pbi.InheritedFromUniqueProcessId), &psid)
+	if err != nil || psid != 0 {
+		return false, nil
+	}
+	pproc, err := windows.OpenProcess(windows.PROCESS_QUERY_LIMITED_INFORMATION, false, uint32(pbi.InheritedFromUniqueProcessId))
+	if err != nil {
+		return false, err
+	}
+	defer windows.CloseHandle(pproc)
+	var exeNameBuf [261]uint16
+	exeNameLen := uint32(len(exeNameBuf) - 1)
+	err = windows.QueryFullProcessImageName(pproc, 0, &exeNameBuf[0], &exeNameLen)
+	if err != nil {
+		return false, err
+	}
+	exeName := windows.UTF16ToString(exeNameBuf[:exeNameLen])
+	if !strings.EqualFold(filepath.Base(exeName), "services.exe") {
+		return false, nil
+	}
+	system32, err := windows.GetSystemDirectory()
+	if err != nil {
+		return false, err
+	}
+	targetExeName := filepath.Join(system32, "services.exe")
+	return strings.EqualFold(exeName, targetExeName), nil
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 }

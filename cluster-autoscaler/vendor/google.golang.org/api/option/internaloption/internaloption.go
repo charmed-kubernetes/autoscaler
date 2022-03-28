@@ -67,6 +67,7 @@ func (e enableDirectPath) Apply(o *internal.DialSettings) {
 	o.EnableDirectPath = bool(e)
 }
 
+<<<<<<< HEAD
 // AllowNonDefaultServiceAccount returns a ClientOption that overrides the default
 // requirement for using the default service account for DirectPath.
 //
@@ -82,6 +83,8 @@ func (a allowNonDefaultServiceAccount) Apply(o *internal.DialSettings) {
 	o.AllowNonDefaultServiceAccount = bool(a)
 }
 
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16
 // WithDefaultAudience returns a ClientOption that specifies a default audience
 // to be used as the audience field ("aud") for the JWT token authentication.
 //
@@ -110,6 +113,7 @@ func (w withDefaultScopes) Apply(o *internal.DialSettings) {
 	o.DefaultScopes = make([]string, len(w))
 	copy(o.DefaultScopes, w)
 }
+<<<<<<< HEAD
 
 // EnableJwtWithScope returns a ClientOption that specifies if scope can be used
 // with self-signed JWT.
@@ -134,3 +138,5 @@ type withCreds google.Credentials
 func (w *withCreds) Apply(o *internal.DialSettings) {
 	o.InternalCredentials = (*google.Credentials)(w)
 }
+=======
+>>>>>>> 1cb7c9a8c04b7de79c2dd46f84bd5239eed4ee16

@@ -325,6 +325,9 @@ func (client GalleryImagesClient) ListByGallery(ctx context.Context, resourceGro
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.gil.hasNextLink() && result.gil.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

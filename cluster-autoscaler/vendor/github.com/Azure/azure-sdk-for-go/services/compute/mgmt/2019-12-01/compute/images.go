@@ -306,6 +306,9 @@ func (client ImagesClient) List(ctx context.Context) (result ImageListResultPage
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.ilr.hasNextLink() && result.ilr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -420,6 +423,9 @@ func (client ImagesClient) ListByResourceGroup(ctx context.Context, resourceGrou
 	if result.ilr.hasNextLink() && result.ilr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.ilr.hasNextLink() && result.ilr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

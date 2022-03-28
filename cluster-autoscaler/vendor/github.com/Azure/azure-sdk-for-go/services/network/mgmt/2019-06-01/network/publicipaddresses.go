@@ -408,6 +408,9 @@ func (client PublicIPAddressesClient) List(ctx context.Context, resourceGroupNam
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.pialr.hasNextLink() && result.pialr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -521,6 +524,9 @@ func (client PublicIPAddressesClient) ListAll(ctx context.Context) (result Publi
 	if result.pialr.hasNextLink() && result.pialr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.pialr.hasNextLink() && result.pialr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return
@@ -638,6 +644,9 @@ func (client PublicIPAddressesClient) ListVirtualMachineScaleSetPublicIPAddresse
 	if result.pialr.hasNextLink() && result.pialr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.pialr.hasNextLink() && result.pialr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return
@@ -760,6 +769,9 @@ func (client PublicIPAddressesClient) ListVirtualMachineScaleSetVMPublicIPAddres
 	if result.pialr.hasNextLink() && result.pialr.IsEmpty() {
 		err = result.NextWithContext(ctx)
 		return
+	}
+	if result.pialr.hasNextLink() && result.pialr.IsEmpty() {
+		err = result.NextWithContext(ctx)
 	}
 
 	return

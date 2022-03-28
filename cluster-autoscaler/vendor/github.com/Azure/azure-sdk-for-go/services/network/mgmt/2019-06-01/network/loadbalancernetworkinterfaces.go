@@ -69,6 +69,9 @@ func (client LoadBalancerNetworkInterfacesClient) List(ctx context.Context, reso
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.ilr.hasNextLink() && result.ilr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }

@@ -312,6 +312,9 @@ func (client ServiceEndpointPolicyDefinitionsClient) ListByResourceGroup(ctx con
 		err = result.NextWithContext(ctx)
 		return
 	}
+	if result.sepdlr.hasNextLink() && result.sepdlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
