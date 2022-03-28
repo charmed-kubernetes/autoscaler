@@ -13,7 +13,7 @@ type Clients struct {
 	statusClient      *api.Client         // statusClient is used to gather status information
 }
 
-func NewClientsUsingConnectorConfig(connectorConfig connector.SimpleConfig) (*Clients, error) {
+func NewClients(connectorConfig connector.SimpleConfig) (*Clients, error) {
 	connector, err := connector.NewSimple(connectorConfig)
 	if err != nil {
 		return nil, fmt.Errorf("error creating Juju SimpleConnector: %v", err)

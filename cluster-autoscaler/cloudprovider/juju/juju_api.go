@@ -43,7 +43,7 @@ func (m *Manager) init() error {
 		Username:            m.cloudConfig.User,
 		Password:            m.cloudConfig.Password,
 	}
-	m.clients, err = NewClientsUsingConnectorConfig(config)
+	m.clients, err = NewClients(config)
 	if err != nil {
 		return err
 	}
