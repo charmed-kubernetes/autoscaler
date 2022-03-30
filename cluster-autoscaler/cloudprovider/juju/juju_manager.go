@@ -1,5 +1,7 @@
 package juju
 
+//go:generate mockgen -destination=./mocks/mock_juju_client.go --build_flags=--mod=mod -package=mocks . JujuClient
+
 import (
 	"fmt"
 
@@ -45,7 +47,7 @@ func (m *Manager) init() error {
 	}
 
 	app := fullStatus.Applications[m.application]
-	for unitName := range app.Units {
+	for unitName, unitStatus := range app.Units {
 		hostname, err := m.getHostnameForUnitNamed(unitName)
 		if err != nil {
 			return fmt.Errorf("error getting hostname for unit %v: %v", unitName, err)
@@ -54,6 +56,7 @@ func (m *Manager) init() error {
 			state:    cloudprovider.InstanceRunning,
 			jujuName: unitName,
 			kubeName: hostname,
+			status:   unitStatus,
 		}
 	}
 
@@ -79,11 +82,12 @@ func (m *Manager) addUnits(delta int) error {
 		return err
 	}
 
-	for unitName := range currentStatus.Applications[m.application].Units {
+	for unitName, unitStatus := range currentStatus.Applications[m.application].Units {
 		if _, ok := prevStatus.Applications[m.application].Units[unitName]; !ok {
 			m.units[unitName] = &Unit{
 				state:    cloudprovider.InstanceCreating,
 				jujuName: unitName,
+				status:   unitStatus,
 			}
 		}
 	}
