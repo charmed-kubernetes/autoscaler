@@ -95,8 +95,11 @@ func (m *Manager) addUnits(delta int) error {
 	return nil
 }
 
-func (m *Manager) removeUnit(name string) error {
-	unit := m.getUnitByHostname(name)
+func (m *Manager) removeUnit(hostname string) error {
+	unit := m.getUnitByHostname(hostname)
+	if unit == nil {
+		return fmt.Errorf("unit with hostname %s not found", hostname)
+	}
 	unit.state = cloudprovider.InstanceDeleting
 
 	units := []string{unit.jujuName}
