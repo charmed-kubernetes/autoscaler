@@ -15,7 +15,7 @@ jobs:
       id: go-version
       run: |
         set -euxo pipefail
-        echo "::set-output name=version::$(grep '^go ' go.mod | awk '{print $2}')"
+        echo "::set-output name=version::$(grep '^go ' ./cluster-autoscaler/go.mod | awk '{print $2}')"
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
