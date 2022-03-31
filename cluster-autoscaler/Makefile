@@ -9,8 +9,6 @@ GOOS?=linux
 GOARCH?=$(shell go env GOARCH)
 REGISTRY?=upload.rocks.canonical.com:5000
 DOCKER_NETWORK?=default
-JUJU_MAJOR?=2.9
-JUJU_MINOR?=22
 ifdef BUILD_TAGS
   TAGS_FLAG=--tags ${BUILD_TAGS}
   PROVIDER=-${BUILD_TAGS}

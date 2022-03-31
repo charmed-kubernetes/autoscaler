@@ -201,10 +201,9 @@ func BuildJuju(
 			continue
 		}
 
-		man := NewManager(jujuAPI, model, application)
-		err = man.init()
+		man, err := NewManager(jujuAPI, model, application)
 		if err != nil {
-			klog.Errorf("error initializing manager: %v", err)
+			klog.Errorf("error creating manager: %v", err)
 			continue
 		}
 

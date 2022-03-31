@@ -5,12 +5,14 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/google/go-cmp/cmp"
 	"github.com/juju/juju/api/client/application"
 	"github.com/juju/juju/rpc/params"
 	"k8s.io/autoscaler/cluster-autoscaler/cloudprovider"
 	"k8s.io/autoscaler/cluster-autoscaler/cloudprovider/juju/mocks"
 )
 
+// Note: If you need to generate new mocks , run go generate ./... in the cloudprovider/juju directory
 func makeUnit(state cloudprovider.InstanceState, jujuName string, kubeName string, agentStatus string, workloadStatus string, machine string) Unit {
 	return Unit{
 		state:    state,
@@ -59,13 +61,19 @@ func makeStatus(appName string, units map[string]*Unit) params.FullStatus {
 	}
 }
 
-func makeManager(mockJujuClient *mocks.MockJujuClient, units []Unit) *Manager {
-	m := NewManager(mockJujuClient, "test_model", "test_application")
-	for _, v := range units {
-		unit := v
-		m.units[v.jujuName] = &unit
+func makeManager(mockJujuClient *mocks.MockJujuClient, units map[string]*Unit) (*Manager, error) {
+	ms := makeStatus("test_application", units)
+	mockJujuClient.EXPECT().Status(nil).Return(&ms, nil)
+	m, err := NewManager(mockJujuClient, "test_model", "test_application")
+
+	// The constructor initializes the units it gets from status in the instance running state, lets fix those so that the managers units
+	// equal the units passed in as an argument
+	m.units = units
+	if err != nil {
+		return nil, err
 	}
-	return m
+
+	return m, nil
 }
 
 func TestNewManager(t *testing.T) {
@@ -73,8 +81,20 @@ func TestNewManager(t *testing.T) {
 	defer ctl.Finish()
 
 	mockJujuClient := mocks.NewMockJujuClient(ctl)
+	unit1 := makeUnit(cloudprovider.InstanceRunning, "unit_1", "unit_1_hostname", "idle", "active", "machine_1")
+	unit2 := makeUnit(cloudprovider.InstanceCreating, "unit_2", "unit_2_hostname", "error", "blocked", "machine_2")
+	units := map[string]*Unit{
+		unit1.jujuName: &unit1,
+		unit2.jujuName: &unit2,
+	}
 
-	m := NewManager(mockJujuClient, "test_model", "test_application")
+	ms := makeStatus("test_application", units)
+	mockJujuClient.EXPECT().Status(nil).Return(&ms, nil)
+
+	m, err := NewManager(mockJujuClient, "test_model", "test_application")
+	if err != nil {
+		t.Fatalf("error creating manager")
+	}
 
 	if m.jujuClient != mockJujuClient {
 		t.Errorf("m.jujuClient = %v; want %v", m.jujuClient, mockJujuClient)
@@ -87,43 +107,32 @@ func TestNewManager(t *testing.T) {
 	if m.application != "test_application" {
 		t.Errorf("m.application = %v; want %v", m.application, "test_application")
 	}
-}
 
-func TestInit(t *testing.T) {
+	for unitName, unit := range m.units {
+		if unit.state != cloudprovider.InstanceRunning {
+			t.Errorf("%v state = %v; want %v", unitName, unit.state, cloudprovider.InstanceRunning)
+		}
 
-	ctl := gomock.NewController(t)
-	defer ctl.Finish()
+		if unit.jujuName != units[unitName].jujuName {
+			t.Errorf("%v jujuName = %v; want %v", unitName, unit.jujuName, units[unitName].jujuName)
+		}
 
-	mockJujuClient := mocks.NewMockJujuClient(ctl)
-	m := makeManager(mockJujuClient, []Unit{})
+		if unit.kubeName != units[unitName].kubeName {
+			t.Errorf("%v kubeName = %v; want %v", unitName, unit.kubeName, units[unitName].kubeName)
+		}
 
-	unit1 := makeUnit(cloudprovider.InstanceRunning, "unit_1", "unit_1_hostname", "idle", "active", "machine_1")
-	unit2 := makeUnit(cloudprovider.InstanceRunning, "unit_2", "unit_2_hostname", "error", "blocked", "machine_2")
-	unit3 := makeUnit(cloudprovider.InstanceRunning, "unit_3", "unit_3_hostname", "idle", "active", "machine_3")
-	unit4 := makeUnit(cloudprovider.InstanceDeleting, "unit_4", "unit_4_hostname", "idle", "active", "machine_4")
-	units := map[string]*Unit{
-		unit1.jujuName: &unit1,
-		unit2.jujuName: &unit2,
-		unit3.jujuName: &unit3,
-		unit4.jujuName: &unit4,
-	}
-	ms := makeStatus("test_application", units)
-	gomock.InOrder(
-		mockJujuClient.EXPECT().Status(nil).Return(&ms, nil), // Getting initial status
-		mockJujuClient.EXPECT().Status(nil).Return(&ms, nil), // Getting hostname of unit_1
-		mockJujuClient.EXPECT().Status(nil).Return(&ms, nil), // Getting hostname of unit_2
-		mockJujuClient.EXPECT().Status(nil).Return(&ms, nil), // Getting hostname of unit_3
-		mockJujuClient.EXPECT().Status(nil).Return(&ms, nil), // Getting hostname of unit_4
-	)
-
-	err := m.init()
-	if err != nil {
-		t.Errorf("unexpected error returned from init")
+		if !cmp.Equal(unit.status, units[unitName].status) {
+			t.Errorf("%v kubeName = %v; want %v", unitName, unit.kubeName, units[unitName].kubeName)
+		}
 	}
 
-	if len(m.units) != 4 {
-		t.Errorf("len(m.units) = %v; want %v", len(m.units), 4)
+	// Test the error path for status()
+	mockJujuClient.EXPECT().Status(nil).Return(nil, errors.New("status error"))
+	_, err = NewManager(mockJujuClient, "test_model", "test_application")
+	if err.Error() != "status error" {
+		t.Errorf("expected status error but did not get it")
 	}
+
 }
 
 func TestAddUnit(t *testing.T) {
@@ -134,8 +143,13 @@ func TestAddUnit(t *testing.T) {
 	mockJujuClient := mocks.NewMockJujuClient(ctl)
 
 	unit1 := makeUnit(cloudprovider.InstanceRunning, "unit_1", "unit_1_hostname", "idle", "active", "machine_1")
-	units := []Unit{unit1}
-	m := makeManager(mockJujuClient, units)
+	units := map[string]*Unit{
+		unit1.jujuName: &unit1,
+	}
+	m, err := makeManager(mockJujuClient, units)
+	if err != nil {
+		t.Fatalf("error creating manager")
+	}
 
 	mockStatusBeforeAdd := makeStatus(m.application, m.units)
 
@@ -162,11 +176,38 @@ func TestAddUnit(t *testing.T) {
 		t.Errorf("units does not contain added unit")
 	}
 
-	// state should now be creating
+	// State should now be InstanceCreating for the added unit
 	if m.units[mockAddedUnit.jujuName].state != cloudprovider.InstanceCreating {
 		t.Errorf("state = %v; want %v", m.units[mockAddedUnit.jujuName].state, cloudprovider.InstanceCreating)
 	}
 
+	// Test error path when getting previous status
+	mockJujuClient.EXPECT().Status(nil).Return(nil, errors.New("previous status error"))
+	err = m.addUnits(1)
+	if err.Error() != "previous status error" {
+		t.Errorf("expected previous status error but did not get it")
+	}
+
+	// Test error path when calling AddUnits
+	gomock.InOrder(
+		mockJujuClient.EXPECT().Status(nil).Return(&mockStatusBeforeAdd, nil),                    // Getting previous status
+		mockJujuClient.EXPECT().AddUnits(gomock.Any()).Return(nil, errors.New("AddUnits error")), // Add a unit
+	)
+	err = m.addUnits(1)
+	if err.Error() != "AddUnits error" {
+		t.Errorf("expected AddUnits error but did not get it")
+	}
+
+	// Test error path when getting current status
+	gomock.InOrder(
+		mockJujuClient.EXPECT().Status(nil).Return(&mockStatusBeforeAdd, nil),               // Getting previous status
+		mockJujuClient.EXPECT().AddUnits(gomock.Any()).Return([]string{"added_unit"}, nil),  // Add a unit
+		mockJujuClient.EXPECT().Status(nil).Return(nil, errors.New("current status error")), // Getting status after adding a unit
+	)
+	err = m.addUnits(1)
+	if err.Error() != "current status error" {
+		t.Errorf("expected current status error but did not get it")
+	}
 }
 
 func TestRemoveUnit(t *testing.T) {
@@ -175,8 +216,13 @@ func TestRemoveUnit(t *testing.T) {
 
 	mockJujuClient := mocks.NewMockJujuClient(ctl)
 	unit1 := makeUnit(cloudprovider.InstanceRunning, "unit_1", "unit_1_hostname", "idle", "active", "machine_1")
-	units := []Unit{unit1}
-	m := makeManager(mockJujuClient, units)
+	units := map[string]*Unit{
+		unit1.jujuName: &unit1,
+	}
+	m, err := makeManager(mockJujuClient, units)
+	if err != nil {
+		t.Fatalf("error creating manager")
+	}
 
 	args := application.DestroyUnitsParams{
 		Units:          []string{"unit_1"},
@@ -186,7 +232,7 @@ func TestRemoveUnit(t *testing.T) {
 
 	mockJujuClient.EXPECT().DestroyUnits(args).Return(nil, nil)
 
-	err := m.removeUnit("unit_1_hostname")
+	err = m.removeUnit("unit_1_hostname")
 	if err != nil {
 		t.Errorf("error removing unit: %s", err.Error())
 	}
@@ -197,17 +243,12 @@ func TestRemoveUnit(t *testing.T) {
 
 	// Test case when hostname is not found
 	err = m.removeUnit("the_host_does_not_exist")
-	if err == nil {
-		t.Errorf("expected error but did not get one")
+	if err.Error() != "unit with hostname the_host_does_not_exist not found" {
+		t.Errorf("error = %v, want %v", "unit with hostname the_host_does_not_exist not found", err.Error())
 	}
 
-	// Test case when DestroyUnits returns an error
-	args = application.DestroyUnitsParams{
-		Units:          []string{"unit_1"},
-		DestroyStorage: false,
-		Force:          false,
-	}
-	mockJujuClient.EXPECT().DestroyUnits(args).Return(nil, errors.New("some error"))
+	// Test error path when calling DestroyUnits
+	mockJujuClient.EXPECT().DestroyUnits(gomock.Any()).Return(nil, errors.New("some error"))
 	err = m.removeUnit("unit_1_hostname")
 	if err.Error() != "some error" {
 		t.Errorf("expected some error but did not get it")
@@ -219,36 +260,74 @@ func TestRefresh(t *testing.T) {
 	defer ctl.Finish()
 
 	mockJujuClient := mocks.NewMockJujuClient(ctl)
-	unit1 := makeUnit(cloudprovider.InstanceRunning, "unit_1", "unit_1_hostname", "idle", "active", "machine_1")
+	// Unit 1 will have a missing hostname at first
+	unit1 := makeUnit(cloudprovider.InstanceRunning, "unit_1", "", "idle", "active", "machine_1")
 	unit2 := makeUnit(cloudprovider.InstanceRunning, "unit_2", "unit_2_hostname", "error", "blocked", "machine_2")
 	unit3 := makeUnit(cloudprovider.InstanceCreating, "unit_3", "unit_3_hostname", "idle", "active", "machine_3")
 	unit4 := makeUnit(cloudprovider.InstanceDeleting, "unit_4", "unit_4_hostname", "idle", "active", "machine_4")
-	units := []Unit{unit1, unit2, unit3, unit4}
-	m := makeManager(mockJujuClient, units)
+	units := map[string]*Unit{
+		unit1.jujuName: &unit1,
+		unit2.jujuName: &unit2,
+		unit3.jujuName: &unit3,
+		unit4.jujuName: &unit4,
+	}
+	m, err := makeManager(mockJujuClient, units)
+	if err != nil {
+		t.Fatalf("error creating manager")
+	}
 
-	ms := makeStatus(m.application, m.units)
+	// Provide a hostname in the status
+	unit1s := makeUnit(cloudprovider.InstanceRunning, "unit_1", "unit_1_hostname", "idle", "active", "machine_1")
+	unit2s := makeUnit(cloudprovider.InstanceRunning, "unit_2", "unit_2_hostname", "error", "blocked", "machine_2")
+	unit3s := makeUnit(cloudprovider.InstanceCreating, "unit_3", "unit_3_hostname", "idle", "active", "machine_3")
+	unit4s := makeUnit(cloudprovider.InstanceDeleting, "unit_4", "unit_4_hostname", "idle", "active", "machine_4")
+	statusUnits := map[string]*Unit{
+		unit1.jujuName: &unit1s,
+		unit2.jujuName: &unit2s,
+		unit3.jujuName: &unit3s,
+		unit4.jujuName: &unit4s,
+	}
+	ms := makeStatus(m.application, statusUnits)
 	gomock.InOrder(
 		mockJujuClient.EXPECT().Status(nil).Return(&ms, nil), // Getting previous status
 	)
 
-	// mockUnit3 state should be creating before the call
-	if m.units[unit3.jujuName].state != cloudprovider.InstanceCreating {
-		t.Errorf("state = %v; want %v", m.units[unit3.jujuName].state, cloudprovider.InstanceCreating)
+	// mockUnit1 kubeName should be empty before the call
+	if m.units[unit1.jujuName].kubeName != "" {
+		t.Errorf("before calling refresh: kubeName = %v; want %v", m.units[unit1.jujuName].kubeName, "")
 	}
 
-	err := m.refresh()
+	// mockUnit3 state should be InstanceCreating before the call
+	if m.units[unit3.jujuName].state != cloudprovider.InstanceCreating {
+		t.Errorf("before calling refresh: state = %v; want %v", m.units[unit3.jujuName].state, cloudprovider.InstanceCreating)
+	}
+
+	err = m.refresh()
 	if err != nil {
 		t.Errorf("error refreshing: %s", err.Error())
 	}
 
+	// mockUnit1 kubeName should be unit_1_hostname after the call
+	if m.units[unit1.jujuName].kubeName != "unit_1_hostname" {
+		t.Errorf("after calling refresh: kubeName = %v; want %v", m.units[unit1.jujuName].kubeName, "unit_1_hostname")
+	}
+
 	// mockUnit3 state should now be running since it was previously creating (and active)
 	if m.units[unit3.jujuName].state != cloudprovider.InstanceRunning {
-		t.Errorf("state = %v; want %v", m.units[unit3.jujuName].state, cloudprovider.InstanceRunning)
+		t.Errorf("after calling refresh: state = %v; want %v", m.units[unit3.jujuName].state, cloudprovider.InstanceRunning)
 	}
 
 	// mockUnit4 should be deleted
 	if _, ok := m.units[unit4.jujuName]; ok {
 		t.Errorf("units contain unit that should have been removed")
+	}
+
+	// Test error path when getting status
+	// Test the error path for status()
+	mockJujuClient.EXPECT().Status(nil).Return(nil, errors.New("status error"))
+	err = m.refresh()
+	if err.Error() != "status error" {
+		t.Errorf("expected status error but did not get it")
 	}
 
 }

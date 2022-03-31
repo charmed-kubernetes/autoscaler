@@ -30,37 +30,29 @@ type Manager struct {
 	units       map[string]*Unit
 }
 
-func NewManager(jujuClient JujuClient, model string, application string) *Manager {
+func NewManager(jujuClient JujuClient, model string, application string) (*Manager, error) {
 	m := new(Manager)
 	m.jujuClient = jujuClient
 	m.model = model
 	m.application = application
 	m.units = make(map[string]*Unit)
 
-	return m
-}
-
-func (m *Manager) init() error {
 	fullStatus, err := m.jujuClient.Status(nil)
 	if err != nil {
-		return fmt.Errorf("error getting status: %v", err)
+		return nil, err
 	}
 
 	app := fullStatus.Applications[m.application]
 	for unitName, unitStatus := range app.Units {
-		hostname, err := m.getHostnameForUnitNamed(unitName)
-		if err != nil {
-			return fmt.Errorf("error getting hostname for unit %v: %v", unitName, err)
-		}
 		m.units[unitName] = &Unit{
 			state:    cloudprovider.InstanceRunning,
 			jujuName: unitName,
-			kubeName: hostname,
+			kubeName: fullStatus.Machines[unitStatus.Machine].Hostname,
 			status:   unitStatus,
 		}
 	}
 
-	return nil
+	return m, nil
 }
 
 func (m *Manager) addUnits(delta int) error {
@@ -123,22 +115,19 @@ func (m *Manager) refresh() error {
 		return err
 	}
 
+	// Update the status and hostname (if it was empty) of each unit
 	for unitName, unitStatus := range fullStatus.Applications[m.application].Units {
 		if _, ok := m.units[unitName]; ok {
 			m.units[unitName].status = unitStatus
+			if m.units[unitName].kubeName == "" {
+				m.units[unitName].kubeName = fullStatus.Machines[unitStatus.Machine].Hostname
+			}
 		}
 	}
 
+	// Based on the state, decide if we need to delete any units, or update any freshly created units to running
 	for unitName, unit := range m.units {
 		if unit.state == cloudprovider.InstanceCreating {
-			if unit.kubeName == "" {
-				hostname, err := m.getHostnameForUnitNamed(unitName)
-				if err != nil {
-					return fmt.Errorf("error getting hostname for unit %v: %v", unit, err)
-				}
-				unit.kubeName = hostname
-			}
-
 			if unit.status.WorkloadStatus.Status == "active" {
 				unit.state = cloudprovider.InstanceRunning
 			}
@@ -157,15 +146,4 @@ func (m *Manager) getUnitByHostname(hostname string) *Unit {
 		}
 	}
 	return nil
-}
-
-func (m *Manager) getHostnameForUnitNamed(unitName string) (string, error) {
-	fullStatus, err := m.jujuClient.Status(nil)
-	if err != nil {
-		return "", err
-	} else {
-		app := fullStatus.Applications[m.application]
-		unitStatus := app.Units[unitName]
-		return fullStatus.Machines[unitStatus.Machine].Hostname, nil
-	}
 }
