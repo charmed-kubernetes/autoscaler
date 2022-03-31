@@ -6,11 +6,6 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
-    strategy:
-      matrix:
-        platform:
-           - { os: linux, arch: amd64 }
-           - { os: linux, arch: arm64 }
 
     steps:
     - name: Checkout
@@ -30,4 +25,4 @@ jobs:
     - name: Test
       run: |
         cd ./cluster-autoscaler
-        GOOS=${{ matrix.platform.os }} GOARCH=${{ matrix.platform.arch }} go test -v ./cloudprovider/juju/
+        go test -v ./cloudprovider/juju/
