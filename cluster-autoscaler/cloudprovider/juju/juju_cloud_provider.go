@@ -22,6 +22,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/juju/juju/api/connector"
 	"gopkg.in/yaml.v2"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -39,6 +40,15 @@ const (
 	GPULabel             = "juju/gpu-node"
 	scaleToZeroSupported = true
 )
+
+// Note: struct fields must be public in order for unmarshal to
+// correctly populate the data.
+type jujuCloudConfig struct {
+	User      string   `yaml:"user"`
+	Password  string   `yaml:"password"`
+	Endpoints []string `yaml:"endpoints"`
+	CAcert    string   `yaml:"ca-cert"`
+}
 
 // jujuCloudProvider implements CloudProvider interface.
 type jujuCloudProvider struct {
@@ -154,7 +164,7 @@ func BuildJuju(
 		defer configRC.Close()
 	}
 
-	cloudConfig, err := readCloudConfigYaml(configRC)
+	jujuConfig, err := readCloudConfigYaml(configRC)
 	if err != nil {
 		klog.Fatalf("Couldn't read cloud provider configuration yaml file %s", err)
 	}
@@ -171,13 +181,32 @@ func BuildJuju(
 			klog.Errorf("failed to parse node group name: %v", err)
 			continue
 		}
-		man := &Manager{
-			cloudConfig: cloudConfig,
-			model:       model,
-			application: application,
-			units:       make(map[string]*Unit),
+
+		connector, err := connector.NewSimple(connector.SimpleConfig{
+			ControllerAddresses: jujuConfig.Endpoints,
+			CACert:              jujuConfig.CAcert,
+			ModelUUID:           model,
+			Username:            jujuConfig.User,
+			Password:            jujuConfig.Password,
+		})
+
+		if err != nil {
+			klog.Errorf("failed to create simple connector %v", err)
+			continue
 		}
-		man.init()
+
+		jujuAPI, err := NewJujuAPi(connector)
+		if err != nil {
+			klog.Errorf("failed to create JujuClient %v", err)
+			continue
+		}
+
+		man, err := NewManager(jujuAPI, model, application)
+		if err != nil {
+			klog.Errorf("error creating manager: %v", err)
+			continue
+		}
+
 		ng := &NodeGroup{
 			id:      "juju",
 			minSize: nodeGroupSpec.MinSize,
