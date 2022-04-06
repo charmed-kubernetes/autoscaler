@@ -65,7 +65,7 @@ func (n *NodeGroup) IncreaseSize(delta int) error {
 
 	if targetSize > n.MaxSize() {
 		return fmt.Errorf("size increase is too large. current: %d desired: %d max: %d",
-			targetSize, targetSize, n.MaxSize())
+			n.target, targetSize, n.MaxSize())
 	}
 
 	err := n.manager.addUnits(delta)
