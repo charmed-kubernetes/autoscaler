@@ -276,30 +276,47 @@ func TestRefresh(t *testing.T) {
 		t.Fatalf("error creating manager")
 	}
 
-	// Provide a hostname in the status
+	// Unit 1 now has a hostname
+	// Unit 2 has been deleted outside of the autoscaler
+	// Unit 5 has been added outside of the autoscaler
+	// Unit 6 has been added outside of the autoscaler
 	unit1s := makeUnit(cloudprovider.InstanceRunning, "unit_1", "unit_1_hostname", "idle", "active", "machine_1")
-	unit2s := makeUnit(cloudprovider.InstanceRunning, "unit_2", "unit_2_hostname", "error", "blocked", "machine_2")
 	unit3s := makeUnit(cloudprovider.InstanceCreating, "unit_3", "unit_3_hostname", "idle", "active", "machine_3")
 	unit4s := makeUnit(cloudprovider.InstanceDeleting, "unit_4", "unit_4_hostname", "idle", "active", "machine_4")
+	unit5s := makeUnit(cloudprovider.InstanceCreating, "unit_5", "unit_5_hostname", "idle", "active", "machine_5")
+	unit6s := makeUnit(cloudprovider.InstanceCreating, "unit_6", "unit_6_hostname", "executing", "waiting", "machine_6")
 	statusUnits := map[string]*Unit{
-		unit1.jujuName: &unit1s,
-		unit2.jujuName: &unit2s,
-		unit3.jujuName: &unit3s,
-		unit4.jujuName: &unit4s,
+		unit1s.jujuName: &unit1s,
+		unit3s.jujuName: &unit3s,
+		unit4s.jujuName: &unit4s,
+		unit5s.jujuName: &unit5s,
+		unit6s.jujuName: &unit6s,
 	}
 	ms := makeStatus(m.application, statusUnits)
 	gomock.InOrder(
 		mockJujuClient.EXPECT().Status(nil).Return(&ms, nil), // Getting previous status
 	)
 
-	// mockUnit1 kubeName should be empty before the call
+	// unit1 kubeName should be empty before the call
 	if m.units[unit1.jujuName].kubeName != "" {
 		t.Errorf("before calling refresh: kubeName = %v; want %v", m.units[unit1.jujuName].kubeName, "")
 	}
 
-	// mockUnit3 state should be InstanceCreating before the call
+	// unit3 state should be InstanceCreating before the call
 	if m.units[unit3.jujuName].state != cloudprovider.InstanceCreating {
 		t.Errorf("before calling refresh: state = %v; want %v", m.units[unit3.jujuName].state, cloudprovider.InstanceCreating)
+	}
+
+	// unit5s and unit6s should not be managed before the call
+	_, ok5 := m.units[unit5s.jujuName]
+	_, ok6 := m.units[unit6s.jujuName]
+	if ok5 && ok6 {
+		t.Errorf("externally added unit exists in manager units before calling refresh")
+	}
+
+	// unit2 should be managed before the call
+	if _, ok := m.units[unit2.jujuName]; !ok {
+		t.Errorf("expected unit does not exist in manager units before calling refresh")
 	}
 
 	err = m.refresh()
@@ -307,19 +324,34 @@ func TestRefresh(t *testing.T) {
 		t.Errorf("error refreshing: %s", err.Error())
 	}
 
-	// mockUnit1 kubeName should be unit_1_hostname after the call
+	// unit1 kubeName should be unit_1_hostname after the call
 	if m.units[unit1.jujuName].kubeName != "unit_1_hostname" {
 		t.Errorf("after calling refresh: kubeName = %v; want %v", m.units[unit1.jujuName].kubeName, "unit_1_hostname")
 	}
 
-	// mockUnit3 state should now be running since it was previously creating (and active)
+	// unit3 state should now be running since it was previously creating (and active)
 	if m.units[unit3.jujuName].state != cloudprovider.InstanceRunning {
 		t.Errorf("after calling refresh: state = %v; want %v", m.units[unit3.jujuName].state, cloudprovider.InstanceRunning)
 	}
 
-	// mockUnit4 should be deleted
+	// unit4 should be deleted
 	if _, ok := m.units[unit4.jujuName]; ok {
 		t.Errorf("units contain unit that should have been removed")
+	}
+
+	// unit2 should be gone as well since it was removed externally
+	if _, ok := m.units[unit2.jujuName]; ok {
+		t.Errorf("units contain unit that was removed externally")
+	}
+
+	// unit5 should now exist in the manager units
+	if _, ok := m.units[unit5s.jujuName]; !ok {
+		t.Errorf("externally added unit does not exist in manager units")
+	}
+
+	// unit6 should still not be in the manager units since it was not active/idle
+	if _, ok := m.units[unit6s.jujuName]; ok {
+		t.Errorf("non-active/non-idle externally added unit exists in manager units")
 	}
 
 	// Test error path when getting status
