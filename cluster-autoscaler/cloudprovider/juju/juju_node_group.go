@@ -1,12 +1,9 @@
 /*
 Copyright 2019 The Kubernetes Authors.
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
     http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -68,11 +65,15 @@ func (n *NodeGroup) IncreaseSize(delta int) error {
 
 	if targetSize > n.MaxSize() {
 		return fmt.Errorf("size increase is too large. current: %d desired: %d max: %d",
-			n.target, targetSize, n.MaxSize())
+			targetSize, targetSize, n.MaxSize())
 	}
 
-	n.manager.addUnits(delta)
+	err := n.manager.addUnits(delta)
+	if err != nil {
+		return err
+	}
 
+	// update internal cache
 	n.target = targetSize
 
 	return nil
@@ -84,8 +85,10 @@ func (n *NodeGroup) IncreaseSize(delta int) error {
 func (n *NodeGroup) DeleteNodes(nodes []*apiv1.Node) error {
 	// ctx := context.Background()
 	for _, node := range nodes {
-		n.manager.removeUnit(node.Name)
-
+		err := n.manager.removeUnit(node.Name)
+		if err != nil {
+			return err
+		}
 		// decrement the count by one  after a successful delete
 		n.target--
 	}
@@ -130,9 +133,6 @@ func (n *NodeGroup) Debug() string {
 // This list should include also instances that might have not become a kubernetes node yet.
 func (n *NodeGroup) Nodes() ([]cloudprovider.Instance, error) {
 	var nodes []cloudprovider.Instance
-
-	n.manager.refresh()
-
 	for _, unit := range n.manager.units {
 		if unit.kubeName != "" {
 			nodes = append(nodes, cloudprovider.Instance{

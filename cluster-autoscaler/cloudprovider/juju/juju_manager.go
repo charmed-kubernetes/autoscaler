@@ -8,6 +8,7 @@ import (
 	"github.com/juju/juju/api/client/application"
 	"github.com/juju/juju/rpc/params"
 	"k8s.io/autoscaler/cluster-autoscaler/cloudprovider"
+	klog "k8s.io/klog/v2"
 )
 
 type Unit struct {
@@ -81,6 +82,7 @@ func (m *Manager) addUnits(delta int) error {
 				jujuName: unitName,
 				status:   unitStatus,
 			}
+			klog.Infof("added unit %s to managed units", unitName)
 		}
 	}
 
@@ -106,6 +108,7 @@ func (m *Manager) removeUnit(hostname string) error {
 		return err
 	}
 
+	klog.Infof("unit %s state changed to InstanceDeleting", unit.jujuName)
 	return nil
 }
 
@@ -115,24 +118,51 @@ func (m *Manager) refresh() error {
 		return err
 	}
 
-	// Update the status and hostname (if it was empty) of each unit
+	// Loop over the units in the status and update the manager to match
+	// This could mean updating the state of units currently managed by the manager
+	// or incorporating a totally new unit that was added by the cluster-admin manually
 	for unitName, unitStatus := range fullStatus.Applications[m.application].Units {
+		// Check if we are already managing this unit
 		if _, ok := m.units[unitName]; ok {
+			// Update the status and hostname (if it was empty) of each unit
 			m.units[unitName].status = unitStatus
 			if m.units[unitName].kubeName == "" {
 				m.units[unitName].kubeName = fullStatus.Machines[unitStatus.Machine].Hostname
+			}
+		} else {
+			// Check if the unit is active and idle
+			// This is necessary since when a unit gets deleted it does not happen immediately
+			// We want to make sure we only add externally added units, not recently deleted units that are still showing up in status
+			if unitStatus.WorkloadStatus.Status == "active" && unitStatus.AgentStatus.Status == "idle" {
+				// The unit was added manually. Need to add it to the units list as a new unit
+				m.units[unitName] = &Unit{
+					state:    cloudprovider.InstanceCreating,
+					jujuName: unitName,
+					status:   unitStatus,
+				}
+				klog.Infof("detected manually added unit %s", unitName)
+				klog.Infof("added unit %s to managed units", unitName)
 			}
 		}
 	}
 
 	// Based on the state, decide if we need to delete any units, or update any freshly created units to running
 	for unitName, unit := range m.units {
+		// Check if any unit we are managing does not exist in the list of units we got from status
+		if _, ok := fullStatus.Applications[m.application].Units[unitName]; !ok {
+			// A unit we were managing does not exist in the list of units we got from Juju status.
+			// Change the state to InstanceDeleting so it gets removed below
+			unit.state = cloudprovider.InstanceDeleting
+			klog.Infof("detected manually removed unit %s", unit.jujuName)
+		}
+
 		if unit.state == cloudprovider.InstanceCreating {
 			if unit.status.WorkloadStatus.Status == "active" {
 				unit.state = cloudprovider.InstanceRunning
 			}
 		} else if unit.state == cloudprovider.InstanceDeleting {
 			delete(m.units, unitName)
+			klog.Infof("removed unit %s from managed units", unit.jujuName)
 		}
 	}
 

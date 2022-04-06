@@ -143,8 +143,23 @@ func (j *jujuCloudProvider) Cleanup() error {
 // update cloud provider state. In particular the list of node groups returned
 // by NodeGroups() can change as a result of CloudProvider.Refresh().
 func (j *jujuCloudProvider) Refresh() error {
-	// klog.V(4).Info("Refreshing node group cache")
-	// return d.manager.Refresh() //TODO
+	// Juju does not have a NodeGroup concept. Currently, a "node group" is added on startup for each
+	// --nodes option passed to the autoscaler command
+	// The units making up these node groups can change dynamically if a juju admin adds
+	// or removes units outside of the autoscaler
+	// The loop below calls the refresh function for each node group (which updates state to include any externally added or removed nodes),
+	// and updates the target size to match the current size of the node group
+	klog.Infof("refreshing node groups")
+	for _, node := range j.nodeGroups {
+		// Cast the cloudprovider.NodeGroup interface to the underlying juju NodeGroup struct
+		jujuNodeGroup, ok := node.(*NodeGroup)
+		if ok {
+			klog.Infof("updating node group %s target", jujuNodeGroup.id)
+			jujuNodeGroup.manager.refresh()
+			jujuNodeGroup.target = len(jujuNodeGroup.manager.units)
+		}
+	}
+
 	return nil
 }
 
@@ -207,11 +222,11 @@ func BuildJuju(
 			continue
 		}
 
+		jujuID := fmt.Sprintf("juju-%s-%s", model, application)
 		ng := &NodeGroup{
-			id:      "juju",
+			id:      jujuID,
 			minSize: nodeGroupSpec.MinSize,
 			maxSize: nodeGroupSpec.MaxSize,
-			target:  len(man.units),
 			manager: man,
 		}
 		ngs = append(ngs, ng)
