@@ -227,6 +227,7 @@ func BuildJuju(
 			id:      jujuID,
 			minSize: nodeGroupSpec.MinSize,
 			maxSize: nodeGroupSpec.MaxSize,
+			target:  len(man.units),
 			manager: man,
 		}
 		ngs = append(ngs, ng)
