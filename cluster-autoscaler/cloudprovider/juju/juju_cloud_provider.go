@@ -36,8 +36,8 @@ import (
 var _ cloudprovider.CloudProvider = (*jujuCloudProvider)(nil)
 
 const (
-	// GPULabel is the label added to nodes with GPU resource.
-	GPULabel             = "juju/gpu-node"
+	GPULabel             = "juju/gpu-node"          // GPULabel is the label added to nodes with GPU resource.
+	HostnameLabel        = "kubernetes.io/hostname" // Used as an alternative to ProviderID when looking for unregistered nodes
 	scaleToZeroSupported = true
 )
 

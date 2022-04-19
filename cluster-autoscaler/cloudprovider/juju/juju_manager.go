@@ -45,8 +45,12 @@ func NewManager(jujuClient JujuClient, model string, application string) (*Manag
 
 	app := fullStatus.Applications[m.application]
 	for unitName, unitStatus := range app.Units {
+		unitState := cloudprovider.InstanceCreating
+		if unitStatus.WorkloadStatus.Status == "active" && unitStatus.AgentStatus.Status == "idle" {
+			unitState = cloudprovider.InstanceRunning
+		}
 		m.units[unitName] = &Unit{
-			state:    cloudprovider.InstanceRunning,
+			state:    unitState,
 			jujuName: unitName,
 			kubeName: fullStatus.Machines[unitStatus.Machine].Hostname,
 			status:   unitStatus,
@@ -136,11 +140,11 @@ func (m *Manager) refresh() error {
 			if unitStatus.WorkloadStatus.Status == "active" && unitStatus.AgentStatus.Status == "idle" {
 				// The unit was added manually. Need to add it to the units list as a new unit
 				m.units[unitName] = &Unit{
-					state:    cloudprovider.InstanceCreating,
+					state:    cloudprovider.InstanceRunning,
 					jujuName: unitName,
 					status:   unitStatus,
 				}
-				klog.Infof("detected manually added unit %s", unitName)
+				klog.Infof("detected unmanaged unit %s", unitName)
 				klog.Infof("added unit %s to managed units", unitName)
 			}
 		}
@@ -153,11 +157,11 @@ func (m *Manager) refresh() error {
 			// A unit we were managing does not exist in the list of units we got from Juju status.
 			// Change the state to InstanceDeleting so it gets removed below
 			unit.state = cloudprovider.InstanceDeleting
-			klog.Infof("detected manually removed unit %s", unit.jujuName)
+			klog.Infof("detected managed unit %s that has been removed", unit.jujuName)
 		}
 
 		if unit.state == cloudprovider.InstanceCreating {
-			if unit.status.WorkloadStatus.Status == "active" {
+			if unit.status.WorkloadStatus.Status == "active" && unit.status.AgentStatus.Status == "idle" {
 				unit.state = cloudprovider.InstanceRunning
 			}
 		} else if unit.state == cloudprovider.InstanceDeleting {

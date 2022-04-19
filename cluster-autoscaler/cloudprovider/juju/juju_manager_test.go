@@ -109,8 +109,8 @@ func TestNewManager(t *testing.T) {
 	}
 
 	for unitName, unit := range m.units {
-		if unit.state != cloudprovider.InstanceRunning {
-			t.Errorf("%v state = %v; want %v", unitName, unit.state, cloudprovider.InstanceRunning)
+		if unit.state != units[unitName].state {
+			t.Errorf("%v state = %v; want %v", unitName, unit.state, units[unitName].state)
 		}
 
 		if unit.jujuName != units[unitName].jujuName {
@@ -122,7 +122,7 @@ func TestNewManager(t *testing.T) {
 		}
 
 		if !cmp.Equal(unit.status, units[unitName].status) {
-			t.Errorf("%v kubeName = %v; want %v", unitName, unit.kubeName, units[unitName].kubeName)
+			t.Errorf("%v status = %v; want %v", unitName, unit.status, units[unitName].status)
 		}
 	}
 
