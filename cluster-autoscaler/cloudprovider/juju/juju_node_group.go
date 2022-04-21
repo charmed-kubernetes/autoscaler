@@ -14,25 +14,31 @@ limitations under the License.
 package juju
 
 import (
+	ctx "context"
 	"fmt"
 
 	apiv1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"k8s.io/autoscaler/cluster-autoscaler/cloudprovider"
 	"k8s.io/autoscaler/cluster-autoscaler/config"
+	"k8s.io/autoscaler/cluster-autoscaler/utils/errors"
+	kube_client "k8s.io/client-go/kubernetes"
+	klog "k8s.io/klog/v2"
 	schedulerframework "k8s.io/kubernetes/pkg/scheduler/framework"
 )
 
-// const (
-// 	nodeIDLabel        = "juju/node-id"
-// )
+const (
+	hostnameLabel = "kubernetes.io/hostname" // Used as an alternative to ProviderID when looking for unregistered nodes
+)
 
 type NodeGroup struct {
-	id      string
-	minSize int
-	maxSize int
-	target  int
-	manager *Manager
+	id         string
+	minSize    int
+	maxSize    int
+	target     int
+	manager    *Manager
+	kubeClient kube_client.Interface
 }
 
 // MaxSize returns maximum size of the node group.
@@ -132,11 +138,28 @@ func (n *NodeGroup) Debug() string {
 // Other fields are optional.
 // This list should include also instances that might have not become a kubernetes node yet.
 func (n *NodeGroup) Nodes() ([]cloudprovider.Instance, error) {
-	var nodes []cloudprovider.Instance
+	var instances []cloudprovider.Instance
+
+	nodes, err := n.kubeClient.CoreV1().Nodes().List(ctx.TODO(), metav1.ListOptions{})
+	if err != nil {
+		return []cloudprovider.Instance{}, err
+	}
+
 	for _, unit := range n.manager.units {
-		if unit.kubeName != "" {
-			nodes = append(nodes, cloudprovider.Instance{
-				Id: unit.kubeName,
+		if unit.hostname != "" {
+			providerID, err := getProviderIDForHostname(nodes, unit.hostname)
+			if err != nil {
+				klog.Error(err.Error())
+				continue
+			}
+
+			if providerID == "" {
+				klog.Error("providerID for node with hostname %v is empty", unit.hostname)
+				continue
+			}
+
+			instances = append(instances, cloudprovider.Instance{
+				Id: providerID,
 				Status: &cloudprovider.InstanceStatus{
 					State: unit.state,
 				},
@@ -144,7 +167,7 @@ func (n *NodeGroup) Nodes() ([]cloudprovider.Instance, error) {
 		}
 	}
 
-	return nodes, nil
+	return instances, nil
 }
 
 // TemplateNodeInfo returns a schedulerframework.NodeInfo structure of an empty
@@ -160,7 +183,7 @@ func (n *NodeGroup) TemplateNodeInfo() (*schedulerframework.NodeInfo, error) {
 // Exist checks if the node group really exists on the cloud provider side. Allows to tell the
 // theoretical node group from the real one. Implementation required.
 func (n *NodeGroup) Exist() bool {
-	return true //TODO IMPLEMENT LOGIC
+	return n.manager != nil
 }
 
 // Create creates the node group on the cloud provider side. Implementation optional.
@@ -186,4 +209,14 @@ func (n *NodeGroup) Autoprovisioned() bool {
 // Implementation optional.
 func (n *NodeGroup) GetOptions(defaults config.NodeGroupAutoscalingOptions) (*config.NodeGroupAutoscalingOptions, error) {
 	return nil, cloudprovider.ErrNotImplemented
+}
+
+func getProviderIDForHostname(nodes *apiv1.NodeList, hostname string) (string, error) {
+	for _, node := range nodes.Items {
+		if node.Labels[hostnameLabel] == hostname {
+			return node.Spec.ProviderID, nil
+		}
+	}
+
+	return "", errors.NewAutoscalerError(errors.InternalError, "hostname %v not found in nodes", hostname)
 }

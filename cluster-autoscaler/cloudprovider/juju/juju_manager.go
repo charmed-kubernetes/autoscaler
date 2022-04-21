@@ -14,7 +14,7 @@ import (
 type Unit struct {
 	state    cloudprovider.InstanceState
 	jujuName string
-	kubeName string
+	hostname string
 	status   params.UnitStatus
 }
 
@@ -52,7 +52,7 @@ func NewManager(jujuClient JujuClient, model string, application string) (*Manag
 		m.units[unitName] = &Unit{
 			state:    unitState,
 			jujuName: unitName,
-			kubeName: fullStatus.Machines[unitStatus.Machine].Hostname,
+			hostname: fullStatus.Machines[unitStatus.Machine].Hostname,
 			status:   unitStatus,
 		}
 	}
@@ -130,8 +130,8 @@ func (m *Manager) refresh() error {
 		if _, ok := m.units[unitName]; ok {
 			// Update the status and hostname (if it was empty) of each unit
 			m.units[unitName].status = unitStatus
-			if m.units[unitName].kubeName == "" {
-				m.units[unitName].kubeName = fullStatus.Machines[unitStatus.Machine].Hostname
+			if m.units[unitName].hostname == "" {
+				m.units[unitName].hostname = fullStatus.Machines[unitStatus.Machine].Hostname
 			}
 		} else {
 			// Check if the unit is active and idle
@@ -175,7 +175,7 @@ func (m *Manager) refresh() error {
 
 func (m *Manager) getUnitByHostname(hostname string) *Unit {
 	for _, unit := range m.units {
-		if unit.kubeName == hostname {
+		if unit.hostname == hostname {
 			return unit
 		}
 	}

@@ -17,8 +17,11 @@ limitations under the License.
 package juju
 
 import (
+	ctx "context"
+	"flag"
 	"fmt"
 	"io"
+	"net/url"
 	"os"
 	"strings"
 
@@ -26,10 +29,14 @@ import (
 	"gopkg.in/yaml.v2"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/autoscaler/cluster-autoscaler/cloudprovider"
 	"k8s.io/autoscaler/cluster-autoscaler/config"
 	"k8s.io/autoscaler/cluster-autoscaler/config/dynamic"
 	"k8s.io/autoscaler/cluster-autoscaler/utils/errors"
+	kube_client "k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
 	klog "k8s.io/klog/v2"
 )
 
@@ -37,7 +44,6 @@ var _ cloudprovider.CloudProvider = (*jujuCloudProvider)(nil)
 
 const (
 	GPULabel             = "juju/gpu-node"          // GPULabel is the label added to nodes with GPU resource.
-	HostnameLabel        = "kubernetes.io/hostname" // Used as an alternative to ProviderID when looking for unregistered nodes
 	scaleToZeroSupported = true
 )
 
@@ -163,12 +169,30 @@ func (j *jujuCloudProvider) Refresh() error {
 	return nil
 }
 
+// GetIdForNode returns the unique ID used to track registration for a given node, or non-nil error if such
+// occurred. Must be implemented.
+func (j *jujuCloudProvider) GetIdForNode(node *apiv1.Node) (string, error) {
+	if hostname, ok := node.Labels[hostnameLabel]; ok {
+		return hostname, nil
+	}
+
+	return "", errors.NewAutoscalerError(errors.InternalError, "Label %v not found on node %v", hostnameLabel, node.Name)
+}
+
 // BuildJuju builds the Juju cloud provider.
 func BuildJuju(
 	opts config.AutoscalingOptions,
 	do cloudprovider.NodeGroupDiscoveryOptions,
 	rl *cloudprovider.ResourceLimiter,
 ) cloudprovider.CloudProvider {
+	flag.Parse()
+	kubeClient := createKubeClient(getKubeConfig())
+	nodes, err := kubeClient.CoreV1().Nodes().List(ctx.TODO(), metav1.ListOptions{})
+	if err == nil {
+		for _, node := range nodes.Items {
+			klog.Infof("Found node with hostname %v and providerID %v", node.Labels[hostnameLabel], node.Spec.ProviderID)
+		}
+	}
 	var configRC io.ReadCloser
 	if opts.CloudConfig != "" {
 		var err error
@@ -229,6 +253,7 @@ func BuildJuju(
 			maxSize: nodeGroupSpec.MaxSize,
 			target:  len(man.units),
 			manager: man,
+			kubeClient: kubeClient,
 		}
 		ngs = append(ngs, ng)
 	}
@@ -260,4 +285,33 @@ func readCloudConfigYaml(configRC io.ReadCloser) (jujuCloudConfig, error) {
 
 	err = yaml.Unmarshal(b, &t)
 	return t, err
+}
+
+func getKubeConfig() *rest.Config {
+	kubeConfigFile := flag.Lookup("kubeconfig").Value.(flag.Getter).Get().(string)
+	if kubeConfigFile != "" {
+		klog.V(1).Infof("Using kubeconfig file: %s", kubeConfigFile)
+		// use the current context in kubeconfig
+		config, err := clientcmd.BuildConfigFromFlags("", kubeConfigFile)
+		if err != nil {
+			klog.Fatalf("Failed to build config: %v", err)
+		}
+		return config
+	}
+	kubernetes := flag.Lookup("kubernetes").Value.(flag.Getter).Get().(string)
+	url, err := url.Parse(kubernetes)
+	if err != nil {
+		klog.Fatalf("Failed to parse Kubernetes url: %v", err)
+	}
+
+	kubeConfig, err := config.GetKubeClientConfig(url)
+	if err != nil {
+		klog.Fatalf("Failed to build Kubernetes client configuration: %v", err)
+	}
+
+	return kubeConfig
+}
+
+func createKubeClient(kubeConfig *rest.Config) kube_client.Interface {
+	return kube_client.NewForConfigOrDie(kubeConfig)
 }

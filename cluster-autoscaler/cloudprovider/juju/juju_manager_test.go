@@ -13,11 +13,11 @@ import (
 )
 
 // Note: If you need to generate new mocks , run go generate ./... in the cloudprovider/juju directory
-func makeUnit(state cloudprovider.InstanceState, jujuName string, kubeName string, agentStatus string, workloadStatus string, machine string) Unit {
+func makeUnit(state cloudprovider.InstanceState, jujuName string, hostname string, agentStatus string, workloadStatus string, machine string) Unit {
 	return Unit{
 		state:    state,
 		jujuName: jujuName,
-		kubeName: kubeName,
+		hostname: hostname,
 		status: params.UnitStatus{
 			AgentStatus: params.DetailedStatus{
 				Status: agentStatus,
@@ -47,7 +47,7 @@ func makeMachineStatuses(units map[string]*Unit) map[string]params.MachineStatus
 	machineStatuses := make(map[string]params.MachineStatus)
 	for _, unit := range units {
 		machineStatuses[unit.status.Machine] = params.MachineStatus{
-			Hostname: unit.kubeName,
+			Hostname: unit.hostname,
 		}
 	}
 
@@ -117,8 +117,8 @@ func TestNewManager(t *testing.T) {
 			t.Errorf("%v jujuName = %v; want %v", unitName, unit.jujuName, units[unitName].jujuName)
 		}
 
-		if unit.kubeName != units[unitName].kubeName {
-			t.Errorf("%v kubeName = %v; want %v", unitName, unit.kubeName, units[unitName].kubeName)
+		if unit.hostname != units[unitName].hostname {
+			t.Errorf("%v hostname = %v; want %v", unitName, unit.hostname, units[unitName].hostname)
 		}
 
 		if !cmp.Equal(unit.status, units[unitName].status) {
@@ -297,9 +297,9 @@ func TestRefresh(t *testing.T) {
 		mockJujuClient.EXPECT().Status(nil).Return(&ms, nil), // Getting previous status
 	)
 
-	// unit1 kubeName should be empty before the call
-	if m.units[unit1.jujuName].kubeName != "" {
-		t.Errorf("before calling refresh: kubeName = %v; want %v", m.units[unit1.jujuName].kubeName, "")
+	// unit1 hostname should be empty before the call
+	if m.units[unit1.jujuName].hostname != "" {
+		t.Errorf("before calling refresh: hostname = %v; want %v", m.units[unit1.jujuName].hostname, "")
 	}
 
 	// unit3 state should be InstanceCreating before the call
@@ -324,9 +324,9 @@ func TestRefresh(t *testing.T) {
 		t.Errorf("error refreshing: %s", err.Error())
 	}
 
-	// unit1 kubeName should be unit_1_hostname after the call
-	if m.units[unit1.jujuName].kubeName != "unit_1_hostname" {
-		t.Errorf("after calling refresh: kubeName = %v; want %v", m.units[unit1.jujuName].kubeName, "unit_1_hostname")
+	// unit1 hostname should be unit_1_hostname after the call
+	if m.units[unit1.jujuName].hostname != "unit_1_hostname" {
+		t.Errorf("after calling refresh: hostname = %v; want %v", m.units[unit1.jujuName].hostname, "unit_1_hostname")
 	}
 
 	// unit3 state should now be running since it was previously creating (and active)

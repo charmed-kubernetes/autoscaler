@@ -24,7 +24,6 @@ import (
 	"time"
 
 	"k8s.io/autoscaler/cluster-autoscaler/cloudprovider"
-	"k8s.io/autoscaler/cluster-autoscaler/cloudprovider/juju"
 	"k8s.io/autoscaler/cluster-autoscaler/clusterstate/api"
 	"k8s.io/autoscaler/cluster-autoscaler/clusterstate/utils"
 	"k8s.io/autoscaler/cluster-autoscaler/metrics"
@@ -305,7 +304,7 @@ func (csr *ClusterStateRegistry) UpdateNodes(nodes []*apiv1.Node, nodeInfosForGr
 	if err != nil {
 		return err
 	}
-	notRegistered := csr.getNotRegisteredNodes(nodes, cloudProviderNodeInstances, currentTime)
+	notRegistered := getNotRegisteredNodes(nodes, cloudProviderNodeInstances, currentTime)
 
 	csr.Lock()
 	defer csr.Unlock()
@@ -949,17 +948,11 @@ func (csr *ClusterStateRegistry) getCloudProviderNodeInstances() (map[string][]c
 }
 
 // Calculates which of the existing cloud provider nodes are not registered in Kubernetes.
-func (csr *ClusterStateRegistry) getNotRegisteredNodes(allNodes []*apiv1.Node, cloudProviderNodeInstances map[string][]cloudprovider.Instance, time time.Time) []UnregisteredNode {
+func getNotRegisteredNodes(allNodes []*apiv1.Node, cloudProviderNodeInstances map[string][]cloudprovider.Instance, time time.Time) []UnregisteredNode {
 	registered := sets.NewString()
 	for _, node := range allNodes {
-		if csr.cloudProvider.Name() == cloudprovider.JujuProviderName {
-			hostname := node.Labels[juju.HostnameLabel]
-			registered.Insert(hostname)
-		} else {
-			registered.Insert(node.Spec.ProviderID)
-		}
+		registered.Insert(node.Spec.ProviderID)
 	}
-
 	notRegistered := make([]UnregisteredNode, 0)
 	for _, instances := range cloudProviderNodeInstances {
 		for _, instance := range instances {
