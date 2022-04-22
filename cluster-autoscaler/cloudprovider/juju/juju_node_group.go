@@ -23,10 +23,6 @@ import (
 	schedulerframework "k8s.io/kubernetes/pkg/scheduler/framework"
 )
 
-// const (
-// 	nodeIDLabel        = "juju/node-id"
-// )
-
 type NodeGroup struct {
 	id      string
 	minSize int
@@ -132,19 +128,18 @@ func (n *NodeGroup) Debug() string {
 // Other fields are optional.
 // This list should include also instances that might have not become a kubernetes node yet.
 func (n *NodeGroup) Nodes() ([]cloudprovider.Instance, error) {
-	var nodes []cloudprovider.Instance
+	var instances []cloudprovider.Instance
+
 	for _, unit := range n.manager.units {
-		if unit.kubeName != "" {
-			nodes = append(nodes, cloudprovider.Instance{
-				Id: unit.kubeName,
-				Status: &cloudprovider.InstanceStatus{
-					State: unit.state,
-				},
-			})
-		}
+		instances = append(instances, cloudprovider.Instance{
+			Id: unit.providerID,
+			Status: &cloudprovider.InstanceStatus{
+				State: unit.state,
+			},
+		})
 	}
 
-	return nodes, nil
+	return instances, nil
 }
 
 // TemplateNodeInfo returns a schedulerframework.NodeInfo structure of an empty
@@ -160,7 +155,7 @@ func (n *NodeGroup) TemplateNodeInfo() (*schedulerframework.NodeInfo, error) {
 // Exist checks if the node group really exists on the cloud provider side. Allows to tell the
 // theoretical node group from the real one. Implementation required.
 func (n *NodeGroup) Exist() bool {
-	return true //TODO IMPLEMENT LOGIC
+	return n.manager != nil
 }
 
 // Create creates the node group on the cloud provider side. Implementation optional.
