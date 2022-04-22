@@ -17,7 +17,6 @@ limitations under the License.
 package juju
 
 import (
-	ctx "context"
 	"flag"
 	"fmt"
 	"io"
@@ -29,7 +28,6 @@ import (
 	"gopkg.in/yaml.v2"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/autoscaler/cluster-autoscaler/cloudprovider"
 	"k8s.io/autoscaler/cluster-autoscaler/config"
 	"k8s.io/autoscaler/cluster-autoscaler/config/dynamic"
@@ -177,12 +175,7 @@ func BuildJuju(
 ) cloudprovider.CloudProvider {
 	flag.Parse()
 	kubeClient := createKubeClient(getKubeConfig())
-	nodes, err := kubeClient.CoreV1().Nodes().List(ctx.TODO(), metav1.ListOptions{})
-	if err == nil {
-		for _, node := range nodes.Items {
-			klog.Infof("Found node with hostname %v and providerID %v", node.Labels[hostnameLabel], node.Spec.ProviderID)
-		}
-	}
+
 	var configRC io.ReadCloser
 	if opts.CloudConfig != "" {
 		var err error

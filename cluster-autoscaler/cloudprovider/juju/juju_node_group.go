@@ -24,10 +24,6 @@ import (
 	schedulerframework "k8s.io/kubernetes/pkg/scheduler/framework"
 )
 
-const (
-	hostnameLabel = "kubernetes.io/hostname" // Used as an alternative to ProviderID when looking for unregistered nodes
-)
-
 type NodeGroup struct {
 	id         string
 	minSize    int
