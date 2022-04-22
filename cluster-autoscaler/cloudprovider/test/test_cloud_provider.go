@@ -274,12 +274,6 @@ func (tcp *TestCloudProvider) Refresh() error {
 	return nil
 }
 
-// GetIdForNode returns the unique ID used to track registration for a given node, or non-nil error if such
-// occurred. Must be implemented.
-func (tcp *TestCloudProvider) GetIdForNode(node *apiv1.Node) (string, error) {
-	return node.Spec.ProviderID, nil
-}
-
 // TestNodeGroup is a node group used by TestCloudProvider.
 type TestNodeGroup struct {
 	sync.Mutex
