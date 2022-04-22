@@ -231,12 +231,11 @@ func BuildJuju(
 
 		jujuID := fmt.Sprintf("juju-%s-%s", model, application)
 		ng := &NodeGroup{
-			id:         jujuID,
-			minSize:    nodeGroupSpec.MinSize,
-			maxSize:    nodeGroupSpec.MaxSize,
-			target:     len(man.units),
-			manager:    man,
-			kubeClient: kubeClient,
+			id:      jujuID,
+			minSize: nodeGroupSpec.MinSize,
+			maxSize: nodeGroupSpec.MaxSize,
+			target:  len(man.units),
+			manager: man,
 		}
 		ngs = append(ngs, ng)
 	}

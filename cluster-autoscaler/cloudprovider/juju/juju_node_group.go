@@ -20,17 +20,15 @@ import (
 
 	"k8s.io/autoscaler/cluster-autoscaler/cloudprovider"
 	"k8s.io/autoscaler/cluster-autoscaler/config"
-	kube_client "k8s.io/client-go/kubernetes"
 	schedulerframework "k8s.io/kubernetes/pkg/scheduler/framework"
 )
 
 type NodeGroup struct {
-	id         string
-	minSize    int
-	maxSize    int
-	target     int
-	manager    *Manager
-	kubeClient kube_client.Interface
+	id      string
+	minSize int
+	maxSize int
+	target  int
+	manager *Manager
 }
 
 // MaxSize returns maximum size of the node group.
