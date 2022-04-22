@@ -137,11 +137,13 @@ func (m *Manager) refresh() error {
 
 		unitHostname := fullStatus.Machines[unitStatus.Machine].Hostname
 		unitProviderID := ""
-		node, err := m.kubeClient.CoreV1().Nodes().Get(ctx.TODO(), unitHostname, v1.GetOptions{})
-		if err != nil {
-			klog.Errorf("error getting provider ID for unit %v with hostname %v", unitName, unitHostname)
-		} else {
-			unitProviderID = node.Spec.ProviderID
+		if unitHostname != "" {
+			node, err := m.kubeClient.CoreV1().Nodes().Get(ctx.TODO(), unitHostname, v1.GetOptions{})
+			if err != nil {
+				klog.Errorf("error getting provider ID for unit %v with hostname %v: %v", unitName, unitHostname, err.Error())
+			} else {
+				unitProviderID = node.Spec.ProviderID
+			}
 		}
 
 		// Check if we aren't already managing this unit
