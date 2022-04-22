@@ -43,7 +43,7 @@ import (
 var _ cloudprovider.CloudProvider = (*jujuCloudProvider)(nil)
 
 const (
-	GPULabel             = "juju/gpu-node"          // GPULabel is the label added to nodes with GPU resource.
+	GPULabel             = "juju/gpu-node" // GPULabel is the label added to nodes with GPU resource.
 	scaleToZeroSupported = true
 )
 
@@ -62,7 +62,7 @@ type jujuCloudProvider struct {
 	nodeGroups      []cloudprovider.NodeGroup
 }
 
-func newJujuCloudProvider(rl *cloudprovider.ResourceLimiter, nodeGroups []cloudprovider.NodeGroup) (*jujuCloudProvider, error) { //TODO
+func newJujuCloudProvider(rl *cloudprovider.ResourceLimiter, nodeGroups []cloudprovider.NodeGroup) (*jujuCloudProvider, error) {
 	return &jujuCloudProvider{
 		resourceLimiter: rl,
 		nodeGroups:      nodeGroups,
@@ -89,7 +89,7 @@ func (j *jujuCloudProvider) NodeGroupForNode(node *apiv1.Node) (cloudprovider.No
 			return nil, err
 		}
 		for _, nodeGroupNode := range nodeGroupNodes {
-			if nodeGroupNode.Id == node.Name {
+			if nodeGroupNode.Id == node.Spec.ProviderID {
 				return nodeGroup, nil
 			}
 		}
@@ -169,16 +169,6 @@ func (j *jujuCloudProvider) Refresh() error {
 	return nil
 }
 
-// GetIdForNode returns the unique ID used to track registration for a given node, or non-nil error if such
-// occurred. Must be implemented.
-func (j *jujuCloudProvider) GetIdForNode(node *apiv1.Node) (string, error) {
-	if hostname, ok := node.Labels[hostnameLabel]; ok {
-		return hostname, nil
-	}
-
-	return "", errors.NewAutoscalerError(errors.InternalError, "Label %v not found on node %v", hostnameLabel, node.Name)
-}
-
 // BuildJuju builds the Juju cloud provider.
 func BuildJuju(
 	opts config.AutoscalingOptions,
@@ -240,7 +230,7 @@ func BuildJuju(
 			continue
 		}
 
-		man, err := NewManager(jujuAPI, model, application)
+		man, err := NewManager(jujuAPI, kubeClient, model, application)
 		if err != nil {
 			klog.Errorf("error creating manager: %v", err)
 			continue
@@ -248,11 +238,11 @@ func BuildJuju(
 
 		jujuID := fmt.Sprintf("juju-%s-%s", model, application)
 		ng := &NodeGroup{
-			id:      jujuID,
-			minSize: nodeGroupSpec.MinSize,
-			maxSize: nodeGroupSpec.MaxSize,
-			target:  len(man.units),
-			manager: man,
+			id:         jujuID,
+			minSize:    nodeGroupSpec.MinSize,
+			maxSize:    nodeGroupSpec.MaxSize,
+			target:     len(man.units),
+			manager:    man,
 			kubeClient: kubeClient,
 		}
 		ngs = append(ngs, ng)

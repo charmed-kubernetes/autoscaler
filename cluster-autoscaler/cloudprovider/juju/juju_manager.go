@@ -1,21 +1,27 @@
 package juju
 
 //go:generate mockgen -destination=./mocks/mock_juju_client.go --build_flags=--mod=mod -package=mocks . JujuClient
+//go:generate mockgen -destination=./mocks/mock_kube_client.go --build_flags=--mod=mod -package=mocks k8s.io/client-go/kubernetes Interface
+//go:generate mockgen -destination=./mocks/mock_core_v1.go --build_flags=--mod=mod -package=mocks k8s.io/client-go/kubernetes/typed/core/v1 CoreV1Interface,NodeInterface
 
 import (
+	ctx "context"
 	"fmt"
 
 	"github.com/juju/juju/api/client/application"
 	"github.com/juju/juju/rpc/params"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/autoscaler/cluster-autoscaler/cloudprovider"
+	kube_client "k8s.io/client-go/kubernetes"
 	klog "k8s.io/klog/v2"
 )
 
 type Unit struct {
-	state    cloudprovider.InstanceState
-	jujuName string
-	hostname string
-	status   params.UnitStatus
+	state      cloudprovider.InstanceState
+	jujuName   string
+	hostname   string
+	status     params.UnitStatus
+	providerID string
 }
 
 type JujuClient interface {
@@ -26,14 +32,16 @@ type JujuClient interface {
 
 type Manager struct {
 	jujuClient  JujuClient
+	kubeClient  kube_client.Interface
 	model       string
 	application string
 	units       map[string]*Unit
 }
 
-func NewManager(jujuClient JujuClient, model string, application string) (*Manager, error) {
+func NewManager(jujuClient JujuClient, kubeClient kube_client.Interface, model string, application string) (*Manager, error) {
 	m := new(Manager)
 	m.jujuClient = jujuClient
+	m.kubeClient = kubeClient
 	m.model = model
 	m.application = application
 	m.units = make(map[string]*Unit)
@@ -126,27 +134,38 @@ func (m *Manager) refresh() error {
 	// This could mean updating the state of units currently managed by the manager
 	// or incorporating a totally new unit that was added by the cluster-admin manually
 	for unitName, unitStatus := range fullStatus.Applications[m.application].Units {
-		// Check if we are already managing this unit
-		if _, ok := m.units[unitName]; ok {
-			// Update the status and hostname (if it was empty) of each unit
-			m.units[unitName].status = unitStatus
-			if m.units[unitName].hostname == "" {
-				m.units[unitName].hostname = fullStatus.Machines[unitStatus.Machine].Hostname
-			}
+
+		unitHostname := fullStatus.Machines[unitStatus.Machine].Hostname
+		unitProviderID := ""
+		node, err := m.kubeClient.CoreV1().Nodes().Get(ctx.TODO(), unitHostname, v1.GetOptions{})
+		if err != nil {
+			klog.Errorf("error getting provider ID for unit %v with hostname %v", unitName, unitHostname)
 		} else {
+			unitProviderID = node.Spec.ProviderID
+		}
+
+		// Check if we aren't already managing this unit
+		if _, ok := m.units[unitName]; !ok {
 			// Check if the unit is active and idle
 			// This is necessary since when a unit gets deleted it does not happen immediately
 			// We want to make sure we only add externally added units, not recently deleted units that are still showing up in status
 			if unitStatus.WorkloadStatus.Status == "active" && unitStatus.AgentStatus.Status == "idle" {
 				// The unit was added manually. Need to add it to the units list as a new unit
 				m.units[unitName] = &Unit{
-					state:    cloudprovider.InstanceRunning,
-					jujuName: unitName,
-					status:   unitStatus,
+					state:      cloudprovider.InstanceRunning,
+					jujuName:   unitName,
+					hostname:   unitHostname,
+					status:     unitStatus,
+					providerID: unitProviderID,
 				}
 				klog.Infof("detected unmanaged unit %s", unitName)
 				klog.Infof("added unit %s to managed units", unitName)
 			}
+		} else {
+			// Update the status, hostname, and providerID of each unit
+			m.units[unitName].status = unitStatus
+			m.units[unitName].hostname = unitHostname
+			m.units[unitName].providerID = unitProviderID
 		}
 	}
 
