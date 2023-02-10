@@ -195,12 +195,12 @@ func BuildJuju(
 	for _, nodeGroupSpecString := range do.NodeGroupSpecs {
 		nodeGroupSpec, err := dynamic.SpecFromString(nodeGroupSpecString, scaleToZeroSupported)
 		if err != nil {
-			klog.Errorf("failed to parse node group spec: %v", err)
+			klog.Fatalf("failed to parse node group spec: %v", err)
 			continue
 		}
 		model, application, err := parseNodeGroupName(nodeGroupSpec.Name)
 		if err != nil {
-			klog.Errorf("failed to parse node group name: %v", err)
+			klog.Fatalf("failed to parse node group name: %v", err)
 			continue
 		}
 
@@ -213,19 +213,19 @@ func BuildJuju(
 		})
 
 		if err != nil {
-			klog.Errorf("failed to create simple connector %v", err)
+			klog.Fatalf("failed to create simple connector %v", err)
 			continue
 		}
 
 		jujuAPI, err := NewJujuAPi(connector)
 		if err != nil {
-			klog.Errorf("failed to create JujuClient %v", err)
+			klog.Fatalf("failed to create JujuClient %v", err)
 			continue
 		}
 
 		man, err := NewManager(jujuAPI, kubeClient, model, application)
 		if err != nil {
-			klog.Errorf("error creating manager: %v", err)
+			klog.Fatalf("error creating manager: %v", err)
 			continue
 		}
 
