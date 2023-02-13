@@ -37,8 +37,11 @@ type CharmOrigin struct {
 	Branch   *string `json:"branch,omitempty"`
 
 	Architecture string `json:"architecture,omitempty"`
-	OS           string `json:"os,omitempty"`
-	Series       string `json:"series,omitempty"`
+	Base         Base   `json:"base,omitempty"`
+	// TODO(juju3) - remove series, os, channel
+	Series  string `json:"series,omitempty"`
+	OS      string `json:"os,omitempty"`
+	Channel string `json:"channel,omitempty"`
 
 	// InstanceKey is a unique string associated with the application. To
 	// assist with keeping KPI data in charmhub, it must be the same for every
@@ -50,7 +53,8 @@ type CharmOrigin struct {
 // ApplicationDeploy holds the parameters for making the application Deploy
 // call.
 type ApplicationDeploy struct {
-	ApplicationName  string                         `json:"application"`
+	ApplicationName string `json:"application"`
+	// TODO(juju3) - remove, only used in facade 12 or earlier
 	Series           string                         `json:"series"`
 	CharmURL         string                         `json:"charm-url"`
 	CharmOrigin      *CharmOrigin                   `json:"charm-origin,omitempty"`
@@ -333,12 +337,14 @@ type ApplicationGetResults struct {
 	CharmConfig       map[string]interface{} `json:"config"`
 	ApplicationConfig map[string]interface{} `json:"application-config,omitempty"`
 	Constraints       constraints.Value      `json:"constraints"`
-	Series            string                 `json:"series"`
-	Channel           string                 `json:"channel"`
-	EndpointBindings  map[string]string      `json:"endpoint-bindings,omitempty"`
+	// TODO(juju3) - remove series
+	Series           string            `json:"series"`
+	Base             Base              `json:"base"`
+	Channel          string            `json:"channel"`
+	EndpointBindings map[string]string `json:"endpoint-bindings,omitempty"`
 }
 
-// ApplicationConfigSetArgsV12 holds the parameters for
+// ApplicationConfigSetArgs holds the parameters for
 // setting application config values for specified applications.
 type ApplicationConfigSetArgs struct {
 	Args []ApplicationConfigSet
@@ -577,14 +583,17 @@ type ScaleApplicationInfo struct {
 // ApplicationResult holds an application info.
 // NOTE: we should look to combine ApplicationResult and ApplicationInfo.
 type ApplicationResult struct {
-	Tag              string                     `json:"tag"`
-	Charm            string                     `json:"charm,omitempty"`
+	Tag   string `json:"tag"`
+	Charm string `json:"charm,omitempty"`
+	// TODO(juju3) - remove series
 	Series           string                     `json:"series,omitempty"`
+	Base             Base                       `json:"base,omitempty"`
 	Channel          string                     `json:"channel,omitempty"`
 	Constraints      constraints.Value          `json:"constraints,omitempty"`
 	Principal        bool                       `json:"principal"`
 	Exposed          bool                       `json:"exposed"`
 	Remote           bool                       `json:"remote"`
+	Life             string                     `json:"life"`
 	EndpointBindings map[string]string          `json:"endpoint-bindings,omitempty"`
 	ExposedEndpoints map[string]ExposedEndpoint `json:"exposed-endpoints,omitempty"`
 }
@@ -608,6 +617,7 @@ type RelationData struct {
 
 // EndpointRelationData holds information about a relation to a given endpoint.
 type EndpointRelationData struct {
+	RelationId       int                     `json:"relation-id"`
 	Endpoint         string                  `json:"endpoint"`
 	CrossModel       bool                    `json:"cross-model"`
 	RelatedEndpoint  string                  `json:"related-endpoint"`
@@ -624,6 +634,7 @@ type UnitResult struct {
 	PublicAddress   string                 `json:"public-address,omitempty"`
 	Charm           string                 `json:"charm"`
 	Leader          bool                   `json:"leader,omitempty"`
+	Life            string                 `json:"life,omitempty"`
 	RelationData    []EndpointRelationData `json:"relation-data,omitempty"`
 
 	// The following are for CAAS models.

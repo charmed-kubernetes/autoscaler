@@ -3,15 +3,15 @@ package juju
 import (
 	"fmt"
 
-	"github.com/juju/juju/api"
 	"github.com/juju/juju/api/client/application"
+	apiclient "github.com/juju/juju/api/client/client"
 	"github.com/juju/juju/api/connector"
 	"github.com/juju/juju/rpc/params"
 )
 
 type JujuAPI struct {
 	applicationClient *application.Client // applicationClient is limited to application API calls
-	statusClient      *api.Client         // statusClient is used to gather status information
+	statusClient      *apiclient.Client   // statusClient is used to gather status information
 }
 
 func NewJujuAPi(connector *connector.SimpleConnector) (*JujuAPI, error) {
@@ -22,7 +22,7 @@ func NewJujuAPi(connector *connector.SimpleConnector) (*JujuAPI, error) {
 
 	jujuAPI := new(JujuAPI)
 	jujuAPI.applicationClient = application.NewClient(conn)
-	jujuAPI.statusClient = api.NewClient(conn)
+	jujuAPI.statusClient = apiclient.NewClient(conn)
 	return jujuAPI, nil
 }
 

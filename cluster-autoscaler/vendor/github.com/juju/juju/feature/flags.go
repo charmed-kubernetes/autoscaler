@@ -1,7 +1,6 @@
 // Copyright 2015 Canonical Ltd.
 // Licensed under the AGPLv3, see LICENCE file for details.
 
-// Package feature package defines the names of the current feature flags.
 package feature
 
 // TODO (anastasiamac 2015-03-02)
@@ -51,12 +50,12 @@ const RawK8sSpec = "raw-k8s-spec"
 // ActionsV2 enables the next generation actions UX.
 const ActionsV2 = "actions-v2"
 
-// Secrets enables the secrets feature.
-const Secrets = "secrets"
-
 // RaftAPILeases will switch all lease store management transport, currently
 // handled by Pubsub to facade API interaction.
 const RaftAPILeases = "raft-api-leases"
 
 // AsynchronousCharmDownloads enables support for asynchronous charm downloads.
 const AsynchronousCharmDownloads = "async-charm-downloads"
+
+// LoggingOutput enables the ability to configure different logging backends.
+const LoggingOutput = "logging-output"

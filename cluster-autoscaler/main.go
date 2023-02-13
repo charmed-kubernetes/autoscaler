@@ -190,6 +190,12 @@ var (
 	emitPerNodeGroupMetrics  = flag.Bool("emit-per-nodegroup-metrics", false, "If true, emit per node group metrics.")
 	debuggingSnapshotEnabled = flag.Bool("debugging-snapshot-enabled", false, "Whether the debugging snapshot of cluster autoscaler feature is enabled")
 	nodeInfoCacheExpireTime  = flag.Duration("node-info-cache-expire-time", 87600*time.Hour, "Node Info cache expire time for each item. Default value is 10 years.")
+
+	leaderElect              = flag.Bool("leader-elect", true, "Starts a leader election client and gain leadership before executing the main loop. Enable this when running replicated components for high availability.")
+	leaderElectLeaseDuration = flag.Duration("leader-elect-lease-duration", 15*time.Second, "The duration that non-leader candidates will wait after observing a leadership renewal until attempting to acquire leadership of a led but unrenewed leader slot. This is effectively the maximum duration that a leader can be stopped before it is replaced by another candidate. This is only applicable if leader election is enabled")
+	leaderElectRenewDeadline = flag.Duration("leader-elect-renew-deadline", 15*time.Second, "The interval between attempts by the active cluster-autoscaler to renew a leadership slot before it stops leading. This must be less than or equal to the lease duration. This is only applicable if leader election is enabled")
+	leaderElectRetryPeriod   = flag.Duration("leader-elect-retry-period", 15*time.Second, "The duration the clients should wait between attempting acquisition and renewal of a leadership. This is only applicable if leader election is enabled")
+	leaderElectResourceLock  = flag.String("leader-elect-resource-lock", "leases", "The type of resource object that is used for locking during leader election. Supported options are leases (default), endpoints, endpointsleases, configmaps, and configmapsleases")
 )
 
 func createAutoscalingOptions() config.AutoscalingOptions {

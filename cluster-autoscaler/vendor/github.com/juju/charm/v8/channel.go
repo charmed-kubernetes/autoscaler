@@ -85,7 +85,7 @@ func MakePermissiveChannel(track, risk, branch string) Channel {
 // ParseChannel parses a string representing a store channel.
 func ParseChannel(s string) (Channel, error) {
 	if s == "" {
-		return Channel{}, errors.Errorf("channel cannot be empty")
+		return Channel{}, errors.NotValidf("empty channel")
 	}
 
 	p := strings.Split(s, "/")
@@ -148,9 +148,6 @@ func ParseChannelNormalize(s string) (Channel, error) {
 // Normalize the channel with normalized track, risk and names.
 func (ch Channel) Normalize() Channel {
 	track := ch.Track
-	if track == "latest" {
-		track = ""
-	}
 
 	risk := ch.Risk
 	if risk == "" {

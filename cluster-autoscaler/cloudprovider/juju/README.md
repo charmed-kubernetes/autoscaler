@@ -102,7 +102,7 @@ juju models -c $KUBE_CONTROLLER --format json | jq -cr '.models[]|{name,"model-u
 
 Then you can execute the autoscaler application using the following command:
 ```
-./cluster-autoscaler-amd64 -v=5 --kubeconfig=/absolute/path/to/your/.kube/config --cloud-provider=juju --max-node-provision-time 60m0s --scale-down-unneeded-time=5m0s --scale-down-delay-after-add 5m0s --nodes 3:5:<your-model-UUID>:kubernetes-worker --cloud-config=/absolute/path/to/your/cloud-config.yaml
+./cluster-autoscaler-amd64 -v=5 --kubeconfig=/absolute/path/to/your/.kube/config --leader-elect=false --cloud-provider=juju --max-node-provision-time 60m0s --scale-down-unneeded-time=5m0s --scale-down-delay-after-add 5m0s --nodes 3:5:<your-model-UUID>:kubernetes-worker --cloud-config=/absolute/path/to/your/cloud-config.yaml
 ```
 
 Note that you will need to pass in absolute paths to your kube-config file as well as your cloud-config file. The `--nodes` option is used to specify the minimum and maximum number of nodes allowed, along with the model UUID and application name that you want to scale (kubernetes-worker in this case). Make sure you replace `<your-model-UUID>` with the UUID of the model found in the above step. 

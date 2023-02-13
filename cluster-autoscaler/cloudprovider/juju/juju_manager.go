@@ -39,6 +39,7 @@ type Manager struct {
 }
 
 func NewManager(jujuClient JujuClient, kubeClient kube_client.Interface, model string, application string) (*Manager, error) {
+	klog.Infof("creating manager")
 	m := new(Manager)
 	m.jujuClient = jujuClient
 	m.kubeClient = kubeClient
@@ -48,6 +49,7 @@ func NewManager(jujuClient JujuClient, kubeClient kube_client.Interface, model s
 
 	fullStatus, err := m.jujuClient.Status(nil)
 	if err != nil {
+		klog.Error("error getting status from juju client", err.Error())
 		return nil, err
 	}
 

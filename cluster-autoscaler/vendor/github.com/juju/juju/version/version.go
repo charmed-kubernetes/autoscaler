@@ -1,8 +1,6 @@
 // Copyright 2012, 2013 Canonical Ltd.
 // Licensed under the AGPLv3, see LICENCE file for details.
 
-// Package version contains versioning information for juju.  It also
-// acts as guardian of the current client Juju version number.
 package version
 
 import (
@@ -21,7 +19,7 @@ import (
 // The presence and format of this constant is very important.
 // The debian/rules build recipe uses this value for the version
 // number of the release package.
-const version = "2.9.28"
+const version = "2.9.40"
 
 // UserAgentVersion defines a user agent version used for communication for
 // outside resources.
@@ -65,8 +63,7 @@ var GitTreeState string = TreeStateDirty
 func init() {
 	defer func() {
 		if Current.Build == 0 {
-			// We set the Build to OfficialBuild if FORCE-VERSION file does not exist or
-			// no build number provided in the FORCE-VERSION file.
+			// We set the Build to OfficialBuild if no build number provided in the FORCE-VERSION file.
 			Current.Build = OfficialBuild
 		}
 	}()
